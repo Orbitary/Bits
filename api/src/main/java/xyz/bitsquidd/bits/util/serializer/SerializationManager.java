@@ -32,6 +32,7 @@ public final class SerializationManager {
         JsonMapper.Builder builder = JsonMapper.builder()
           .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
           .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+          .disable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
           .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
           .annotationIntrospector(new NullableAwareIntrospector());
 
