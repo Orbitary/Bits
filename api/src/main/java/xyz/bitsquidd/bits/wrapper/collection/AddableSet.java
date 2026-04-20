@@ -1,3 +1,10 @@
+/*
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
+ *
+ * Copyright (c) 2023-2026 ImBit
+ */
+
 package xyz.bitsquidd.bits.wrapper.collection;
 
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
@@ -34,7 +41,7 @@ public class AddableSet<T> implements Buildable<Set<T>> {
         return this;
     }
 
-    public final AddableSet<T> addAll(Collection<T> element) {
+    public final AddableSet<T> addAll(Collection<? extends T> element) {
         for (T e : element) {
             add(e);
         }
@@ -60,7 +67,7 @@ public class AddableSet<T> implements Buildable<Set<T>> {
         return new AddableSet<T>().addAll(element);
     }
 
-    public static <T> AddableSet<T> of(Collection<T> set) {
+    public static <T> AddableSet<T> of(Collection<? extends T> set) {
         return new AddableSet<T>().addAll(set);
     }
 

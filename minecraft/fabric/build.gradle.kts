@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.includeLibrary
+import xyz.bitsquidd.util.shadeLibrary
 
 plugins {
     alias(fabricLibs.plugins.fabric.loom)
@@ -18,7 +18,6 @@ loom {
         create("bits") {
             sourceSet(sourceSets.main.get())
             sourceSet(sourceSets["client"])
-//            sourceSet(sourceSets["server"])
         }
     }
 }
@@ -40,7 +39,8 @@ dependencies {
     implementation("net.kyori:adventure-platform-fabric:6.9.0")
     implementation("me.lucko:fabric-permissions-api:0.5.0")
 
-    includeLibrary(project(":minecraft"))
+    shadeLibrary(project(":minecraft"))
+    shadeLibrary(project(":api"))
 }
 
 tasks {
@@ -61,12 +61,17 @@ tasks {
         filteringCharset = "UTF-8"
 
         filesMatching("fabric.mod.json") {
-            expand(
-                "version" to project.version
-            )
+            expand("version" to project.version)
         }
     }
 }
+
+tasks {
+    shadowJar {
+        from(sourceSets["client"].output)
+    }
+}
+
 
 //afterEvaluate {
 //    publishing {
