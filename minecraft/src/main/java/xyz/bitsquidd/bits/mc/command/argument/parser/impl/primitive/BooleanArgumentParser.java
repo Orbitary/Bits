@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive;
 
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -15,6 +17,7 @@ import java.util.function.Supplier;
  *
  * @since 0.0.10
  */
+@ArgumentParser
 public final class BooleanArgumentParser extends PrimitiveArgumentParser<Boolean> {
 
     public BooleanArgumentParser() {

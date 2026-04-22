@@ -51,7 +51,7 @@ public abstract class PaperBitsConfig extends MinecraftBitsConfig {
     }
 
     @Override
-    public boolean hasPermission(Audience audience, Permission permission) {
+    public final boolean hasPermission(Audience audience, Permission permission) {
         if (audience instanceof CommandSender commandSender) {
             return commandSender.hasPermission(permission.toString());
         } else {
@@ -60,28 +60,28 @@ public abstract class PaperBitsConfig extends MinecraftBitsConfig {
     }
 
     @Override
-    public void registerPermission(Permission permission) {
+    public final void registerPermission(Permission permission) {
         Bukkit.getPluginManager().addPermission(new org.bukkit.permissions.Permission(permission.toString()));
     }
 
     @Override
-    public Locale getLocale(Audience audience) {
+    public final Locale getLocale(Audience audience) {
         if (audience instanceof Player player) return player.locale();
         return Locale.getDefault();
     }
 
     @Override
-    public Audience getAll() {
+    public final Audience getAll() {
         return Audience.audience(Bukkit.getOnlinePlayers());
     }
 
     @Override
-    public void runLater(Runnable runnable, long delayMs) {
+    public final void runLater(Runnable runnable, long delayMs) {
         Runnables.later(runnable, delayMs / 50); // Convert ms to ticks
     }
 
     @Override
-    public void runLaterAsync(Runnable runnable, long delayMs) {
+    public final void runLaterAsync(Runnable runnable, long delayMs) {
         Runnables.buildLater(runnable, delayMs / 50).async().run(); // Convert ms to ticks
     }
 
@@ -91,7 +91,7 @@ public abstract class PaperBitsConfig extends MinecraftBitsConfig {
     }
 
     @Override
-    public PaperBitsCommandManager getCommandManager() {
+    public final PaperBitsCommandManager getCommandManager() {
         return (PaperBitsCommandManager)super.getCommandManager();
     }
 

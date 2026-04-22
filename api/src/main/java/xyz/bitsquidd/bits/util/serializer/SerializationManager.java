@@ -33,10 +33,8 @@ public final class SerializationManager {
           .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
           .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
           .disable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
-          .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
-          .disable(MapperFeature.AUTO_DETECT_GETTERS)
-          .disable(MapperFeature.AUTO_DETECT_SETTERS)
           .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
+          .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
           .annotationIntrospector(new NullableAwareIntrospector());
 
         getSerializers().forEach(serializer -> registerSerializer(serializer, builder));

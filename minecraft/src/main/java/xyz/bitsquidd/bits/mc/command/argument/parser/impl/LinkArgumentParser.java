@@ -10,6 +10,7 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.Link;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
  *
  * @since 0.0.10
  */
+@ArgumentParser
 public final class LinkArgumentParser extends AbstractArgumentParser<Link> {
     public LinkArgumentParser() {
         super(TypeSignature.of(Link.class), "URL");
