@@ -5,18 +5,16 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.includeLibrary
-
 repositories {
     maven { url = uri("https://libraries.minecraft.net") }
 }
 
 dependencies {
-    includeLibrary(project(":api"))
+    api(project(":api"))
 
-    includeLibrary(rootProject.libs.brigadier)
+    api(rootProject.libs.brigadier)
 
-    compileOnly(rootProject.libs.joml)
+//    compileOnly(rootProject.libs.joml)
 }
 
 //relocate("com.mojang.brigadier" to "xyz.bitsquidd.lib.brigadier")

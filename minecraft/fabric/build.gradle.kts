@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.shadeLibrary
+import xyz.bitsquidd.util.includeLibrary
 
 plugins {
     alias(fabricLibs.plugins.fabric.loom)
@@ -30,33 +30,23 @@ repositories {
     mavenCentral()
 }
 
+allprojects {
+    dependencies {
+        compileOnly(rootProject.fabricLibs.fabric.loader)
+        compileOnly(rootProject.fabricLibs.fabric.api)
+    }
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:26.1.2")
 
-    implementation(rootProject.fabricLibs.fabric.loader)
-    implementation(rootProject.fabricLibs.fabric.api)
+    api(project(":minecraft"))
 
-    implementation("net.kyori:adventure-platform-fabric:6.9.0")
-    implementation("me.lucko:fabric-permissions-api:0.5.0")
-
-    shadeLibrary(project(":minecraft"))
-    shadeLibrary(project(":api"))
+    api("net.kyori:adventure-platform-fabric:6.9.0")
+    api("me.lucko:fabric-permissions-api:0.5.0")
 }
 
 tasks {
-//    val mergedJar by registering(ShadowJar::class) {
-//        archiveClassifier.set("merged")
-//        from(sourceSets.main.get().output)
-//        from(sourceSets["client"].output)
-//        from(zipTree(project(":minecraft").tasks.named<ShadowJar>("shadowJar").flatMap { it.archiveFile }))
-//    }
-//
-//    remapJar {
-//        dependsOn(mergedJar)
-//        inputFile.set(mergedJar.flatMap { it.archiveFile })
-//        archiveClassifier.set("")
-//    }
-
     processResources {
         filteringCharset = "UTF-8"
 
@@ -64,24 +54,12 @@ tasks {
             expand("version" to project.version)
         }
     }
-}
 
-tasks {
     shadowJar {
         from(sourceSets["client"].output)
     }
 }
 
-
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            named<MavenPublication>("maven") {
-//                artifacts.clear()
-//                artifact(tasks.named("remapJar"))
-//                artifact(tasks.named("sourcesJar"))
-//                artifact(tasks.named("javadocJar"))
-//            }
-//        }
-//    }
-//}
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}

@@ -5,16 +5,6 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.includeLibrary
-
-/*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
- *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
- */
-
 plugins {
     alias(paperLibs.plugins.paperweight.userdev)
 }
@@ -23,7 +13,16 @@ repositories {
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
 }
 
+allprojects {
+    dependencies {
+        paperweight.paperDevBundle(rootProject.paperLibs.versions.paper.api.get())
+    }
+}
+
 dependencies {
-    includeLibrary(project(":minecraft"))
-    paperweight.paperDevBundle(rootProject.paperLibs.versions.paper.api.get())
+    api(project(":minecraft"))
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
