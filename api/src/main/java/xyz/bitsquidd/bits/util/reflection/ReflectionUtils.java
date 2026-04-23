@@ -13,6 +13,9 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
+import org.jetbrains.annotations.Nullable;
+
+import xyz.bitsquidd.bits.log.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -150,19 +153,20 @@ public final class ReflectionUtils {
          * unchecked cast.
          */
         @SuppressWarnings("unchecked")
-        public static <T> T invoke(Object object, String methodName, Class<?>[] paramTypes, Class<T> returnType, Object... args) throws ReflectionException {
+        public static <T> @Nullable T invoke(Object object, String methodName, Class<?>[] paramTypes, Class<T> returnType, Object... args) throws ReflectionException {
             if (object == null) throw new IllegalArgumentException("Object cannot be null");
             try {
                 return (T)resolveMethod(object.getClass(), methodName, paramTypes).invoke(object, args);
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
                 throw new ReflectionException("Unable to invoke method: " + methodName, e);
             }
         }
 
         public static <T> Optional<T> tryInvoke(Object object, String methodName, Class<?>[] paramTypes, Class<T> returnType, Object... args) {
             try {
-                return Optional.of(invoke(object, methodName, paramTypes, returnType, args));
+                return Optional.ofNullable(invoke(object, methodName, paramTypes, returnType, args));
             } catch (ReflectionException e) {
+                Logger.warn("Failed to invoke method: " + methodName + " on " + object.getClass().getName());
                 return Optional.empty();
             }
         }
@@ -342,6 +346,7 @@ public final class ReflectionUtils {
             try {
                 return Optional.of(create(clazz, args));
             } catch (ReflectionException e) {
+                Logger.warn("Failed to create instance of " + clazz.getName() + " with args: " + Arrays.toString(args));
                 return Optional.empty();
             }
         }
@@ -403,6 +408,7 @@ public final class ReflectionUtils {
             try {
                 return getClasses(packageName, clazz, flags);
             } catch (ReflectionException e) {
+                Logger.warn("Failed to get classes in package: " + packageName + " extending/implementing " + clazz.getName());
                 return Collections.emptyList();
             }
         }
@@ -429,6 +435,7 @@ public final class ReflectionUtils {
             try {
                 return getAnnotatedClasses(packageName, clazz, flags);
             } catch (ReflectionException e) {
+                Logger.warn("Failed to get annotated classes in package: " + packageName + " with annotation " + clazz.getName());
                 return Collections.emptyList();
             }
         }
