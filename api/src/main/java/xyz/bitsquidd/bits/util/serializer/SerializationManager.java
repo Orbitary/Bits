@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
 import xyz.bitsquidd.bits.util.reflection.ReflectionException;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
@@ -30,14 +31,15 @@ public final class SerializationManager {
 
     private static ObjectMapper createMapper() {
         JsonMapper.Builder builder = JsonMapper.builder()
-          .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+          .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
           .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+          .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
           .disable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
           .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
-          .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
           .annotationIntrospector(new NullableAwareIntrospector());
 
         getSerializers().forEach(serializer -> registerSerializer(serializer, builder));
+        builder.addModule(new GuavaModule());
         return builder.build();
     }
 

@@ -19,6 +19,7 @@ dependencies {
     api(rootProject.libs.logger)
     api(rootProject.libs.jackson.core)
     api(rootProject.libs.jackson.databind)
+    api(rootProject.libs.jackson.collections.guava)
     api(rootProject.libs.guava)
     api(rootProject.libs.adventure)
 }
