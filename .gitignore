@@ -1,9 +1,15 @@
+# Common .gitignore file for all Orbitary projects.
+# This file should not be edited directly. Instead edit it in: https://github.com/Orbitary/Convention
+
 # ── Gradle ─────────────────────────────────────────
-.gradle
-build/
+.gradle/
+gradle/
 !gradle/wrapper/gradle-wrapper.jar
+build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+buildScan-data/
+
 
 # ── IntelliJ ───────────────────────────────────────
 .idea/*
@@ -12,8 +18,10 @@ build/
 !.idea/icon.png
 !.idea/copyright
 
+
 # ── Kotlin ─────────────────────────────────────────
 .kotlin
+
 
 # ── Eclipse ────────────────────────────────────────
 .apt_generated
@@ -27,6 +35,7 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+
 # ── NetBeans ───────────────────────────────────────
 /nbproject/private/
 /nbbuild/
@@ -34,17 +43,48 @@ bin/
 /nbdist/
 /.nb-gradle/
 
+
 # ── VS Code ────────────────────────────────────────
 .vscode/
 
-# ── Mac OS ─────────────────────────────────────────
+
+# ── Windows ────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+# ── Mac ────────────────────────────────────────────
 .DS_Store
+.Spotlight-V100
+.Trashes
+
 
 # ── Minecraft ──────────────────────────────────────
 run/
 plugins/
 
+
+# ── Agents ─────────────────────────────────────────
+.claude/
+.crush/
+
+
+# ── Test Results────────────────────────────────────
+test-results/
+coverage/
+*.lcov
+*.exec
+
+
+# ── Logs ───────────────────────────────────────────
+*.log
+logs/
+
+
 # ── Misc ───────────────────────────────────────────
+.env
+
 *.jar
 *.zip
 *.tar.gz
@@ -54,5 +94,3 @@ temp/
 test/
 
 !libs/**
-
-.env
