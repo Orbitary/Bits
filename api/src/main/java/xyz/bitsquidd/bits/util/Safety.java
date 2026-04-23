@@ -1,16 +1,14 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.util;
 
 import xyz.bitsquidd.bits.log.Logger;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 
 /**
@@ -44,7 +42,7 @@ public final class Safety {
         try {
             task.run();
         } catch (final Exception e) {
-            logExceptionNicely("Error during " + name + " task execution.", e);
+            Logger.exception("Error during " + name + " task execution.", e);
         }
     }
 
@@ -75,31 +73,9 @@ public final class Safety {
         try {
             return task.get();
         } catch (final Exception e) {
-            logExceptionNicely("Error during " + name + " task execution.", e);
+            Logger.exception("Error during " + name + " task execution.", e);
             return defaultValue;
         }
     }
-
-
-    /**
-     * Logs an exception, unwrapping {@link InvocationTargetException} to reveal
-     * the underlying cause if necessary.
-     *
-     * @param message   the descriptive message for the error
-     * @param exception the throwable to log
-     *
-     * @since 0.0.10
-     */
-    public static void logExceptionNicely(String message, Throwable exception) {
-        if (exception instanceof InvocationTargetException invocationTargetException) {
-            Throwable cause = invocationTargetException.getCause();
-            if (cause == null) cause = exception; // Fallback to the original exception if cause is null
-            logExceptionNicely(message, cause);
-        } else {
-            Logger.exception(message, exception);
-        }
-
-    }
-
 
 }
