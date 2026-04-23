@@ -13,8 +13,5 @@ dependencies {
     api(project(":api"))
 
     api(rootProject.libs.brigadier)
-
-//    compileOnly(rootProject.libs.joml)
 }
 
-//relocate("com.mojang.brigadier" to "xyz.bitsquidd.lib.brigadier")

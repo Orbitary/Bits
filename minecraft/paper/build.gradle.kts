@@ -15,7 +15,7 @@ repositories {
 
 allprojects {
     dependencies {
-        paperweight.paperDevBundle(rootProject.paperLibs.versions.paper.api.get())
+        paperweight.paperDevBundle(paperLibs.versions.paper.api.get())
     }
 }
 

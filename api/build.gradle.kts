@@ -5,14 +5,14 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import xyz.bitsquidd.util.shade
 
 description = "🦑 Utility API for Bits Plugin development."
 
 dependencies {
-    implementation(rootProject.libs.classgraph)
+    shade(rootProject.libs.classgraph)
 
-    runtimeOnly(rootProject.libs.adventure.text.serializer.plain)
+    compileOnly(rootProject.libs.adventure.text.serializer.plain)
 
     api(rootProject.libs.joml)
     api(rootProject.libs.adventure.text.minimessage)
@@ -23,9 +23,6 @@ dependencies {
     api(rootProject.libs.adventure)
 }
 
-tasks.withType<ShadowJar> {
-    dependencies {
-        include(dependency(rootProject.libs.classgraph.get().toString()))
-    }
+tasks.shadowJar {
     relocate("io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
 }

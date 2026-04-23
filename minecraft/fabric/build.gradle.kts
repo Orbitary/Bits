@@ -5,7 +5,9 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.includeLibrary
+import xyz.bitsquidd.util.providedApi
+import xyz.bitsquidd.util.shade
+
 
 plugins {
     alias(fabricLibs.plugins.fabric.loom)
@@ -22,25 +24,18 @@ loom {
     }
 }
 
+providedApi(fabricLibs.fabric.loader)
+providedApi(fabricLibs.fabric.api)
+
 repositories {
-    mavenLocal()
-
     maven { url = uri("https://maven.fabricmc.net/") }
-
-    mavenCentral()
-}
-
-allprojects {
-    dependencies {
-        compileOnly(rootProject.fabricLibs.fabric.loader)
-        compileOnly(rootProject.fabricLibs.fabric.api)
-    }
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:26.1.2")
 
     api(project(":minecraft"))
+    shade(project(":minecraft"), transitive = true)
 
     api("net.kyori:adventure-platform-fabric:6.9.0")
     api("me.lucko:fabric-permissions-api:0.5.0")
@@ -57,6 +52,7 @@ tasks {
 
     shadowJar {
         from(sourceSets["client"].output)
+        relocate("io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
     }
 }
 

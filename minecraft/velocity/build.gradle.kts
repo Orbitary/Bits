@@ -5,11 +5,21 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
+import xyz.bitsquidd.util.providedApi
+
+/*
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
+ *
+ * Copyright (c) 2023-2026 ImBit
+ */
+
+providedApi(velocityLibs.velocity.api)
+
 dependencies {
     api(project(":minecraft"))
 
-    runtimeOnly(rootProject.velocityLibs.velocity.api.get())
-    annotationProcessor(rootProject.velocityLibs.velocity.api.get())
+    annotationProcessor(velocityLibs.velocity.api)
 }
 
 repositories {
