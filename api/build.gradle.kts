@@ -25,4 +25,5 @@ dependencies {
 
 tasks.shadowJar {
     relocate("io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
+    relocate("nonapi.io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
 }
