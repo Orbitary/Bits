@@ -456,6 +456,15 @@ public final class ReflectionUtils {
               .collect(HashSet::new, Set::add, Set::addAll);
         }
 
+        public static <T, A extends Annotation> Set<T> createAnnotatedClassesInDir(String packageName, Class<A> annotationClazz, Class<T> clazz, ScannerFlags flags) {
+            return Scanner.tryGetAnnotatedClasses(packageName, annotationClazz, flags)
+              .stream().map(ReflectionUtils.Instance::tryCreate)
+              .map(optional -> optional.orElse(null))
+              .filter(Objects::nonNull)
+              .map(clazz::cast)
+              .collect(HashSet::new, Set::add, Set::addAll);
+        }
+
         @SuppressWarnings("unchecked")
         public static <T> Map<Class<?>, T> createClassesInDirMapped(String packageName, Class<? extends T> clazz, ScannerFlags flags) {
             return Scanner.tryGetClasses(packageName, clazz, flags)
