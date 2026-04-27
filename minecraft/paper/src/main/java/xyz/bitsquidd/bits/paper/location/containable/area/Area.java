@@ -17,7 +17,9 @@ import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
 import xyz.bitsquidd.bits.paper.location.wrapper.Locatable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An immutable boolean composition of {@link Containable}s (Regions or other Areas),
@@ -54,11 +56,34 @@ public final class Area implements Containable {
     }
 
     /**
+     * Create an empty area.
+     */
+    public static Area empty() {
+        return new Area(List.of());
+    }
+
+    /**
      * Begin building an Area, seeding it with an initial containable via UNION.
      */
     public static Builder from(Containable initial) {
         return new Builder(initial);
     }
+
+    /**
+     * Begin building an Area from a collection of containables, unioning them together.
+     */
+    public static Builder from(Collection<? extends Containable> containables) {
+        if (containables.isEmpty()) throw new IllegalArgumentException("Must provide at least one containable");
+        Builder builder = new Builder(containables.iterator().next());
+        containables.stream().skip(1).forEach(builder::union);
+        return builder;
+    }
+
+
+    public Set<AreaEntry> entries() {
+        return Set.copyOf(entries);
+    }
+
 
     /**
      * Evaluates the operation chain left to right.
