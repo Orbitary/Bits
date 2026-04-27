@@ -7,7 +7,7 @@
 
 package xyz.bitsquidd.bits.wrapper.flag;
 
-import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * Utility class for working with sets of flags represented as bitmasks.
@@ -16,15 +16,12 @@ import java.util.EnumSet;
  * @since 0.0.13
  */
 public final class Flags {
-
     private Flags() {}
 
-    public static <F extends Enum<F> & Flag> int empty() {
-        return 0;
-    }
+    public static int EMPTY = 0;
 
     @SafeVarargs
-    public static <F extends Enum<F> & Flag> int of(F... flags) {
+    public static <F extends Flag> int of(F... flags) {
         int mask = 0;
         for (F flag : flags) {
             mask |= flag.bit();
@@ -32,7 +29,7 @@ public final class Flags {
         return mask;
     }
 
-    public static <F extends Enum<F> & Flag> int of(EnumSet<F> flags) {
+    public static <F extends Flag> int of(Set<? extends F> flags) {
         int mask = 0;
         for (F flag : flags) {
             mask |= flag.bit();
@@ -49,28 +46,28 @@ public final class Flags {
     }
 
 
-    public static <F extends Enum<F> & Flag> int add(int mask, F flag) {
+    public static <F extends Flag> int add(int mask, F flag) {
         return mask | flag.bit();
     }
 
-    public static <F extends Enum<F> & Flag> int remove(int mask, F flag) {
+    public static <F extends Flag> int remove(int mask, F flag) {
         return mask & ~flag.bit();
     }
 
-    public static <F extends Enum<F> & Flag> int toggle(int mask, F flag) {
+    public static <F extends Flag> int toggle(int mask, F flag) {
         return mask ^ flag.bit();
     }
 
-    public static <F extends Enum<F> & Flag> int set(int mask, F flag, boolean value) {
+    public static <F extends Flag> int set(int mask, F flag, boolean value) {
         return value ? add(mask, flag) : remove(mask, flag);
     }
 
 
-    public static <F extends Enum<F> & Flag> boolean isEmpty(int mask) {
+    public static <F extends Flag> boolean isEmpty(int mask) {
         return mask == 0;
     }
 
-    public static <F extends Enum<F> & Flag> boolean has(int mask, F flag) {
+    public static <F extends Flag> boolean has(int mask, F flag) {
         return flag.isIn(mask);
     }
 
