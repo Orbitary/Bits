@@ -70,6 +70,14 @@ public final class Area implements Containable {
     }
 
     /**
+     * Create an Area from a single Containable.
+     */
+    public static Area of(Containable containable) {
+        return from(containable).build();
+    }
+
+
+    /**
      * Begin building an Area from a collection of containables, unioning them together.
      */
     public static Builder from(Collection<? extends Containable> containables) {

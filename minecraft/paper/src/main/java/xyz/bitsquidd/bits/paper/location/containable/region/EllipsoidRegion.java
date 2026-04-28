@@ -11,10 +11,15 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
+import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.Center;
+import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.Edge;
+import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.impl.RegionVisualiser;
 import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
 import xyz.bitsquidd.bits.paper.location.wrapper.Locatable;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public final class EllipsoidRegion extends Region {
     private final BlockPos center;
@@ -121,6 +126,40 @@ public final class EllipsoidRegion extends Region {
 
     public double getRadiusZ() {
         return radiusZ;
+    }
+
+
+    @Override
+    protected Set<RegionVisualiser> createVisualiser() {
+        Set<RegionVisualiser> visualisers = new HashSet<>();
+
+        visualisers.add(Edge.arc(BlockPos.of(center.x, center.y, center.z), radiusX, 0, 360, 0, 0));
+
+        final int meridians = 8;
+        for (int i = 0; i < meridians; i++) {
+            double yaw = 360.0 * i / meridians;
+            double yawRad = Math.toRadians(yaw);
+
+            double cosY = Math.cos(yawRad);
+            double sinY = Math.sin(yawRad);
+            double equatorialRadius = Math.sqrt(
+              (cosY * cosY) * (radiusX * radiusX) +
+                (sinY * sinY) * (radiusZ * radiusZ)
+            );
+
+            // Meridian arc sweeps from bottom to top in the vertical plane at this yaw.
+            // We approximate with a uniform radius per meridian arc.
+            visualisers.add(Edge.arc(
+              BlockPos.of(center.x, center.y, center.z),
+              equatorialRadius,
+              0, 360,
+              90, yaw
+            ));
+        }
+
+        visualisers.add(Center.of(center()));
+
+        return visualisers;
     }
 
 }

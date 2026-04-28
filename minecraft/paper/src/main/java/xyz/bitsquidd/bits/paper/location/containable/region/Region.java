@@ -12,7 +12,10 @@ import org.bukkit.World;
 import org.joml.Vector3d;
 
 import xyz.bitsquidd.bits.paper.location.containable.Containable;
+import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.impl.RegionVisualiser;
 import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
+
+import java.util.Set;
 
 /**
  * Represents a region in a world: a defined area that can contain locations and blocks.
@@ -62,5 +65,8 @@ public abstract class Region implements Containable {
 
     public abstract Region shift(double x, double y, double z);
     //endregion
+
+
+    protected abstract Set<RegionVisualiser> createVisualiser();
 
 }

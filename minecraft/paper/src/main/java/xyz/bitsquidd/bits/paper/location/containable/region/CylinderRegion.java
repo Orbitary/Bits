@@ -12,10 +12,16 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 import xyz.bitsquidd.bits.data.world.Axis;
+import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.Center;
+import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.Corner;
+import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.Edge;
+import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.impl.RegionVisualiser;
 import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
 import xyz.bitsquidd.bits.paper.location.wrapper.Locatable;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public final class CylinderRegion extends Region {
     private final BlockPos centerBottom;
@@ -187,6 +193,75 @@ public final class CylinderRegion extends Region {
 
     public double getHeight() {
         return height;
+    }
+
+
+    @Override
+    protected Set<RegionVisualiser> createVisualiser() {
+        Set<RegionVisualiser> visualisers = new HashSet<>();
+
+        int edges = 8;
+        BlockPos c = center();
+
+        switch (axis) {
+            case Y -> {
+                // Arcs on the XZ plane at bottom and top Y
+                visualisers.add(Edge.arc(BlockPos.of(c.x, min().y, c.z), radius, 0, 360, 0, 0));
+                visualisers.add(Edge.arc(BlockPos.of(c.x, max().y, c.z), radius, 0, 360, 0, 0));
+
+                // Vertical (Y-axis) edges around the circumference
+                for (int i = 0; i < edges; i++) {
+                    double angle = 2 * Math.PI * i / edges;
+                    double x = c.x + radius * Math.cos(angle);
+                    double z = c.z + radius * Math.sin(angle);
+                    visualisers.add(Edge.straight(
+                      BlockPos.of(x, min().y, z),
+                      BlockPos.of(x, max().y, z)
+                    ));
+                }
+
+                visualisers.add(Corner.of(BlockPos.of(c.x, min().y, c.z)));
+                visualisers.add(Corner.of(BlockPos.of(c.x, max().y, c.z)));
+            }
+            case X -> {
+                visualisers.add(Edge.arc(BlockPos.of(min().x, c.y, c.z), radius, 0, 360, 90, 0));
+                visualisers.add(Edge.arc(BlockPos.of(max().x, c.y, c.z), radius, 0, 360, 90, 0));
+
+                for (int i = 0; i < edges; i++) {
+                    double angle = 2 * Math.PI * i / edges;
+                    double y = c.y + radius * Math.cos(angle);
+                    double z = c.z + radius * Math.sin(angle);
+                    visualisers.add(Edge.straight(
+                      BlockPos.of(min().x, y, z),
+                      BlockPos.of(max().x, y, z)
+                    ));
+                }
+
+                visualisers.add(Corner.of(BlockPos.of(min().x, c.y, c.z)));
+                visualisers.add(Corner.of(BlockPos.of(max().x, c.y, c.z)));
+            }
+            case Z -> {
+                visualisers.add(Edge.arc(BlockPos.of(c.x, c.y, min().z), radius, 0, 360, 0, 90));
+                visualisers.add(Edge.arc(BlockPos.of(c.x, c.y, max().z), radius, 0, 360, 0, 90));
+
+                for (int i = 0; i < edges; i++) {
+                    double angle = 2 * Math.PI * i / edges;
+                    double x = c.x + radius * Math.cos(angle);
+                    double y = c.y + radius * Math.sin(angle);
+                    visualisers.add(Edge.straight(
+                      BlockPos.of(x, y, min().z),
+                      BlockPos.of(x, y, max().z)
+                    ));
+                }
+
+                visualisers.add(Corner.of(BlockPos.of(c.x, c.y, min().z)));
+                visualisers.add(Corner.of(BlockPos.of(c.x, c.y, max().z)));
+            }
+        }
+
+        visualisers.add(Center.of(c));
+
+        return visualisers;
     }
 
 }
