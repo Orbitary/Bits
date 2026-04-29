@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.paper.location.containable.region;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
@@ -27,7 +29,8 @@ public final class EllipsoidRegion extends Region {
     private final double radiusY;
     private final double radiusZ;
 
-    public EllipsoidRegion(World world, BlockPos center, double radiusX, double radiusY, double radiusZ) {
+    @JsonCreator
+    public EllipsoidRegion(@JsonProperty("world") World world, @JsonProperty("center") BlockPos center, @JsonProperty("radiusX") double radiusX, @JsonProperty("radiusY") double radiusY, @JsonProperty("radiusZ") double radiusZ) {
         super(world);
         if (radiusX <= 0 || radiusY <= 0 || radiusZ <= 0) throw new IllegalArgumentException("Radii must be positive");
         this.center = center;

@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.paper.location.containable.region;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
@@ -29,7 +31,8 @@ public final class CylinderRegion extends Region {
     private final double radius;
     private final double height;
 
-    public CylinderRegion(World world, BlockPos centerBottom, Axis axis, double radius, double height) {
+    @JsonCreator
+    public CylinderRegion(@JsonProperty("world") World world, @JsonProperty("centerBottom") BlockPos centerBottom, @JsonProperty("axis") Axis axis, @JsonProperty("radius") double radius, @JsonProperty("height") double height) {
         super(world);
         if (radius <= 0) throw new IllegalArgumentException("Radius must be positive");
         if (height <= 0) throw new IllegalArgumentException("Height must be positive");

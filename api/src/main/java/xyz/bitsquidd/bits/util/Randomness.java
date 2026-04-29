@@ -21,16 +21,20 @@ public final class Randomness {
 
     public static final RandomGenerator RANDOM = new SplittableRandom();
     public static final Random SECONDARY_RANDOM = new Random();
-    
 
+
+    //region Collections
+
+    /**
+     * Shuffles a collection and returns a new list with the elements in random order.
+     *
+     * @since 0.0.13
+     */
     public static <T> List<T> shuffle(Collection<T> list) {
         List<T> copied = new ArrayList<>(list);
         Collections.shuffle(copied);
         return copied;
     }
-
-
-    //region Collections
 
     /**
      * Gets random element in a collection.

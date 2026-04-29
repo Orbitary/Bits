@@ -56,13 +56,6 @@ public final class Area implements Containable {
     }
 
     /**
-     * Create an empty area.
-     */
-    public static Area empty() {
-        return new Area(List.of());
-    }
-
-    /**
      * Begin building an Area, seeding it with an initial containable via UNION.
      */
     public static Builder from(Containable initial) {
@@ -154,9 +147,19 @@ public final class Area implements Containable {
             return this;
         }
 
+        public Builder union(Collection<? extends Containable> containables) {
+            containables.forEach(this::union);
+            return this;
+        }
+
         public Builder subtract(Containable containable) {
             validateContainable(containable);
             entries.add(new AreaEntry(containable, Operation.SUBTRACT));
+            return this;
+        }
+
+        public Builder subtract(Collection<? extends Containable> containables) {
+            containables.forEach(this::subtract);
             return this;
         }
 
@@ -165,6 +168,12 @@ public final class Area implements Containable {
             entries.add(new AreaEntry(containable, Operation.INTERSECT));
             return this;
         }
+
+        public Builder intersect(Collection<? extends Containable> containables) {
+            containables.forEach(this::intersect);
+            return this;
+        }
+
 
         @Override
         public Area build() {

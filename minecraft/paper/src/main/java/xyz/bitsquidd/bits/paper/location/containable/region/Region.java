@@ -7,13 +7,13 @@
 
 package xyz.bitsquidd.bits.paper.location.containable.region;
 
-import org.bukkit.Location;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.bukkit.World;
 import org.joml.Vector3d;
 
 import xyz.bitsquidd.bits.paper.location.containable.Containable;
 import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.impl.RegionVisualiser;
-import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
 
 import java.util.Set;
 
@@ -23,6 +23,12 @@ import java.util.Set;
  *
  * @since 0.0.13
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = CylinderRegion.class, name = "cylinder"),
+  @JsonSubTypes.Type(value = CuboidRegion.class, name = "cuboid"),
+  @JsonSubTypes.Type(value = EllipsoidRegion.class, name = "ellipsoid")
+})
 public abstract class Region implements Containable {
     protected final World world;
 
@@ -30,17 +36,6 @@ public abstract class Region implements Containable {
     protected Region(World world) {
         this.world = world;
     }
-
-
-    //region Containment
-    public final boolean contains(Location location) {
-        if (location == null) return false;
-        if (location.getWorld() == null || !location.getWorld().equals(world)) return false;
-
-        return contains(BlockPos.of(location));
-    }
-
-    //endregion
 
 
     //region Basic getters

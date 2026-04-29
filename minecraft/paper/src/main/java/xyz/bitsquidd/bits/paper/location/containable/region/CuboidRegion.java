@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.paper.location.containable.region;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
@@ -34,7 +36,8 @@ public final class CuboidRegion extends Region {
     private final double maxY;
     private final double maxZ;
 
-    public CuboidRegion(World world, BlockPos corner1, BlockPos corner2) {
+    @JsonCreator
+    public CuboidRegion(@JsonProperty("world") World world, @JsonProperty("corner1") BlockPos corner1, @JsonProperty("corner2") BlockPos corner2) {
         super(world);
 
         this.min = BlockPos.of(Locations.getMinLocation(List.of(corner1, corner2)));

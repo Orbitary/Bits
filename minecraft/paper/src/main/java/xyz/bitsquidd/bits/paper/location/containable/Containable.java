@@ -26,7 +26,16 @@ import java.util.stream.Collectors;
 public interface Containable {
     boolean contains(Locatable locatable);
 
+    default boolean contains(Location location) {
+        if (location == null) return false;
+        if (location.getWorld() == null || !location.getWorld().equals(world())) return false;
+        
+        return contains(BlockPos.of(location));
+    }
+
+
     World world();
+
 
     BlockPos center();
 
