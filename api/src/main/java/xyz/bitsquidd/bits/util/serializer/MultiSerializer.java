@@ -10,11 +10,10 @@ package xyz.bitsquidd.bits.util.serializer;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -32,7 +31,7 @@ public abstract class MultiSerializer<T> {
 
     protected abstract JsonNode serialize(T value) throws JacksonException;
 
-    public final StdSerializer<T> jacksonSerializer() {
+    public final StdSerializer<? super T> jacksonSerializer() {
         return new StdSerializer<>(clazz) {
             @Override
             public void serialize(T value, JsonGenerator gen, SerializerProvider ctx) throws IOException {
@@ -45,7 +44,7 @@ public abstract class MultiSerializer<T> {
 
     protected abstract T deserialize(JsonNode node) throws JacksonException;
 
-    public final StdDeserializer<T> jacksonDeserializer() {
+    public final StdDeserializer<? extends T> jacksonDeserializer() {
         return new StdDeserializer<>(clazz) {
             @Override
             public T deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
@@ -53,6 +52,15 @@ public abstract class MultiSerializer<T> {
                 return MultiSerializer.this.deserialize(node);
             }
         };
+    }
+
+
+    public @Nullable JsonSerializer<? super T> jacksonKeySerializer() {
+        return null;
+    }
+
+    public @Nullable KeyDeserializer jacksonKeyDeserializer() {
+        return null;
     }
 
 }

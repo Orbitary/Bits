@@ -8,9 +8,7 @@
 package xyz.bitsquidd.bits.util.serializer;
 
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -48,6 +46,12 @@ public final class SerializationManager {
         Class<T> targetClass = serializer.getTargetClass();
         module.addSerializer(targetClass, serializer.jacksonSerializer());
         module.addDeserializer(targetClass, serializer.jacksonDeserializer());
+
+        JsonSerializer<? super T> keySerializer = serializer.jacksonKeySerializer();
+        if (keySerializer != null) module.addKeySerializer(targetClass, keySerializer);
+        KeyDeserializer keyDeserializer = serializer.jacksonKeyDeserializer();
+        if (keyDeserializer != null) module.addKeyDeserializer(targetClass, keyDeserializer);
+
         builder.addModule(module);
     }
 
