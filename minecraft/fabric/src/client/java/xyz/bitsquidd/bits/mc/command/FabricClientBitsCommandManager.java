@@ -11,6 +11,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
+import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;
 
 public final class FabricClientBitsCommandManager extends FabricBitsCommandManager<FabricClientCommandSource> {
@@ -46,6 +47,8 @@ public final class FabricClientBitsCommandManager extends FabricBitsCommandManag
                 bitsCommand.onRegister();
             });
         });
+
+        Logger.success("Registered " + getRegisteredCommands().size() + " commands with Fabric");
     }
 
 }

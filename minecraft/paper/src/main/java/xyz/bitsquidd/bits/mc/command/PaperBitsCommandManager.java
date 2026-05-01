@@ -12,6 +12,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 
+import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;
 
 public class PaperBitsCommandManager extends BitsCommandManager<CommandSourceStack> {
@@ -50,6 +51,8 @@ public class PaperBitsCommandManager extends BitsCommandManager<CommandSourceSta
                 });
               bitsCommand.onRegister();
           });
+
+        Logger.success("Registered " + getRegisteredCommands().size() + " commands with Paper");
     }
 
 }
