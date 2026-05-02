@@ -41,4 +41,16 @@ public interface LocationRounding {
         return location;
     };
 
+
+    //region Combination
+    static LocationRounding combined(LocationRounding... roundings) {
+        return location -> {
+            for (LocationRounding rounding : roundings) {
+                location = rounding.apply(location);
+            }
+            return location;
+        };
+    }
+    //endregion
+
 }
