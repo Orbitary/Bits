@@ -5,11 +5,8 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-repositories {
-    maven { url = uri("https://libraries.minecraft.net") }
+allprojects {
+    dependencies {
+        implementation(project(":minecraft"))
+    }
 }
-
-dependencies {
-    api(project(":api"))
-}
-

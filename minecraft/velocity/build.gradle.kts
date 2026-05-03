@@ -18,6 +18,7 @@ providedApi(velocityLibs.velocity.api)
 
 dependencies {
     api(project(":minecraft"))
+    api(project(":minecraft:module:command"))
 
     annotationProcessor(velocityLibs.velocity.api)
 }

@@ -5,11 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-repositories {
-    maven { url = uri("https://libraries.minecraft.net") }
-}
+@NotNullByDefault
+package bitsquidd.bits.mc.command.debugging;
 
-dependencies {
-    api(project(":api"))
-}
-
+import org.jetbrains.annotations.NotNullByDefault;

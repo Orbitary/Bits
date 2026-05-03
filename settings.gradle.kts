@@ -41,3 +41,6 @@ include("minecraft")
 include("minecraft:paper")
 include("minecraft:velocity")
 include("minecraft:fabric")
+
+include("minecraft:module")
+include("minecraft:module:command")
