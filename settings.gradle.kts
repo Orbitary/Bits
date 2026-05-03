@@ -44,3 +44,4 @@ include("minecraft:fabric")
 
 include("minecraft:module")
 include("minecraft:module:command")
+include("minecraft:module:sendable")
