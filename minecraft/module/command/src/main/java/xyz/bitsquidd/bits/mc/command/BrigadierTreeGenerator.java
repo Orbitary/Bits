@@ -13,7 +13,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.BitsConfig;
+import xyz.bitsquidd.bits.config.Bits;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.argument.BrigadierArgumentMapping;
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+
 
 /**
  * Utility responsible for constructing Brigadier command trees from defined command builders.
@@ -78,7 +79,7 @@ public final class BrigadierTreeGenerator<T> {
           .map(node -> (LiteralCommandNode<T>)node)
           .toList();
 
-        if (BitsConfig.get().isDevelopment()) Logger.info(new TreeDebugger<T>().visualizeCommandTree(nodes));
+        if (Bits.get().isDevelopment()) Logger.info(new TreeDebugger<T>().visualizeCommandTree(nodes));
         return nodes;
     }
 

@@ -13,15 +13,16 @@ import xyz.bitsquidd.bits.mc.permission.Permission;
 
 import java.util.Locale;
 
-public abstract class MinecraftBitsConfig extends BitsConfig {
+
+public abstract class BitsMinecraft extends Bits {
     private boolean paused = false;
 
-    protected MinecraftBitsConfig() {
+    protected BitsMinecraft() {
         super();
     }
 
-    public static MinecraftBitsConfig get() {
-        return (MinecraftBitsConfig)BitsConfig.get();
+    public static BitsMinecraft get() {
+        return (BitsMinecraft)Bits.get();
     }
 
 
@@ -45,6 +46,6 @@ public abstract class MinecraftBitsConfig extends BitsConfig {
         this.paused = paused;
     }
     //endregion
-    
+
 
 }

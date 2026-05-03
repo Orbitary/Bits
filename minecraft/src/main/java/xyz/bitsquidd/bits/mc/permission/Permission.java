@@ -9,7 +9,8 @@ package xyz.bitsquidd.bits.mc.permission;
 
 import net.kyori.adventure.audience.Audience;
 
-import xyz.bitsquidd.bits.config.MinecraftBitsConfig;
+import xyz.bitsquidd.bits.config.BitsMinecraft;
+
 
 /**
  * Represents a unique permission node used for access control within the Bits library.
@@ -89,7 +90,7 @@ public final class Permission {
      * @since 0.0.10
      */
     public boolean hasPermission(Audience audience) {
-        return value.isEmpty() || MinecraftBitsConfig.get().hasPermission(audience, this);
+        return value.isEmpty() || BitsMinecraft.get().hasPermission(audience, this);
     }
 
     /**
@@ -98,7 +99,7 @@ public final class Permission {
      * @since 0.0.10
      */
     public void register() {
-        MinecraftBitsConfig.get().registerPermission(this);
+        BitsMinecraft.get().registerPermission(this);
     }
 
 }

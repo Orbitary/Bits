@@ -13,7 +13,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.MinecraftBitsConfig;
+import xyz.bitsquidd.bits.config.BitsMinecraft;
 import xyz.bitsquidd.bits.exception.BitsException;
 import xyz.bitsquidd.bits.lifecycle.manager.CoreManager;
 import xyz.bitsquidd.bits.mc.command.annotation.Command;
@@ -252,9 +252,9 @@ public abstract class BitsCommandManager<T> implements CoreManager {
      */
     protected final void executeCommand(boolean isAsync, Runnable commandExecution) {
         if (isAsync) {
-            MinecraftBitsConfig.get().runLaterAsync(commandExecution, 0);
+            BitsMinecraft.get().runLaterAsync(commandExecution, 0);
         } else {
-            MinecraftBitsConfig.get().runLater(commandExecution, 0);
+            BitsMinecraft.get().runLater(commandExecution, 0);
         }
     }
 

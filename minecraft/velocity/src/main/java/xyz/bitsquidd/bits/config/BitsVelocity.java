@@ -21,19 +21,19 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 
-public abstract class VelocityBitsConfig extends MinecraftBitsConfig {
+public abstract class BitsVelocity extends BitsMinecraft {
     private final Object plugin;
     private final ProxyServer server;
     private final org.slf4j.Logger slf4j;
 
-    public VelocityBitsConfig(ProxyServer server, Object plugin, org.slf4j.Logger slf4j) {
+    public BitsVelocity(ProxyServer server, Object plugin, org.slf4j.Logger slf4j) {
         this.server = server;
         this.plugin = plugin;
         this.slf4j = slf4j;
     }
 
-    public static VelocityBitsConfig get() {
-        return (VelocityBitsConfig)BitsConfig.get();
+    public static BitsVelocity get() {
+        return (BitsVelocity)Bits.get();
     }
 
 

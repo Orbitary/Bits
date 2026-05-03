@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.paper.util.bukkit.listener;
@@ -14,7 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import xyz.bitsquidd.bits.config.PaperBitsConfig;
+import xyz.bitsquidd.bits.config.BitsPaper;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -26,7 +25,7 @@ import java.util.function.Predicate;
  * See <a href="https://docs.papermc.io/paper/dev/event-listeners/">Listeners</a> for more information.
  */
 public final class Listeners {
-    private static final JavaPlugin plugin = PaperBitsConfig.get().plugin();
+    private static final JavaPlugin plugin = BitsPaper.get().plugin();
 
     private Listeners() {}
 

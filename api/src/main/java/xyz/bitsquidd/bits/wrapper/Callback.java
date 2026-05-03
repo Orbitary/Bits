@@ -1,17 +1,17 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.wrapper;
 
-import xyz.bitsquidd.bits.config.BitsConfig;
+import xyz.bitsquidd.bits.config.Bits;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * A wrapper for executing code after an asynchronous event or action completes.
@@ -64,7 +64,7 @@ public final class Callback {
      */
     public static Callback later(long delay) {
         Callback callback = new Callback();
-        BitsConfig.get().runLater(callback::complete, delay);
+        Bits.get().runLater(callback::complete, delay);
         return callback;
     }
 

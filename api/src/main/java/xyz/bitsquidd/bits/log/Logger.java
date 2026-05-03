@@ -1,23 +1,22 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.log;
 
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.BitsConfig;
+import xyz.bitsquidd.bits.config.Bits;
 
 
 /**
  * The core logging abstraction for the Bits library.
  * <p>
  * Implementations are responsible for directing log output to the platform's
- * console or log files. The logger must be initialised via {@link BitsConfig}
+ * console or log files. The logger must be initialised via {@link Bits}
  * before it can be accessed globally.
  *
  * @since 0.0.10

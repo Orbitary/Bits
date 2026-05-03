@@ -9,10 +9,10 @@ package xyz.bitsquidd.bits.config;
 
 import org.jetbrains.annotations.Nullable;
 
+import xyz.bitsquidd.bits.exception.BitsException;
 import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
 import xyz.bitsquidd.bits.log.Logger;
 
-import java.util.Objects;
 
 /**
  * The main configuration class for the Bits library.
@@ -22,18 +22,18 @@ import java.util.Objects;
  *
  * @since 0.0.10
  */
-public abstract class BitsConfig extends ManagerContainer {
-    private static @Nullable BitsConfig instance;
+public abstract class Bits extends ManagerContainer {
+    private static @Nullable Bits instance;
 
     protected final boolean developmentMode = false;
     protected final Logger logger;
 
     /**
-     * @throws IllegalStateException if a configuration instance already exists
+     * @throws BitsException if an instance already exists
      * @since 0.0.10
      */
-    protected BitsConfig() {
-        if (instance != null) throw new IllegalStateException("BitsConfig instance already exists!");
+    protected Bits() {
+        if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(Bits.class);
         instance = this;
 
         this.logger = createLogger();
@@ -44,11 +44,12 @@ public abstract class BitsConfig extends ManagerContainer {
      *
      * @return the configuration instance
      *
-     * @throws IllegalStateException if the configuration has not been created
+     * @throws BitsException if the instance has not been created
      * @since 0.0.10
      */
-    public static BitsConfig get() {
-        return Objects.requireNonNull(instance, "BitsConfig instance has not been created yet.");
+    public static Bits get() {
+        if (instance == null) throw BitsException.INSTANCE_NOT_FOUND(Bits.class);
+        return instance;
     }
 
 

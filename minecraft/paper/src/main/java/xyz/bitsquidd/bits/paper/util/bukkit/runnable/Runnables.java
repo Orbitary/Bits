@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.paper.util.bukkit.runnable;
@@ -16,15 +15,16 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.PaperBitsConfig;
+import xyz.bitsquidd.bits.config.BitsPaper;
 import xyz.bitsquidd.bits.lifecycle.builder.ExtendableBuildable;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 
+
 public sealed abstract class Runnables permits BasicRunnables, LaterRunnables, TimerRunnables {
-    protected static final JavaPlugin plugin = PaperBitsConfig.get().plugin();
+    protected static final JavaPlugin plugin = BitsPaper.get().plugin();
     protected static final BukkitScheduler scheduler = Bukkit.getScheduler();
 
     protected final boolean isForced;
@@ -101,7 +101,7 @@ public sealed abstract class Runnables permits BasicRunnables, LaterRunnables, T
 
     //region Cleanup
     public static void cleanupAll() {
-        scheduler.cancelTasks(PaperBitsConfig.get().plugin());
+        scheduler.cancelTasks(BitsPaper.get().plugin());
     }
 
     public static @Nullable BukkitTask cleanup(final @Nullable BukkitTask bukkitTask) {

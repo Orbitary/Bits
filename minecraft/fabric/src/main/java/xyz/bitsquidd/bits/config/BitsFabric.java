@@ -13,18 +13,19 @@ import xyz.bitsquidd.bits.log.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class FabricBitsConfig extends MinecraftBitsConfig {
+
+public abstract class BitsFabric extends BitsMinecraft {
     private final org.slf4j.Logger slf4j;
 
     private final List<ScheduledTask> pendingTasks = new ArrayList<>();
 
-    public FabricBitsConfig(org.slf4j.Logger slf4j) {
+    public BitsFabric(org.slf4j.Logger slf4j) {
         this.slf4j = slf4j;
     }
 
 
-    public static FabricBitsConfig get() {
-        return (FabricBitsConfig)BitsConfig.get();
+    public static BitsFabric get() {
+        return (BitsFabric)Bits.get();
     }
 
 

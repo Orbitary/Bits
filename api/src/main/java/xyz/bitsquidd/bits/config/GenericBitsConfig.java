@@ -12,10 +12,11 @@ import org.slf4j.LoggerFactory;
 import xyz.bitsquidd.bits.log.BasicLogger;
 import xyz.bitsquidd.bits.log.Logger;
 
+
 /**
  * Platform-independent implementation of BitsConfig, used for any platform that doesn't have specific requirements.
  */
-public final class GenericBitsConfig extends BitsConfig {
+public final class GenericBitsConfig extends Bits {
     private final String platformName;
 
     public GenericBitsConfig(String platformName) {

@@ -1,3 +1,10 @@
+/*
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
+ *
+ * Copyright (c) 2023-2026 ImBit
+ */
+
 package xyz.bitsquidd.bits.config;
 
 import net.fabricmc.api.EnvType;
@@ -12,15 +19,16 @@ import xyz.bitsquidd.bits.mc.permission.Permission;
 
 import java.util.Locale;
 
-@Environment(EnvType.CLIENT)
-public class FabricClientBitsConfig extends FabricBitsConfig {
 
-    public FabricClientBitsConfig(org.slf4j.Logger slf4j) {
+@Environment(EnvType.CLIENT)
+public class ClientBitsFabric extends BitsFabric {
+
+    public ClientBitsFabric(org.slf4j.Logger slf4j) {
         super(slf4j);
     }
 
-    public static FabricClientBitsConfig get() {
-        return (FabricClientBitsConfig)BitsConfig.get();
+    public static ClientBitsFabric get() {
+        return (ClientBitsFabric)Bits.get();
     }
 
     @Override

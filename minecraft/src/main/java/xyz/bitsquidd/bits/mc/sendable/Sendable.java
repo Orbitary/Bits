@@ -9,11 +9,12 @@ package xyz.bitsquidd.bits.mc.sendable;
 
 import net.kyori.adventure.audience.Audience;
 
-import xyz.bitsquidd.bits.config.MinecraftBitsConfig;
+import xyz.bitsquidd.bits.config.BitsMinecraft;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 
 import java.util.Collection;
 import java.util.function.Predicate;
+
 
 /**
  * Represents an object that can be dispatched to one or more {@link Audience} targets.
@@ -39,7 +40,7 @@ public interface Sendable {
      * @since 0.0.10
      */
     default void sendAll(Predicate<Audience> predicate) {
-        MinecraftBitsConfig.get().getAll().forEachAudience(audience -> {
+        BitsMinecraft.get().getAll().forEachAudience(audience -> {
             if (predicate.test(audience)) send(audience);
         });
     }

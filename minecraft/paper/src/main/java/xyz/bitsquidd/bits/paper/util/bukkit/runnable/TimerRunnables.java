@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.paper.util.bukkit.runnable;
@@ -11,11 +10,12 @@ package xyz.bitsquidd.bits.paper.util.bukkit.runnable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import xyz.bitsquidd.bits.config.MinecraftBitsConfig;
+import xyz.bitsquidd.bits.config.BitsMinecraft;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
 
 public final class TimerRunnables extends Runnables {
     private final Consumer<Integer> onTick;
@@ -48,7 +48,7 @@ public final class TimerRunnables extends Runnables {
                 public void run() {
                     tick++;
 
-                    if (tick < 0 || tick % period != 0 || MinecraftBitsConfig.get().isPaused()) return;
+                    if (tick < 0 || tick % period != 0 || BitsMinecraft.get().isPaused()) return;
 
                     if (stopCondition.apply(tick)) {
                         onStop.accept(tick);

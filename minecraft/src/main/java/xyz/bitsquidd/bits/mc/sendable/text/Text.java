@@ -10,7 +10,7 @@ package xyz.bitsquidd.bits.mc.sendable.text;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 
-import xyz.bitsquidd.bits.config.MinecraftBitsConfig;
+import xyz.bitsquidd.bits.config.BitsMinecraft;
 import xyz.bitsquidd.bits.mc.sendable.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.text.decorator.ITextDecorator;
 import xyz.bitsquidd.bits.mc.sendable.text.decorator.impl.BlankDecorator;
@@ -18,6 +18,7 @@ import xyz.bitsquidd.bits.mc.sendable.text.decorator.impl.BlankDecorator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 
 /**
  * A highly customizable {@link Sendable} implementation for text-based messages.
@@ -133,7 +134,7 @@ public final class Text implements Sendable {
         componentDecorators.addAll(decorators);
         componentDecorators.addAll(POST_DEFAULT_DECORATORS);
 
-        Locale locale = MinecraftBitsConfig.get().getLocale(audience);
+        Locale locale = BitsMinecraft.get().getLocale(audience);
         for (ITextDecorator decorator : componentDecorators) {
             returnComponent = decorator.format(returnComponent, locale);
         }

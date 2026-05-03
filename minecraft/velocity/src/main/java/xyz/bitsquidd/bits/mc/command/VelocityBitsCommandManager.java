@@ -12,7 +12,7 @@ import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
 
-import xyz.bitsquidd.bits.config.VelocityBitsConfig;
+import xyz.bitsquidd.bits.config.BitsVelocity;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.requirement.BitsRequirementRegistry;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;
@@ -46,7 +46,7 @@ public class VelocityBitsCommandManager extends BitsCommandManager<CommandSource
 
     @Override
     protected void enableAllCommands() {
-        CommandManager velocityCommandManager = VelocityBitsConfig.get().getServer().getCommandManager();
+        CommandManager velocityCommandManager = BitsVelocity.get().getServer().getCommandManager();
 
         getAllCommands().build().forEach(this::registerCommand);
         getRegisteredCommands()
@@ -56,7 +56,7 @@ public class VelocityBitsCommandManager extends BitsCommandManager<CommandSource
                     velocityCommandManager.register(
                       velocityCommandManager
                         .metaBuilder(node.getName())
-                        .plugin(VelocityBitsConfig.get().getPlugin())
+                        .plugin(BitsVelocity.get().getPlugin())
                         .build(),
                       new BrigadierCommand(node)
                     );

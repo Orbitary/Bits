@@ -11,7 +11,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.kyori.adventure.audience.Audience;
 
-import xyz.bitsquidd.bits.config.FabricClientBitsConfig;
+import xyz.bitsquidd.bits.config.ClientBitsFabric;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
 
@@ -23,7 +23,7 @@ public class FabricClientBitsCommandContext extends BitsCommandContext<FabricCli
 
     @Override
     protected BitsCommandSourceContext<FabricClientCommandSource> createSourceContext(CommandContext<FabricClientCommandSource> brigadierContext) {
-        return FabricClientBitsConfig.get().getCommandManager().createSourceContext(brigadierContext.getSource());
+        return ClientBitsFabric.get().getCommandManager().createSourceContext(brigadierContext.getSource());
     }
 
     @Override
