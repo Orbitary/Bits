@@ -12,6 +12,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import xyz.bitsquidd.bits.mc.command.provider.BitsCommandProvider;
 import xyz.bitsquidd.bits.wrapper.collection.AddableSet;
 
+
 public abstract class FabricBitsCommandManager<T> extends BitsCommandManager<T> {
     public static final String COMMAND_INSTANCE_ENTRYPOINT = "bits:command";
 

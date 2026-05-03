@@ -9,7 +9,6 @@ package xyz.bitsquidd.bits.config;
 
 import net.kyori.adventure.audience.Audience;
 
-import xyz.bitsquidd.bits.mc.command.BitsCommandManager;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 
 import java.util.Locale;
@@ -17,11 +16,8 @@ import java.util.Locale;
 public abstract class MinecraftBitsConfig extends BitsConfig {
     private boolean paused = false;
 
-    protected BitsCommandManager<?> commandManager;
-
     protected MinecraftBitsConfig() {
         super();
-        this.commandManager = registerManager(createCommandManager());
     }
 
     public static MinecraftBitsConfig get() {
@@ -49,15 +45,6 @@ public abstract class MinecraftBitsConfig extends BitsConfig {
         this.paused = paused;
     }
     //endregion
-
-
-    //region Managers
-    protected abstract BitsCommandManager<?> createCommandManager();
-
-    public BitsCommandManager<?> getCommandManager() {
-        return commandManager;
-    }
-    //endregion
-
+    
 
 }

@@ -15,12 +15,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.log.PaperBitsLogger;
-import xyz.bitsquidd.bits.mc.command.PaperBitsCommandManager;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 import xyz.bitsquidd.bits.paper.format.CommonPaperFormatters;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
 import java.util.Locale;
+
 
 public abstract class PaperBitsConfig extends MinecraftBitsConfig {
     private final JavaPlugin plugin;
@@ -84,16 +84,5 @@ public abstract class PaperBitsConfig extends MinecraftBitsConfig {
     public final void runLaterAsync(Runnable runnable, long delayMs) {
         Runnables.buildLater(runnable, delayMs / 50).async().run(); // Convert ms to ticks
     }
-
-    @Override
-    protected PaperBitsCommandManager createCommandManager() {
-        return new PaperBitsCommandManager();
-    }
-
-    @Override
-    public final PaperBitsCommandManager getCommandManager() {
-        return (PaperBitsCommandManager)super.getCommandManager();
-    }
-
 
 }

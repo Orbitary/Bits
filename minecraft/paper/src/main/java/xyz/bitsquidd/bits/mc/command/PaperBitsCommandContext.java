@@ -13,9 +13,9 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import xyz.bitsquidd.bits.config.PaperBitsConfig;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
+
 
 public class PaperBitsCommandContext extends BitsCommandContext<CommandSourceStack> {
     public PaperBitsCommandContext(CommandContext<CommandSourceStack> brigadierContext) {
@@ -24,7 +24,7 @@ public class PaperBitsCommandContext extends BitsCommandContext<CommandSourceSta
 
     @Override
     protected BitsCommandSourceContext<CommandSourceStack> createSourceContext(CommandContext<CommandSourceStack> brigadierContext) {
-        return (PaperBitsConfig.get().getCommandManager()).createSourceContext(brigadierContext.getSource());
+        return PaperBitsCommandManager.get().createSourceContext(brigadierContext.getSource());
     }
 
     @Override

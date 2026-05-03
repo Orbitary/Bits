@@ -15,7 +15,12 @@ import net.minecraft.server.MinecraftServer;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;
 
+
 public class PaperBitsCommandManager extends BitsCommandManager<CommandSourceStack> {
+
+    public static PaperBitsCommandManager get() {
+        return BitsCommandManager.get();
+    }
 
     @Override
     protected PaperBitsArgumentRegistry initialiseArgumentRegistry() {

@@ -14,12 +14,12 @@ import net.kyori.adventure.audience.Audience;
 
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.log.VelocityBitsLogger;
-import xyz.bitsquidd.bits.mc.command.VelocityBitsCommandManager;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 import xyz.bitsquidd.bits.velocity.util.velocity.runnable.Tasks;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
 
 public abstract class VelocityBitsConfig extends MinecraftBitsConfig {
     private final Object plugin;
@@ -86,16 +86,6 @@ public abstract class VelocityBitsConfig extends MinecraftBitsConfig {
     @Override
     public final void runLaterAsync(Runnable runnable, long delayMs) {
         runLater(runnable, delayMs); // Velocity runs all tasks asynchronously by default.
-    }
-
-    @Override
-    protected VelocityBitsCommandManager createCommandManager() {
-        return new VelocityBitsCommandManager();
-    }
-
-    @Override
-    public final VelocityBitsCommandManager getCommandManager() {
-        return (VelocityBitsCommandManager)super.getCommandManager();
     }
 
 }

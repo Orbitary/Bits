@@ -17,7 +17,12 @@ import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.requirement.BitsRequirementRegistry;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;
 
+
 public class VelocityBitsCommandManager extends BitsCommandManager<CommandSource> {
+
+    public static VelocityBitsCommandManager get() {
+        return BitsCommandManager.get();
+    }
 
     @Override
     protected VelocityBitsArgumentRegistry initialiseArgumentRegistry() {

@@ -14,7 +14,12 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;
 
+
 public final class FabricClientBitsCommandManager extends FabricBitsCommandManager<FabricClientCommandSource> {
+
+    public static FabricClientBitsCommandManager get() {
+        return BitsCommandManager.get();
+    }
 
     @Override
     protected FabricClientBitsArgumentRegistry initialiseArgumentRegistry() {
