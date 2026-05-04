@@ -62,10 +62,9 @@ final class JacksonLeafNode implements ConfigNode {
     }
 
     @Override
-    public <T> T get(Class<T> type, @Nullable T defaultValue) {
+    public <T> T get(Class<T> type, T defaultValue) {
         try {
-            T value = SerializationManager.SERIALIZER.treeToValue(node, type);
-            return value != null ? value : defaultValue;
+            return SerializationManager.SERIALIZER.treeToValue(node, type);
         } catch (Exception e) {
             return defaultValue;
         }
@@ -202,7 +201,7 @@ final class AbsentConfigNode implements ConfigNode {
     }
 
     @Override
-    public <T> T get(Class<T> type, @Nullable T defaultValue) {
+    public <T> T get(Class<T> type, T defaultValue) {
         return defaultValue;
     }
 

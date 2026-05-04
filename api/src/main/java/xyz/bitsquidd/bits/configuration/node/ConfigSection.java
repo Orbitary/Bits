@@ -94,7 +94,7 @@ public interface ConfigSection extends ConfigNode {
      *
      * @since 0.0.14
      */
-    <T> @Nullable T get(String path, Class<T> type, @Nullable T defaultValue);
+    <T> T get(String path, Class<T> type, T defaultValue);
 
     /**
      * Reads the value at {@code path} as {@code int}, or returns {@code defaultValue}.

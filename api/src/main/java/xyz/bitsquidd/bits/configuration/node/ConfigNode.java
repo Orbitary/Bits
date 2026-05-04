@@ -78,7 +78,7 @@ public interface ConfigNode {
      *
      * @since 0.0.14
      */
-    <T> T get(Class<T> type, @Nullable T defaultValue);
+    <T> T get(Class<T> type, T defaultValue);
 
     /**
      * Reads the node as a {@code String}, or returns {@code defaultValue}.

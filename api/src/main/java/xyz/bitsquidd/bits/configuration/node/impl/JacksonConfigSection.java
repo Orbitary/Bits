@@ -147,7 +147,7 @@ public final class JacksonConfigSection implements ConfigSection {
 
 
     @Override
-    public <T> @Nullable T get(String dotPath, Class<T> type, @Nullable T defaultValue) {
+    public <T> T get(String dotPath, Class<T> type, T defaultValue) {
         return node(dotPath).get(type, defaultValue);
     }
 
@@ -193,7 +193,7 @@ public final class JacksonConfigSection implements ConfigSection {
 
 
     @Override
-    public <T> T get(Class<T> type, @Nullable T defaultValue) {
+    public <T> T get(Class<T> type, T defaultValue) {
         try {
             return SerializationManager.SERIALIZER.treeToValue(node, type);
         } catch (Exception e) {
