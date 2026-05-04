@@ -8,6 +8,8 @@
 package xyz.bitsquidd.bits.mc.sendable;
 
 
+import xyz.bitsquidd.bits.mc.sendable.impl.AbstractSendable;
+
 import java.util.function.Predicate;
 
 
