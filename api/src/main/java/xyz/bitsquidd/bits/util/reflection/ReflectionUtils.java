@@ -305,7 +305,7 @@ public final class ReflectionUtils {
         private static Class<?>[] paramTypesFrom(Object... args) {
             Class<?>[] types = new Class<?>[args.length];
             for (int i = 0; i < args.length; i++) {
-                if (args[i] == null) throw new IllegalArgumentException("Null argument at index " + i + " — cannot infer type");
+                if (args[i] == null) throw new IllegalArgumentException("Null argument at index " + i + "- cannot infer type");
                 types[i] = Primitive.fromOrSelf(args[i].getClass());
             }
             return types;
