@@ -48,7 +48,7 @@ public abstract class KeyedSendableCollection<K, S extends Sendable> extends Sen
     }
 
     @Override
-    protected final void removeInternal(SendableHandle<S> filter) {
+    protected final void removeInternal(SendableHandle<? super S> filter) {
         sendables.values().remove(filter);
     }
 

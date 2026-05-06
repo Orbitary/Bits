@@ -38,7 +38,7 @@ public abstract class SingleSendableCollection<S extends Sendable> extends Senda
     }
 
     @Override
-    protected final void removeInternal(SendableHandle<S> handle) {
+    protected final void removeInternal(SendableHandle<? super S> handle) {
         sendables.removeIf(h -> h.equals(handle));
     }
 

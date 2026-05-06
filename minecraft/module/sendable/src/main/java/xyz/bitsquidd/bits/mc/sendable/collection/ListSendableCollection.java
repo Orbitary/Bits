@@ -42,7 +42,7 @@ public abstract class ListSendableCollection<S extends Sendable> extends Sendabl
     }
 
     @Override
-    protected final void removeInternal(SendableHandle<S> handle) {
+    protected final void removeInternal(SendableHandle<? super S> handle) {
         sendables.remove(handle);
     }
 
