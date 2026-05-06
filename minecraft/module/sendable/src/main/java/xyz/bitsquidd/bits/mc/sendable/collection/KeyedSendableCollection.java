@@ -54,15 +54,14 @@ public abstract class KeyedSendableCollection<K, S extends Sendable> extends Sen
 
 
     public void add(K key, S sendable) {
-        int priority = sendable.config().priority();
         if (this.sendables.containsKey(key)) {
             SendableHandle<S> existingHandle = this.sendables.get(key);
-            if (existingHandle.definition.config().priority() > priority) return; // Existing sendable has higher priority, do not replace
+            if (sendable.config().priority() < existingHandle.definition.config().priority() && !sendable.config().replaces(existingHandle.definition)) return; // Existing sendable has higher priority, do not replace
 
             remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
         }
 
-        this.sendables.put(key, createHandle(sendable));
+        sendables.put(key, createHandle(sendable));
     }
 
     public void add(Map<K, ? extends S> sendables) {

@@ -50,10 +50,13 @@ public abstract class ListSendableCollection<S extends Sendable> extends Sendabl
     public void add(S sendable) {
         int priority = sendable.config().priority();
         int index = 0;
+
+        List.copyOf(sendables).stream().filter(handle -> sendable.config().replaces(handle.definition)).forEach(h -> this.remove(h::equals));
         while (index < sendables.size() && sendables.get(index).definition.config().priority() >= priority) {
             index++;
         }
-        this.sendables.add(index, createHandle(sendable));
+
+        sendables.add(index, createHandle(sendable));
     }
 
     public void add(Collection<? extends S> sendables) {

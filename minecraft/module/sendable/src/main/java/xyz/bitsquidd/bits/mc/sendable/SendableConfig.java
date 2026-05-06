@@ -8,6 +8,9 @@
 package xyz.bitsquidd.bits.mc.sendable;
 
 import xyz.bitsquidd.bits.lifecycle.builder.ExtendableBuildable;
+import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
+
+import java.util.function.Predicate;
 
 
 public abstract class SendableConfig {
@@ -15,6 +18,7 @@ public abstract class SendableConfig {
     protected final int maxTicks; // How many ticks until the sendable is removed. -1 for infinite.
 
     private final int priority; // The priority of the sendable. Higher priority = replace / overlap lower priority ones.
+    private final Predicate<Sendable> replaces; // A predicate to determine whether this sendable should replace another sendable.
 
     private final boolean reverseOnExpire; // Whether the sendable should reverse when it reaches max ticks.
     private final boolean persistent;      // Whether the sendable should persist (e.g. through player respawns, world changing, disconnect etc.)
@@ -23,6 +27,7 @@ public abstract class SendableConfig {
         this.tickRate = builder.tickRate;
         this.maxTicks = builder.maxTicks;
         this.priority = builder.priority;
+        this.replaces = builder.replaces;
         this.reverseOnExpire = builder.reverseOnExpire;
         this.persistent = builder.persistent;
     }
@@ -40,6 +45,10 @@ public abstract class SendableConfig {
         return priority;
     }
 
+    public boolean replaces(Sendable other) {
+        return replaces.test(other);
+    }
+
     public boolean reverseOnExpire() {
         return reverseOnExpire;
     }
@@ -54,6 +63,7 @@ public abstract class SendableConfig {
         private int maxTicks = -1;
 
         private int priority = 0;
+        private Predicate<Sendable> replaces = s -> false;
 
         private boolean reverseOnExpire = false;
         private boolean persistent = false;
@@ -73,6 +83,11 @@ public abstract class SendableConfig {
 
         public B priority(int priority) {
             this.priority = priority;
+            return self();
+        }
+
+        public B replaces(Predicate<Sendable> replaces) {
+            this.replaces = replaces;
             return self();
         }
 
