@@ -11,10 +11,10 @@ import xyz.bitsquidd.bits.lifecycle.builder.ExtendableBuildable;
 
 
 public abstract class SendableConfig {
-    private final int tickRate; // How often the tick is incremented. <=0 for never.
-    private final int maxTicks; // How many ticks until the sendable is removed. -1 for infinite.
+    protected final int tickRate; // How often the tick is incremented. <=0 for never.
+    protected final int maxTicks; // How many ticks until the sendable is removed. -1 for infinite.
 
-    private final int priority; // The priority of the sendable. Generally higher priority sendables replace / overlap lower priority ones.
+    private final int priority; // The priority of the sendable. Higher priority = replace / overlap lower priority ones.
 
     private final boolean reverseOnExpire; // Whether the sendable should reverse when it reaches max ticks.
     private final boolean persistent;      // Whether the sendable should persist (e.g. through player respawns, world changing, disconnect etc.)

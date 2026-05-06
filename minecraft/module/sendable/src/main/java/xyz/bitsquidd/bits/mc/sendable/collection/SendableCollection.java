@@ -45,13 +45,21 @@ public abstract class SendableCollection<S extends Sendable> {
     @Unmodifiable
     public abstract List<SendableHandle<S>> getAll();
 
-    protected abstract void removeInternal(SendableFilter<S> filter);
+
+    public final void remove(SendableFilter<S> filter) {
+        get(filter).forEach(handle -> {
+            if (handle.isExpired()) handle.markForExpire();
+            removeInternal(handle);
+        });
+    }
+
+    protected abstract void removeInternal(SendableHandle<S> handle);
     //endregion
 
 
     public final void tick() {
         getAll().forEach(SendableHandle::tick);
-        removeInternal(SendableHandle::isExpired);
+        remove(SendableHandle::isExpired);
     }
 
     public final boolean needsRender() {

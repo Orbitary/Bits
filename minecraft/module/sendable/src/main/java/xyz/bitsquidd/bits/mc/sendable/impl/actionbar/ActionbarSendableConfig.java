@@ -1,0 +1,43 @@
+/*
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
+ *
+ * Copyright (c) 2023-2026 ImBit
+ */
+
+package xyz.bitsquidd.bits.mc.sendable.impl.actionbar;
+
+import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
+
+
+public final class ActionbarSendableConfig extends SendableConfig {
+    public final int keepaliveTicks;
+
+    private ActionbarSendableConfig(Builder builder) {
+        super(builder);
+        this.keepaliveTicks = builder.keepaliveTicks;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder extends SendableConfig.Builder<Builder> {
+        private int keepaliveTicks = 40;
+
+        private Builder() {}
+
+        public Builder keepaliveTicks(int keepaliveTicks) {
+            this.keepaliveTicks = keepaliveTicks;
+            return self();
+        }
+
+
+        @Override
+        public ActionbarSendableConfig build() {
+            return new ActionbarSendableConfig(this);
+        }
+
+    }
+
+}

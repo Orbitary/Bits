@@ -42,4 +42,10 @@ public abstract class Sendable {
     }
 
 
+    public boolean needsRender(SendableState state) {
+        int tickRate = config.tickRate();
+        return tickRate > 0 && state.tick() % tickRate == 0;
+    }
+
+
 }

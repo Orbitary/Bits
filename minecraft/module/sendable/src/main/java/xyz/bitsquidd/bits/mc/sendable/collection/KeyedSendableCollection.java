@@ -12,7 +12,6 @@ import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.Unmodifiable;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.SendableFilter;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
@@ -20,6 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * A collection of sendables that can be accessed by a key.
+ *
+ * @param <K>
+ * @param <S>
+ */
 public abstract class KeyedSendableCollection<K, S extends Sendable> extends SendableCollection<S> {
     protected final BiMap<K, SendableHandle<S>> sendables = HashBiMap.create();
 
@@ -41,12 +46,20 @@ public abstract class KeyedSendableCollection<K, S extends Sendable> extends Sen
     }
 
     @Override
-    protected final void removeInternal(SendableFilter<S> filter) {
-        sendables.values().removeIf(filter);
+    protected final void removeInternal(SendableHandle<S> filter) {
+        sendables.values().remove(filter);
     }
 
 
     public void add(K key, S sendable) {
+        int priority = sendable.config().priority();
+        if (this.sendables.containsKey(key)) {
+            SendableHandle<S> existingHandle = this.sendables.get(key);
+            if (existingHandle.definition.config().priority() > priority) return; // Existing sendable has higher priority, do not replace
+
+            remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
+        }
+
         this.sendables.put(key, createHandle(sendable));
     }
 

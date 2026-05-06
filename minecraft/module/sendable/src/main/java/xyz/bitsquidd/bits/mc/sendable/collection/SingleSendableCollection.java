@@ -10,7 +10,6 @@ package xyz.bitsquidd.bits.mc.sendable.collection;
 import org.jetbrains.annotations.Unmodifiable;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.SendableFilter;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.wrapper.collection.Single;
@@ -39,12 +38,20 @@ public abstract class SingleSendableCollection<S extends Sendable> extends Senda
     }
 
     @Override
-    protected final void removeInternal(SendableFilter<S> filter) {
-        sendables.removeIf(filter);
+    protected final void removeInternal(SendableHandle<S> handle) {
+        sendables.removeIf(h -> h.equals(handle));
     }
 
 
     public void add(S sendable) {
+        int priority = sendable.config().priority();
+        if (this.sendables.isPresent()) {
+            SendableHandle<S> existingHandle = this.sendables.get();
+            if (existingHandle.definition.config().priority() > priority) return; // Existing sendable has higher priority, do not replace
+
+            remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
+        }
+
         this.sendables.set(createHandle(sendable));
     }
 

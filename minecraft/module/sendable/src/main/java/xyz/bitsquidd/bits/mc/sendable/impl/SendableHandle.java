@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
 import xyz.bitsquidd.bits.wrapper.Percentage;
@@ -53,10 +55,7 @@ public final class SendableHandle<S extends Sendable> {
             }
         }
 
-        int tickRate = config.tickRate();
-        if (tickRate > 0 && tick % tickRate == 0) {
-            markForRender();
-        }
+        if (definition.needsRender(state())) markForRender();
 
         if (tick == 0) definition.onAdd(state());
         definition.onTick(state());
@@ -75,18 +74,23 @@ public final class SendableHandle<S extends Sendable> {
     }
 
 
+    //region Flag marking
+    @ApiStatus.Internal
     public void markForRender() {
         needsRender = true;
     }
 
+    @ApiStatus.Internal
     public void markRendered() {
         needsRender = false;
     }
 
+    @ApiStatus.Internal
     public void markForExpire() {
         expired = true;
         definition.onExpire(state());
     }
+    //endregion
 
 
     private SendableState state() {

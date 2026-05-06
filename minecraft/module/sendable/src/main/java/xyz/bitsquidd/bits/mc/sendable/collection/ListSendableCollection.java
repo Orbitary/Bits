@@ -10,7 +10,6 @@ package xyz.bitsquidd.bits.mc.sendable.collection;
 import org.jetbrains.annotations.Unmodifiable;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.SendableFilter;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
@@ -19,6 +18,9 @@ import java.util.Collection;
 import java.util.List;
 
 
+/**
+ * An ordered list of sendables. New sendables added based on priority. Higher priority sendables are before lower priority ones. Sendables with the same priority are ordered by insertion time.
+ */
 public abstract class ListSendableCollection<S extends Sendable> extends SendableCollection<S> {
     protected final List<SendableHandle<S>> sendables = new ArrayList<>();
 
@@ -40,13 +42,18 @@ public abstract class ListSendableCollection<S extends Sendable> extends Sendabl
     }
 
     @Override
-    protected final void removeInternal(SendableFilter<S> filter) {
-        sendables.removeIf(filter);
+    protected final void removeInternal(SendableHandle<S> handle) {
+        sendables.remove(handle);
     }
 
 
     public void add(S sendable) {
-        this.sendables.add(createHandle(sendable));
+        int priority = sendable.config().priority();
+        int index = 0;
+        while (index < sendables.size() && sendables.get(index).definition.config().priority() >= priority) {
+            index++;
+        }
+        this.sendables.add(index, createHandle(sendable));
     }
 
     public void add(Collection<? extends S> sendables) {
