@@ -7,6 +7,16 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl;
 
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
+import xyz.bitsquidd.bits.wrapper.Percentage;
+
+
+/**
+ * State of a {@link SendableHandle} at a specific tick. Passed to {@link Sendable} definitions when rendering.
+ */
 public record SendableState(
-  int tick
+  Receiver receiver,
+  int tick,
+  Percentage progress,
+  boolean reversing
 ) {}

@@ -7,9 +7,7 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
-import xyz.bitsquidd.bits.mc.sendable.impl.AbstractSendable;
-
-import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -17,10 +15,9 @@ import java.util.List;
  */
 public interface Receiver {
     //region General
-    void removeSendables(SendableFilter<AbstractSendable> sendable);
-
-    List<AbstractSendable> getSendables(SendableFilter<AbstractSendable> predicate);
-
+    UUID uniqueId();
     //endregion
+
+    // TODO utility methods e.g. addTitle, addActionbar() etc.
 
 }

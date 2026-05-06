@@ -11,13 +11,13 @@ import xyz.bitsquidd.bits.lifecycle.builder.ExtendableBuildable;
 
 
 public abstract class SendableConfig {
-    public final int tickRate; // How often the tick is incremented. <=0 for never.
-    public final int maxTicks; // How many ticks until the sendable is removed. -1 for infinite.
+    private final int tickRate; // How often the tick is incremented. <=0 for never.
+    private final int maxTicks; // How many ticks until the sendable is removed. -1 for infinite.
 
-    public final int priority; // The priority of the sendable. Generally higher priority sendables replace / overlap lower priority ones.
+    private final int priority; // The priority of the sendable. Generally higher priority sendables replace / overlap lower priority ones.
 
-    public final boolean reverseOnExpire; // Whether the sendable should reverse when it reaches max ticks.
-    public final boolean persistent; // Whether the sendable should persist (e.g. through player respawns, world changing etc.)
+    private final boolean reverseOnExpire; // Whether the sendable should reverse when it reaches max ticks.
+    private final boolean persistent;      // Whether the sendable should persist (e.g. through player respawns, world changing, disconnect etc.)
 
     protected SendableConfig(Builder<?> builder) {
         this.tickRate = builder.tickRate;
@@ -25,6 +25,27 @@ public abstract class SendableConfig {
         this.priority = builder.priority;
         this.reverseOnExpire = builder.reverseOnExpire;
         this.persistent = builder.persistent;
+    }
+
+
+    public int tickRate() {
+        return tickRate;
+    }
+
+    public int maxTicks() {
+        return maxTicks;
+    }
+
+    public int priority() {
+        return priority;
+    }
+
+    public boolean reverseOnExpire() {
+        return reverseOnExpire;
+    }
+
+    public boolean persistent() {
+        return persistent;
     }
 
 

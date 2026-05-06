@@ -22,6 +22,12 @@ public final class TitleSendableConfig extends SendableConfig {
     }
 
 
+    @Override
+    public int maxTicks() {
+        return super.maxTicks() + fadeIn + fadeOut;
+    }
+
+
     public static Builder builder() {
         return new Builder();
     }
@@ -30,7 +36,7 @@ public final class TitleSendableConfig extends SendableConfig {
         private int fadeIn = 0;
         private int fadeOut = 0;
 
-        
+
         private Builder() {}
 
         public Builder fadeIn(int fadeIn) {

@@ -1,17 +1,22 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.wrapper.collection;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+
 
 /**
  * A mutable container that holds a single, potentially nullable value.
@@ -25,7 +30,7 @@ public final class Single<T> {
     /**
      * The wrapped value. May be {@code null}.
      */
-    private @Nullable T value;
+    private final Set<T> value = new HashSet<>(1);
 
     /**
      * Initialises a new container with the given value.
@@ -34,9 +39,12 @@ public final class Single<T> {
      *
      * @since 0.0.10
      */
-    public Single(@Nullable T value) {
-        this.value = value;
+    public Single(T value) {
+        this.value.add(value);
     }
+
+    public Single() {}
+
 
     /**
      * Creates a new container holding a non-null value.
@@ -63,7 +71,7 @@ public final class Single<T> {
      * @since 0.0.10
      */
     public static <T> Single<T> empty() {
-        return new Single<>(null);
+        return new Single<>();
     }
 
     /**
@@ -74,7 +82,7 @@ public final class Single<T> {
      * @since 0.0.10
      */
     public @Nullable T get() {
-        return value;
+        return value.isEmpty() ? null : value.iterator().next();
     }
 
     /**
@@ -84,8 +92,9 @@ public final class Single<T> {
      *
      * @since 0.0.10
      */
-    public void set(@Nullable T value) {
-        this.value = value;
+    public void set(T value) {
+        this.value.clear();
+        this.value.add(value);
     }
 
     /**
@@ -96,7 +105,7 @@ public final class Single<T> {
      * @since 0.0.10
      */
     public boolean isPresent() {
-        return value != null;
+        return !value.isEmpty();
     }
 
     /**
@@ -105,8 +114,18 @@ public final class Single<T> {
      * @since 0.0.10
      */
     public void clear() {
-        this.value = null;
+        this.value.clear();
     }
+
+
+    public List<T> asList() {
+        return isPresent() ? List.of(get()) : Collections.emptyList();
+    }
+
+    public void removeIf(Predicate<? super T> filter) {
+        if (isPresent() && filter.test(get())) clear();
+    }
+
 
     /**
      * Transforms the current value and returns a new container with the result.
@@ -122,10 +141,8 @@ public final class Single<T> {
      */
     public <R> Single<R> map(Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper");
-        if (value == null) {
-            return new Single<>(null);
-        }
-        return new Single<>(mapper.apply(value));
+        if (!isPresent()) return new Single<>();
+        return new Single<>(mapper.apply(get()));
     }
 
 

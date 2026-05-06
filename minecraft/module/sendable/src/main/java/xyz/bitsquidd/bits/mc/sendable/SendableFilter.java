@@ -8,12 +8,13 @@
 package xyz.bitsquidd.bits.mc.sendable;
 
 
-import xyz.bitsquidd.bits.mc.sendable.impl.AbstractSendable;
+import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
 import java.util.function.Predicate;
 
 
 @FunctionalInterface
-public interface SendableFilter<S extends AbstractSendable> extends Predicate<S> {
+public interface SendableFilter<S extends Sendable> extends Predicate<SendableHandle<S>> {
 
 }

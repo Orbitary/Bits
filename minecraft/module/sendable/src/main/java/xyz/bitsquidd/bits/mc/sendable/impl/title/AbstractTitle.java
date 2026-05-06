@@ -5,15 +5,16 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.mc.sendable.impl;
+package xyz.bitsquidd.bits.mc.sendable.impl.title;
 
 import net.kyori.adventure.text.Component;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleSendableConfig;
+import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 
 
-public non-sealed abstract class AbstractTitle extends AbstractSendable {
+public abstract class AbstractTitle extends Sendable {
 
 
     @Override
