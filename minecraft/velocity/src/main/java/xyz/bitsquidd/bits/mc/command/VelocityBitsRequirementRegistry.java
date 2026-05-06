@@ -11,6 +11,8 @@ import com.velocitypowered.api.command.CommandSource;
 
 import xyz.bitsquidd.bits.mc.command.requirement.BitsCommandRequirement;
 import xyz.bitsquidd.bits.mc.command.requirement.BitsRequirementRegistry;
+import xyz.bitsquidd.bits.mc.command.requirement.ConsoleSenderRequirement;
+import xyz.bitsquidd.bits.mc.command.requirement.PlayerSenderRequirement;
 
 import java.util.Map;
 
