@@ -19,7 +19,9 @@ public abstract class AbstractSidebar extends Sendable {
 
 
     @Override
-    protected abstract SidebarSendableConfig createConfig();
+    protected SidebarSendableConfig.Builder createConfig() {
+        return new SidebarSendableConfig.Builder();
+    }
 
     @Override
     public final SidebarSendableConfig config() {

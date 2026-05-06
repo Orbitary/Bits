@@ -7,15 +7,15 @@
 
 package xyz.bitsquidd.bits.configuration;
 
-import xyz.bitsquidd.bits.config.BitsConfig;
 import xyz.bitsquidd.bits.configuration.loader.ConfigLoader;
 import xyz.bitsquidd.bits.configuration.migration.ConfigMigration;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * Fluent builder for creating a {@link BitsConfig}.
+ * Fluent builder for creating a {@link xyz.bitsquidd.bits.config.Bits}.
  * <p>
  * This is the primary entry point for both internal and third-party plugin use.
  * <p>

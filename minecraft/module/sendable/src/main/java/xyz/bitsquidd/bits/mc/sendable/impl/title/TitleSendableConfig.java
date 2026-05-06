@@ -32,16 +32,12 @@ public final class TitleSendableConfig extends SendableConfig {
     }
 
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static final class Builder extends SendableConfig.Builder<Builder> {
         private int fadeIn = 0;
         private int fadeOut = 0;
 
 
-        private Builder() {}
+        Builder() {}
 
         public Builder fadeIn(int fadeIn) {
             this.fadeIn = fadeIn;

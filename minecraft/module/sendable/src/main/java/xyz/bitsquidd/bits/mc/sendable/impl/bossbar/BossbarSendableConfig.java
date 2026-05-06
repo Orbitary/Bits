@@ -25,16 +25,13 @@ public final class BossbarSendableConfig extends SendableConfig {
         this.defaultProgress = builder.defaultProgress;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
+    
     public static final class Builder extends SendableConfig.Builder<Builder> {
         private BossBarOverlay defaultOverlay = BossBarOverlay.DEFAULT;
         private BossBarColor defaultColor = BossBarColor.DEFAULT;
         private Percentage defaultProgress = Percentage.ZERO;
 
-        private Builder() {}
+        Builder() {}
 
 
         public Builder defaultOverlay(BossBarOverlay defaultOverlay) {

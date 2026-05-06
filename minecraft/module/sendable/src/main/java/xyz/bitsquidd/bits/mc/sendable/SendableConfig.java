@@ -49,7 +49,7 @@ public abstract class SendableConfig {
     }
 
 
-    protected abstract static class Builder<B extends Builder<B>> extends ExtendableBuildable<SendableConfig, B> {
+    public abstract static class Builder<B extends Builder<B>> extends ExtendableBuildable<SendableConfig, B> {
         private int tickRate = 0;
         private int maxTicks = -1;
 

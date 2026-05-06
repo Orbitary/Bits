@@ -15,6 +15,7 @@ import xyz.bitsquidd.bits.mc.sendable.SendableFilter;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -38,7 +39,7 @@ public abstract class SendableCollection<S extends Sendable> {
 
 
     //region Collection Operations
-    public final List<SendableHandle<S>> get(SendableFilter<S> filter) {
+    public final Collection<SendableHandle<S>> get(SendableFilter<? super S> filter) {
         return getAll().stream().filter(filter).toList();
     }
 
@@ -46,14 +47,14 @@ public abstract class SendableCollection<S extends Sendable> {
     public abstract List<SendableHandle<S>> getAll();
 
 
-    public final void remove(SendableFilter<S> filter) {
+    public final void remove(SendableFilter<? super S> filter) {
         get(filter).forEach(handle -> {
             if (handle.isExpired()) handle.markForExpire();
             removeInternal(handle);
         });
     }
 
-    protected abstract void removeInternal(SendableHandle<S> handle);
+    protected abstract void removeInternal(SendableHandle<? super S> handle);
     //endregion
 
 
@@ -77,6 +78,7 @@ public abstract class SendableCollection<S extends Sendable> {
 
 
     // Collections must override their toString.
+    @Override
     public abstract String toString();
 
 }

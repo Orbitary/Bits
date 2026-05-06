@@ -45,8 +45,8 @@ public abstract class SingleSendableCollection<S extends Sendable> extends Senda
 
     public void add(S sendable) {
         int priority = sendable.config().priority();
-        if (this.sendables.isPresent()) {
-            SendableHandle<S> existingHandle = this.sendables.get();
+        SendableHandle<S> existingHandle = this.sendables.get();
+        if (existingHandle != null) {
             if (existingHandle.definition.config().priority() > priority) return; // Existing sendable has higher priority, do not replace
 
             remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing

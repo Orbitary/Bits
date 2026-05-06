@@ -15,6 +15,4 @@ import java.util.function.Predicate;
 
 
 @FunctionalInterface
-public interface SendableFilter<S extends Sendable> extends Predicate<SendableHandle<S>> {
-
-}
+public interface SendableFilter<S extends Sendable> extends Predicate<SendableHandle<? extends S>> {}

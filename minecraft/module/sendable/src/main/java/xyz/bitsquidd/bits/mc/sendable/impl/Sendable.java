@@ -19,10 +19,10 @@ public abstract class Sendable {
     private final SendableConfig config;
 
     protected Sendable() {
-        this.config = createConfig();
+        this.config = createConfig().build();
     }
 
-    protected abstract SendableConfig createConfig();
+    protected abstract SendableConfig.Builder<?> createConfig();
 
     public SendableConfig config() {
         return config;

@@ -10,7 +10,6 @@ package xyz.bitsquidd.bits.mc.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.velocitypowered.api.command.CommandSource;
 
-import xyz.bitsquidd.bits.config.BitsVelocity;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
 
@@ -22,7 +21,7 @@ public class VelocityBitsCommandContext extends BitsCommandContext<CommandSource
 
     @Override
     protected BitsCommandSourceContext<CommandSource> createSourceContext(CommandContext<CommandSource> brigadierContext) {
-        return BitsVelocity.get().getCommandManager().createSourceContext(brigadierContext.getSource());
+        return VelocityBitsCommandManager.get().createSourceContext(brigadierContext.getSource());
     }
 
     @Override

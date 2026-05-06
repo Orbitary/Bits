@@ -20,7 +20,9 @@ public abstract class AbstractBossbar extends Sendable {
 
 
     @Override
-    protected abstract BossbarSendableConfig createConfig();
+    protected BossbarSendableConfig.Builder createConfig() {
+        return new BossbarSendableConfig.Builder();
+    }
 
     @Override
     public final BossbarSendableConfig config() {

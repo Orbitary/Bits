@@ -18,14 +18,11 @@ public final class ActionbarSendableConfig extends SendableConfig {
         this.keepaliveTicks = builder.keepaliveTicks;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
 
     public static final class Builder extends SendableConfig.Builder<Builder> {
         private int keepaliveTicks = 40;
 
-        private Builder() {}
+        Builder() {}
 
         public Builder keepaliveTicks(int keepaliveTicks) {
             this.keepaliveTicks = keepaliveTicks;

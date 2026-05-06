@@ -7,6 +7,11 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import com.google.common.collect.ImmutableSet;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
+import xyz.bitsquidd.bits.exception.BitsException;
 import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarManager;
@@ -19,13 +24,30 @@ import java.util.stream.Collectors;
 
 
 public abstract class SendableOrchestrator extends ManagerContainer {
+    private static @Nullable SendableOrchestrator instance;
+
     private final ActionbarManager actionbarManager = registerManager(createActionbarManager());
     private final BossbarManager bossbarManager = registerManager(createBossbarManager());
     private final SidebarManager sidebarManager = registerManager(createSidebarManager());
     private final TablistManager tablistManager = registerManager(createTablistManager());
     private final TitleManager titleManager = registerManager(createTitleManager());
 
-    private final Set<SendableManager<?, ?>> cachedManagers = getAllManagers().stream().filter(m -> m instanceof SendableManager).map(m -> (SendableManager<?, ?>)m).collect(Collectors.toSet());
+    private final ImmutableSet<SendableManager<?, ?>> cachedManagers = ImmutableSet.copyOf(getAllManagers().stream().filter(m -> m instanceof SendableManager).map(m -> (SendableManager<?, ?>)m).collect(Collectors.toSet()));
+
+    protected SendableOrchestrator() {
+        if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(SendableOrchestrator.class);
+        SendableOrchestrator.instance = this;
+    }
+
+    public static SendableOrchestrator get() {
+        if (instance == null) throw BitsException.INSTANCE_NOT_FOUND(SendableOrchestrator.class);
+        return instance;
+    }
+
+    @Unmodifiable
+    public final Set<SendableManager<?, ?>> getSendableManagers() {
+        return cachedManagers;
+    }
 
 
     protected final void tickAll() {
@@ -34,13 +56,33 @@ public abstract class SendableOrchestrator extends ManagerContainer {
 
     protected abstract ActionbarManager createActionbarManager();
 
+    public final ActionbarManager actionbar() {
+        return actionbarManager;
+    }
+
     protected abstract BossbarManager createBossbarManager();
+
+    public final BossbarManager bossbar() {
+        return bossbarManager;
+    }
 
     protected abstract SidebarManager createSidebarManager();
 
+    public final SidebarManager sidebar() {
+        return sidebarManager;
+    }
+
     protected abstract TablistManager createTablistManager();
 
+    public final TablistManager tablist() {
+        return tablistManager;
+    }
+
     protected abstract TitleManager createTitleManager();
+
+    public final TitleManager title() {
+        return titleManager;
+    }
 
 
 }

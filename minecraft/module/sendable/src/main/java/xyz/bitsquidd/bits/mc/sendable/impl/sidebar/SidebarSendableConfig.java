@@ -16,13 +16,10 @@ public final class SidebarSendableConfig extends SendableConfig {
         super(builder);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
 
     public static final class Builder extends SendableConfig.Builder<Builder> {
 
-        private Builder() {}
+        Builder() {}
 
 
         @Override

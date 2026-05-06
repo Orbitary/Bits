@@ -21,7 +21,9 @@ public abstract class AbstractTitle extends Sendable {
 
 
     @Override
-    protected abstract TitleSendableConfig createConfig();
+    protected TitleSendableConfig.Builder createConfig() {
+        return new TitleSendableConfig.Builder();
+    }
 
     @Override
     public final TitleSendableConfig config() {

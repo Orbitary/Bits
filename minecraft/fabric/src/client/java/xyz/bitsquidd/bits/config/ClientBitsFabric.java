@@ -14,7 +14,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
 import net.minecraft.client.Minecraft;
 
-import xyz.bitsquidd.bits.mc.command.FabricClientBitsCommandManager;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 
 import java.util.Locale;
@@ -29,16 +28,6 @@ public class ClientBitsFabric extends BitsFabric {
 
     public static ClientBitsFabric get() {
         return (ClientBitsFabric)Bits.get();
-    }
-
-    @Override
-    protected FabricClientBitsCommandManager createCommandManager() {
-        return new FabricClientBitsCommandManager();
-    }
-
-    @Override
-    public FabricClientBitsCommandManager getCommandManager() {
-        return (FabricClientBitsCommandManager)super.getCommandManager();
     }
 
     @Override

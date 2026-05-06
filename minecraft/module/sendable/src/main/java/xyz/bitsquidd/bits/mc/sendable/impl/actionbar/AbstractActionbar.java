@@ -17,7 +17,9 @@ public abstract class AbstractActionbar extends Sendable {
 
 
     @Override
-    protected abstract ActionbarSendableConfig createConfig();
+    protected ActionbarSendableConfig.Builder createConfig() {
+        return new ActionbarSendableConfig.Builder();
+    }
 
     @Override
     public final ActionbarSendableConfig config() {

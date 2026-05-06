@@ -17,7 +17,9 @@ public abstract class AbstractTablist extends Sendable {
 
 
     @Override
-    protected abstract TablistSendableConfig createConfig();
+    protected TablistSendableConfig.Builder createConfig() {
+        return new TablistSendableConfig.Builder();
+    }
 
     @Override
     public final TablistSendableConfig config() {

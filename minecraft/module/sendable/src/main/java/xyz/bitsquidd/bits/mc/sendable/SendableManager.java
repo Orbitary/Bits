@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import xyz.bitsquidd.bits.lifecycle.manager.CoreManager;
 import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
@@ -33,6 +35,10 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
     protected abstract C createCollection(Receiver receiver);
 
+    @ApiStatus.Internal
+    public final C getSendables(Receiver receiver) {
+        return playerSendables.computeIfAbsent(receiver, k -> createCollection(receiver));
+    }
 
     protected void initialisePlayer(Receiver receiver) {
         cleanupPlayer(receiver);
