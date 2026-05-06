@@ -51,7 +51,7 @@ public abstract class SendableOrchestrator extends ManagerContainer {
 
 
     protected final void tickAll() {
-        cachedManagers.forEach(SendableManager::tickAll);
+        getSendableManagers().forEach(SendableManager::tickAll);
     }
 
     protected abstract ActionbarManager createActionbarManager();

@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,6 +62,17 @@ public class PaperSendableOrchestrator extends SendableOrchestrator {
     @Override
     protected TitleManager createTitleManager() {
         return new PaperTitleManager();
+    }
+
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        getSendableManagers().forEach(manager -> manager.initialiseReceiver(PaperReceiver.from(event.getPlayer())));
+    }
+
+    @EventHandler
+    public final void onPlayerQuit(PlayerJoinEvent event) {
+        getSendableManagers().forEach(manager -> manager.cleanupReceiver(PaperReceiver.from(event.getPlayer())));
     }
 
 }

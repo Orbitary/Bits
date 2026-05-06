@@ -40,12 +40,12 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
         return playerSendables.computeIfAbsent(receiver, k -> createCollection(receiver));
     }
 
-    protected void initialisePlayer(Receiver receiver) {
-        cleanupPlayer(receiver);
+    protected void initialiseReceiver(Receiver receiver) {
+        cleanupReceiver(receiver);
         playerSendables.computeIfAbsent(receiver, k -> createCollection(receiver));
     }
 
-    protected void cleanupPlayer(Receiver receiver) {
+    protected void cleanupReceiver(Receiver receiver) {
         playerSendables.remove(receiver);
     }
 

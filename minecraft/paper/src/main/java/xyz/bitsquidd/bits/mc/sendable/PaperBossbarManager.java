@@ -142,8 +142,8 @@ public class PaperBossbarManager extends BossbarManager {
 
 
     @Override
-    protected void initialisePlayer(Receiver receiver) {
-        super.initialisePlayer(receiver);
+    protected void initialiseReceiver(Receiver receiver) {
+        super.initialiseReceiver(receiver);
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         Map<Integer, BossEvent> bossEvents = new ConcurrentHashMap<>();
@@ -159,8 +159,8 @@ public class PaperBossbarManager extends BossbarManager {
     }
 
     @Override
-    protected void cleanupPlayer(Receiver receiver) {
-        super.cleanupPlayer(receiver);
+    protected void cleanupReceiver(Receiver receiver) {
+        super.cleanupReceiver(receiver);
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         bossbarIds.remove(receiver.getUniqueId());

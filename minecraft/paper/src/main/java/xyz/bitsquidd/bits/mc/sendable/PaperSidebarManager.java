@@ -91,8 +91,8 @@ public class PaperSidebarManager extends SidebarManager {
 
 
     @Override
-    protected void initialisePlayer(Receiver receiver) {
-        super.initialisePlayer(receiver);
+    protected void initialiseReceiver(Receiver receiver) {
+        super.initialiseReceiver(receiver);
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         Objective objective = new Objective(
@@ -120,8 +120,8 @@ public class PaperSidebarManager extends SidebarManager {
     }
 
     @Override
-    protected void cleanupPlayer(Receiver receiver) {
-        super.cleanupPlayer(receiver);
+    protected void cleanupReceiver(Receiver receiver) {
+        super.cleanupReceiver(receiver);
         playerLineCount.remove(receiver.getUniqueId());
     }
 
