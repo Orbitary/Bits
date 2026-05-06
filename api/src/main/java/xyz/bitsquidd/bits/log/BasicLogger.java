@@ -1,14 +1,15 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.log;
 
 import xyz.bitsquidd.bits.log.pretty.PrettyLogLevel;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * A standard implementation of {@link Logger} that outputs to the system console.
@@ -72,8 +73,21 @@ public class BasicLogger extends Logger {
         onLog(new LogData(msg, LogType.ERROR));
     }
 
+    /**
+     * Logs an exception, unwrapping {@link InvocationTargetException} to reveal
+     * the underlying cause if necessary.
+     *
+     * @since 0.0.13
+     */
     @Override
     public void exceptionInternal(final String msg, final Throwable throwable) {
+        if (throwable instanceof InvocationTargetException invocationTargetException) {
+            Throwable cause = invocationTargetException.getCause();
+            if (cause == null) cause = throwable; // Fallback to the original exception if cause is null
+            exceptionInternal(msg, cause);
+            return;
+        }
+
         StackTraceElement origin = throwable.getStackTrace()[0];
         String header = String.format(
           "%s |-> Exception at %s.%s (%s:%d) - %s",

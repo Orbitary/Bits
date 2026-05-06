@@ -1,0 +1,15 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    uses: Orbitary/Convention/.github/workflows/build-and-test.yml@main
+    secrets: inherit

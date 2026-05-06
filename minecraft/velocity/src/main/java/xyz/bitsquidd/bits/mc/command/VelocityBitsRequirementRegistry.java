@@ -9,7 +9,25 @@ package xyz.bitsquidd.bits.mc.command;
 
 import com.velocitypowered.api.command.CommandSource;
 
+import xyz.bitsquidd.bits.mc.command.requirement.BitsCommandRequirement;
 import xyz.bitsquidd.bits.mc.command.requirement.BitsRequirementRegistry;
+import xyz.bitsquidd.bits.mc.command.requirement.ConsoleSenderRequirement;
+import xyz.bitsquidd.bits.mc.command.requirement.PlayerSenderRequirement;
+
+import java.util.Map;
 
 public class VelocityBitsRequirementRegistry extends BitsRequirementRegistry<CommandSource> {
+
+    @Override
+    protected Map<Class<? extends BitsCommandRequirement>, BitsCommandRequirement> initialiseParsers() {
+        Map<Class<? extends BitsCommandRequirement>, BitsCommandRequirement> parsers = super.initialiseParsers();
+
+        parsers.putAll(Map.ofEntries(
+          Map.entry(PlayerSenderRequirement.class, PlayerSenderRequirement.INSTANCE),
+          Map.entry(ConsoleSenderRequirement.class, ConsoleSenderRequirement.INSTANCE)
+        ));
+
+        return parsers;
+    }
+
 }

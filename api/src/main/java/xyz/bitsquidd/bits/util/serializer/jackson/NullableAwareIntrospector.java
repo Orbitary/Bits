@@ -7,9 +7,10 @@
 
 package xyz.bitsquidd.bits.util.serializer.jackson;
 
-import tools.jackson.databind.cfg.MapperConfig;
-import tools.jackson.databind.introspect.AnnotatedMember;
-import tools.jackson.databind.introspect.JacksonAnnotationIntrospector;
+
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 /**
  * Custom Jackson annotation introspector that treats fields annotated with @Nullable as optional (not required).
@@ -18,14 +19,13 @@ import tools.jackson.databind.introspect.JacksonAnnotationIntrospector;
 public class NullableAwareIntrospector extends JacksonAnnotationIntrospector {
 
     @Override
-    public Boolean hasRequiredMarker(MapperConfig<?> config, AnnotatedMember m) {
-        if (m.hasAnnotation(org.jetbrains.annotations.Nullable.class) || m.getAnnotation(org.jspecify.annotations.Nullable.class) != null) {
-            return false;
-        }
+    public Boolean hasRequiredMarker(AnnotatedMember m) {
+        return !isNullable(m);
+    }
 
-        return super.hasRequiredMarker(config, m) != null
-               ? super.hasRequiredMarker(config, m)
-               : true;
+    private boolean isNullable(Annotated a) {
+        return a.hasAnnotation(org.jetbrains.annotations.Nullable.class)
+          || a.hasAnnotation(org.jspecify.annotations.Nullable.class);
     }
 
 }

@@ -7,10 +7,15 @@
 
 package xyz.bitsquidd.bits.util.serializer;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.JsonGenerator;
-import tools.jackson.core.JsonParser;
-import tools.jackson.databind.*;
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
 
 public abstract class MultiSerializer<T> {
     private final Class<T> clazz;
@@ -26,10 +31,10 @@ public abstract class MultiSerializer<T> {
 
     protected abstract JsonNode serialize(T value) throws JacksonException;
 
-    public final ValueSerializer<T> jacksonSerializer() {
-        return new ValueSerializer<T>() {
+    public final StdSerializer<? super T> jacksonSerializer() {
+        return new StdSerializer<>(clazz) {
             @Override
-            public void serialize(T value, JsonGenerator gen, SerializationContext ctxt) throws JacksonException {
+            public void serialize(T value, JsonGenerator gen, SerializerProvider ctx) throws IOException {
                 JsonNode node = MultiSerializer.this.serialize(value);
                 gen.writeTree(node);
             }
@@ -39,14 +44,23 @@ public abstract class MultiSerializer<T> {
 
     protected abstract T deserialize(JsonNode node) throws JacksonException;
 
-    public final ValueDeserializer<T> jacksonDeserializer() {
-        return new ValueDeserializer<T>() {
+    public final StdDeserializer<? extends T> jacksonDeserializer() {
+        return new StdDeserializer<>(clazz) {
             @Override
-            public T deserialize(JsonParser parser, DeserializationContext ctx) throws JacksonException {
+            public T deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
                 JsonNode node = ctx.readTree(parser);
                 return MultiSerializer.this.deserialize(node);
             }
         };
+    }
+
+
+    public @Nullable JsonSerializer<? super T> jacksonKeySerializer() {
+        return null;
+    }
+
+    public @Nullable KeyDeserializer jacksonKeyDeserializer() {
+        return null;
     }
 
 }

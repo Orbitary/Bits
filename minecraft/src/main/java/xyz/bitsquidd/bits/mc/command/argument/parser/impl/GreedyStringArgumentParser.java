@@ -10,6 +10,7 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 import xyz.bitsquidd.bits.mc.command.BrigadierTreeGenerator;
 import xyz.bitsquidd.bits.mc.command.argument.InputTypeContainer;
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.GreedyString;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
@@ -23,6 +24,7 @@ import java.util.List;
  *
  * @since 0.0.10
  */
+@ArgumentParser
 public final class GreedyStringArgumentParser extends AbstractArgumentParser<GreedyString> {
     public GreedyStringArgumentParser() {
         super(TypeSignature.of(GreedyString.class), "String...");

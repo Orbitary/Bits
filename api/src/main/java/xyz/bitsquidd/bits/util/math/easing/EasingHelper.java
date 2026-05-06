@@ -1,12 +1,11 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.util.math;
+package xyz.bitsquidd.bits.util.math.easing;
 
 import org.jetbrains.annotations.Range;
 
@@ -18,8 +17,9 @@ import org.jetbrains.annotations.Range;
  *
  * @since 0.0.10
  */
-public final class Easing {
-    private Easing() {}
+@Deprecated(forRemoval = true, since = "0.0.13")
+public final class EasingHelper {
+    private EasingHelper() {}
 
     private static final double EASING_MAGIC = 1.70158;
 

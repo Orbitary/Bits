@@ -1,29 +1,31 @@
-import xyz.bitsquidd.util.includeLibrary
-import xyz.bitsquidd.util.relocate
-import xyz.bitsquidd.util.shade
-
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
+
+import xyz.bitsquidd.util.shade
 
 description = "🦑 Utility API for Bits Plugin development."
 
 dependencies {
     shade(rootProject.libs.classgraph)
 
-    implementation(rootProject.libs.joml)
-    implementation(rootProject.libs.logger)
-    implementation(rootProject.libs.adventure.text.serializer.plain)
-    implementation(rootProject.libs.adventure.text.minimessage)
+    compileOnly(rootProject.libs.adventure.text.serializer.plain)
 
-    includeLibrary(rootProject.libs.jackson.core)
-    includeLibrary(rootProject.libs.jackson.databind)
-    includeLibrary(rootProject.libs.guava)
-    includeLibrary(rootProject.libs.adventure)
+    api(rootProject.libs.joml)
+    api(rootProject.libs.adventure.text.minimessage)
+    api(rootProject.libs.logger)
+    api(rootProject.libs.jackson.core)
+    api(rootProject.libs.jackson.databind)
+    api(rootProject.libs.jackson.collections.guava)
+    api(rootProject.libs.jackson.dataformat.yaml)
+    api(rootProject.libs.guava)
+    api(rootProject.libs.adventure)
 }
 
-relocate("io.github.classgraph" to "xyz.bitsquidd.lib.classgraph")
+tasks.shadowJar {
+    relocate("io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
+    relocate("nonapi.io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
+}

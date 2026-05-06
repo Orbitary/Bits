@@ -1,5 +1,3 @@
-import xyz.bitsquidd.util.includeLibrary
-
 /*
  * This file is part of a Bit libraries package.
  * Licensed under the GNU Lesser General Public License v3.0.
@@ -12,7 +10,8 @@ repositories {
 }
 
 dependencies {
-    includeLibrary(project(":api"))
+    api(project(":api"))
 
-    includeLibrary(rootProject.libs.brigadier)
+    api(rootProject.libs.brigadier)
 }
+

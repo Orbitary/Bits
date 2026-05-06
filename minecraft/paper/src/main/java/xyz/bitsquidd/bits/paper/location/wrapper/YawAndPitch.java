@@ -28,6 +28,10 @@ public final class YawAndPitch {
 
     public static final YawAndPitch ZERO = new YawAndPitch(0f, 0f);
 
+    public static Location remove(Location location) {
+        return YawAndPitch.ZERO.applyTo(location);
+    }
+
     // Yaw is normalized between [-180, 180]
     // Pitch is normalized between [-90, 90]
     private YawAndPitch(float yaw, float pitch) {
@@ -101,6 +105,17 @@ public final class YawAndPitch {
             case COUNTER_CLOCKWISE -> YawAndPitch.of(-90, 0);
             case COUNTER_CLOCKWISE_45 -> YawAndPitch.of(-45, 0);
         };
+    }
+
+
+    public YawAndPitch roundYaw(float multiple) {
+        float roundedYaw = Math.round(yaw / multiple) * multiple;
+        return new YawAndPitch(roundedYaw, pitch);
+    }
+
+    public YawAndPitch roundPitch(float multiple) {
+        float roundedPitch = Math.round(pitch / multiple) * multiple;
+        return new YawAndPitch(yaw, roundedPitch);
     }
 
 

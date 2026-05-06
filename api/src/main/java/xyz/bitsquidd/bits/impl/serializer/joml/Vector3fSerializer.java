@@ -7,10 +7,10 @@
 
 package xyz.bitsquidd.bits.impl.serializer.joml;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.joml.Vector3f;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.node.JsonNodeFactory;
-import tools.jackson.databind.node.ObjectNode;
 
 import xyz.bitsquidd.bits.util.serializer.MultiSerializer;
 import xyz.bitsquidd.bits.util.serializer.Serializer;
@@ -32,9 +32,9 @@ public final class Vector3fSerializer extends MultiSerializer<Vector3f> {
 
     @Override
     protected Vector3f deserialize(JsonNode node) {
-        float x = node.get("x").asFloat();
-        float y = node.get("y").asFloat();
-        float z = node.get("z").asFloat();
+        float x = node.get("x").floatValue();
+        float y = node.get("y").floatValue();
+        float z = node.get("z").floatValue();
         return new Vector3f(x, y, z);
     }
 

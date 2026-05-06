@@ -1,2 +1,2 @@
 [libraries]
-velocity-api = { group = "com.velocitypowered", name = "velocity-api", version = "3.4.0-SNAPSHOT" }
+velocity-api = { group = "com.velocitypowered", name = "velocity-api", version = "3.5.0-SNAPSHOT" }

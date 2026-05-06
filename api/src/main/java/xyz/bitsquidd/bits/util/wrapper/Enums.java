@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.util.wrapper;
@@ -105,6 +104,18 @@ public final class Enums {
      */
     public static <E extends Enum<E>> Collection<String> getValuesFromEnum(Class<E> enumClass) {
         return getValuesFromEnum(enumClass, Enum::name);
+    }
+
+
+    /**
+     * Returns the set of enum constants that match a specific predicate.
+     *
+     * @since 0.0.14
+     */
+    public static <E extends Enum<E>> Collection<E> filterConstants(Class<E> enumClass, Predicate<E> filter) {
+        return Arrays.stream(enumClass.getEnumConstants())
+          .filter(filter)
+          .toList();
     }
 
 }

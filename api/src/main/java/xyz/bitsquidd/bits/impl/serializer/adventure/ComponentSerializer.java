@@ -7,10 +7,10 @@
 
 package xyz.bitsquidd.bits.impl.serializer.adventure;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.node.StringNode;
 
 import xyz.bitsquidd.bits.util.serializer.MultiSerializer;
 import xyz.bitsquidd.bits.util.serializer.Serializer;
@@ -25,12 +25,12 @@ public final class ComponentSerializer extends MultiSerializer<ComponentLike> {
     // Although we could consider the JsonComponentSerializer, it is not as efficient as the minimessage format.
     @Override
     protected JsonNode serialize(ComponentLike value) {
-        return StringNode.valueOf(MiniMessage.miniMessage().serialize(value.asComponent()));
+        return TextNode.valueOf(MiniMessage.miniMessage().serialize(value.asComponent()));
     }
 
     @Override
     protected ComponentLike deserialize(JsonNode node) {
-        return MiniMessage.miniMessage().deserialize(node.asString());
+        return MiniMessage.miniMessage().deserialize(node.asText());
     }
 
 }

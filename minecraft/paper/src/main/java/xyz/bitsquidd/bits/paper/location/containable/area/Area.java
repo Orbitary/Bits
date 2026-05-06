@@ -17,7 +17,9 @@ import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
 import xyz.bitsquidd.bits.paper.location.wrapper.Locatable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An immutable boolean composition of {@link Containable}s (Regions or other Areas),
@@ -59,6 +61,30 @@ public final class Area implements Containable {
     public static Builder from(Containable initial) {
         return new Builder(initial);
     }
+
+    /**
+     * Create an Area from a single Containable.
+     */
+    public static Area of(Containable containable) {
+        return from(containable).build();
+    }
+
+
+    /**
+     * Begin building an Area from a collection of containables, unioning them together.
+     */
+    public static Builder from(Collection<? extends Containable> containables) {
+        if (containables.isEmpty()) throw new IllegalArgumentException("Must provide at least one containable");
+        Builder builder = new Builder(containables.iterator().next());
+        containables.stream().skip(1).forEach(builder::union);
+        return builder;
+    }
+
+
+    public Set<AreaEntry> entries() {
+        return Set.copyOf(entries);
+    }
+
 
     /**
      * Evaluates the operation chain left to right.
@@ -121,9 +147,19 @@ public final class Area implements Containable {
             return this;
         }
 
+        public Builder union(Collection<? extends Containable> containables) {
+            containables.forEach(this::union);
+            return this;
+        }
+
         public Builder subtract(Containable containable) {
             validateContainable(containable);
             entries.add(new AreaEntry(containable, Operation.SUBTRACT));
+            return this;
+        }
+
+        public Builder subtract(Collection<? extends Containable> containables) {
+            containables.forEach(this::subtract);
             return this;
         }
 
@@ -132,6 +168,12 @@ public final class Area implements Containable {
             entries.add(new AreaEntry(containable, Operation.INTERSECT));
             return this;
         }
+
+        public Builder intersect(Collection<? extends Containable> containables) {
+            containables.forEach(this::intersect);
+            return this;
+        }
+
 
         @Override
         public Area build() {

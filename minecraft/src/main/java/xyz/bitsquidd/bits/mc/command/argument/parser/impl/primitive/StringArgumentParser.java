@@ -7,11 +7,14 @@
 
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive;
 
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+
 /**
  * Argument parser for String values.
  *
  * @since 0.0.10
  */
+@ArgumentParser
 public final class StringArgumentParser extends PrimitiveArgumentParser<String> {
     public StringArgumentParser() {
         super(String.class, "String");

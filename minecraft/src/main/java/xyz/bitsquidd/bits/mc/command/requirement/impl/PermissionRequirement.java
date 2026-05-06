@@ -73,7 +73,7 @@ public class PermissionRequirement extends BitsCommandRequirement {
 
     @Override
     public @Nullable Text getFailureMessage(BitsCommandSourceContext<?> ctx) {
-        return Text.of(Component.text("You are lacking permissions to use this command."));
+        return Text.of(Component.translatable("command.requirement.permission.fail"));
     }
 
 }

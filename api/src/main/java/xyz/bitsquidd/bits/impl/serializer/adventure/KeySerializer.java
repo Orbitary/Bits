@@ -7,9 +7,13 @@
 
 package xyz.bitsquidd.bits.impl.serializer.adventure;
 
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.KeyDeserializer;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
 import net.kyori.adventure.key.Key;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.node.StringNode;
 
 import xyz.bitsquidd.bits.util.serializer.MultiSerializer;
 import xyz.bitsquidd.bits.util.serializer.Serializer;
@@ -22,12 +26,28 @@ public final class KeySerializer extends MultiSerializer<Key> {
 
     @Override
     protected JsonNode serialize(Key value) {
-        return StringNode.valueOf(value.asString());
+        return TextNode.valueOf(value.asString());
     }
 
     @Override
     protected Key deserialize(JsonNode node) {
-        return Key.key(node.asString());
+        return Key.key(node.asText());
+    }
+
+
+    @Override
+    public JsonSerializer<? super Key> jacksonKeySerializer() {
+        return new StdKeySerializers.StringKeySerializer();
+    }
+
+    @Override
+    public KeyDeserializer jacksonKeyDeserializer() {
+        return new KeyDeserializer() {
+            @Override
+            public Object deserializeKey(String key, DeserializationContext ctxt) {
+                return Key.key(key);
+            }
+        };
     }
 
 }

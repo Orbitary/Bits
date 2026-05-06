@@ -1,6 +1,6 @@
 [versions]
 adventure = "4.26.1"
-jackson = "3.1.1"
+jackson = "2.21.2"
 
 [libraries]
 joml = { group = "org.joml", name = "joml", version = "1.10.8" }
@@ -10,8 +10,10 @@ guava = { group = "com.google.guava", name = "guava", version = "33.5.0-jre" }
 
 brigadier = { group = "com.mojang", name = "brigadier", version = "1.0.18" }
 
-jackson-core = { group = "tools.jackson.core", name = "jackson-core", version.ref = "jackson" }
-jackson-databind = { group = "tools.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+jackson-collections-guava = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-guava", version.ref = "jackson" }
+jackson-dataformat-yaml = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jackson" }
 
 adventure = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
 adventure-text-serializer-plain = { group = "net.kyori", name = "adventure-text-serializer-plain", version.ref = "adventure" }

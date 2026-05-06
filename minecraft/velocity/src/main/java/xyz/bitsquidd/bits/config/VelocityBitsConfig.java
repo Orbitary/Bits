@@ -37,11 +37,11 @@ public abstract class VelocityBitsConfig extends MinecraftBitsConfig {
     }
 
 
-    public Object getPlugin() {
+    public final Object getPlugin() {
         return plugin;
     }
 
-    public ProxyServer getServer() {
+    public final ProxyServer getServer() {
         return server;
     }
 
@@ -51,7 +51,7 @@ public abstract class VelocityBitsConfig extends MinecraftBitsConfig {
     }
 
     @Override
-    public boolean hasPermission(Audience audience, Permission permission) {
+    public final boolean hasPermission(Audience audience, Permission permission) {
         if (audience instanceof CommandSource commandSource) {
             return commandSource.hasPermission(permission.toString());
         } else {
@@ -60,12 +60,12 @@ public abstract class VelocityBitsConfig extends MinecraftBitsConfig {
     }
 
     @Override
-    public void registerPermission(Permission permission) {
+    public final void registerPermission(Permission permission) {
         // Unimplemented in Velocity
     }
 
     @Override
-    public Locale getLocale(Audience audience) {
+    public final Locale getLocale(Audience audience) {
         if (audience instanceof Player player) {
             Locale locale = player.getEffectiveLocale();
             if (locale != null) player.getEffectiveLocale();
@@ -74,17 +74,17 @@ public abstract class VelocityBitsConfig extends MinecraftBitsConfig {
     }
 
     @Override
-    public Audience getAll() {
+    public final Audience getAll() {
         return Audience.audience(getServer().getAllPlayers());
     }
 
     @Override
-    public void runLater(Runnable runnable, long delayMs) {
+    public final void runLater(Runnable runnable, long delayMs) {
         Tasks.builder(runnable).delay(delayMs, TimeUnit.MILLISECONDS).schedule();
     }
 
     @Override
-    public void runLaterAsync(Runnable runnable, long delayMs) {
+    public final void runLaterAsync(Runnable runnable, long delayMs) {
         runLater(runnable, delayMs); // Velocity runs all tasks asynchronously by default.
     }
 
@@ -94,7 +94,7 @@ public abstract class VelocityBitsConfig extends MinecraftBitsConfig {
     }
 
     @Override
-    public VelocityBitsCommandManager getCommandManager() {
+    public final VelocityBitsCommandManager getCommandManager() {
         return (VelocityBitsCommandManager)super.getCommandManager();
     }
 

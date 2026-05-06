@@ -7,11 +7,14 @@
 
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive;
 
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+
 /**
  * Argument parser for Double values.
  *
  * @since 0.0.10
  */
+@ArgumentParser
 public final class DoubleArgumentParser extends PrimitiveArgumentParser<Double> {
     public DoubleArgumentParser() {
         super(Double.class, "Double");

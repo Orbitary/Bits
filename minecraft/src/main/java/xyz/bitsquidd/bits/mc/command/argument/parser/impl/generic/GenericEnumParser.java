@@ -10,9 +10,10 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl.generic;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.impl.abs.AbstractEnumArgumentParser;
 import xyz.bitsquidd.bits.mc.command.exception.ExceptionBuilder;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
-import xyz.bitsquidd.bits.mc.command.argument.parser.impl.abs.AbstractEnumArgumentParser;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.stream.Stream;
  *
  * @since 0.0.10
  */
+@ArgumentParser
 public final class GenericEnumParser<E extends Enum<E>> extends AbstractArgumentParser<E> {
 
     private final Class<E> enumClass;

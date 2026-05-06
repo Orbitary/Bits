@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.util.reflection;
@@ -14,6 +13,9 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
+import org.jetbrains.annotations.Nullable;
+
+import xyz.bitsquidd.bits.log.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -23,6 +25,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for common reflection operations and classpath scanning.
@@ -150,12 +153,21 @@ public final class ReflectionUtils {
          * unchecked cast.
          */
         @SuppressWarnings("unchecked")
-        public static <T> T invoke(Object object, String methodName, Class<?>[] paramTypes, Class<T> returnType, Object... args) throws ReflectionException {
+        public static <T> @Nullable T invoke(Object object, String methodName, Class<?>[] paramTypes, Class<T> returnType, Object... args) throws ReflectionException {
             if (object == null) throw new IllegalArgumentException("Object cannot be null");
             try {
                 return (T)resolveMethod(object.getClass(), methodName, paramTypes).invoke(object, args);
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
                 throw new ReflectionException("Unable to invoke method: " + methodName, e);
+            }
+        }
+
+        public static <T> Optional<T> tryInvoke(Object object, String methodName, Class<?>[] paramTypes, Class<T> returnType, Object... args) {
+            try {
+                return Optional.ofNullable(invoke(object, methodName, paramTypes, returnType, args));
+            } catch (ReflectionException e) {
+                Logger.warn("Failed to invoke method: " + methodName + " on " + object.getClass().getName());
+                return Optional.empty();
             }
         }
 
@@ -293,7 +305,7 @@ public final class ReflectionUtils {
         private static Class<?>[] paramTypesFrom(Object... args) {
             Class<?>[] types = new Class<?>[args.length];
             for (int i = 0; i < args.length; i++) {
-                if (args[i] == null) throw new IllegalArgumentException("Null argument at index " + i + " — cannot infer type");
+                if (args[i] == null) throw new IllegalArgumentException("Null argument at index " + i + "- cannot infer type");
                 types[i] = Primitive.fromOrSelf(args[i].getClass());
             }
             return types;
@@ -334,6 +346,7 @@ public final class ReflectionUtils {
             try {
                 return Optional.of(create(clazz, args));
             } catch (ReflectionException e) {
+                Logger.warn("Failed to create instance of " + clazz.getName() + " with args: " + Arrays.toString(args));
                 return Optional.empty();
             }
         }
@@ -355,12 +368,20 @@ public final class ReflectionUtils {
         private Scanner() {}
 
         private static Class<?> getCorrectLoader(ClassInfo info, Class<?> base) throws ClassNotFoundException {
+            // We prefer the loader that loaded the base type - this should generally guarantee constraint compatibility
+            ClassLoader baseLoader = base.getClassLoader();
+            if (baseLoader != null) {
+                try {
+                    return Class.forName(info.getName(), true, baseLoader);
+                } catch (ClassNotFoundException ignored) {}
+            }
+
             for (ClassLoader cl : CLASSLOADERS) {
                 try {
                     return Class.forName(info.getName(), true, cl);
                 } catch (ClassNotFoundException ignored) {}
             }
-            throw new ClassNotFoundException("Cannot load " + info.getName() + " from any registered classloader");
+            throw new ClassNotFoundException("Cannot load " + info.getName());
         }
 
 
@@ -387,6 +408,7 @@ public final class ReflectionUtils {
             try {
                 return getClasses(packageName, clazz, flags);
             } catch (ReflectionException e) {
+                Logger.warn("Failed to get classes in package: " + packageName + " extending/implementing " + clazz.getName());
                 return Collections.emptyList();
             }
         }
@@ -413,8 +435,44 @@ public final class ReflectionUtils {
             try {
                 return getAnnotatedClasses(packageName, clazz, flags);
             } catch (ReflectionException e) {
+                Logger.warn("Failed to get annotated classes in package: " + packageName + " with annotation " + clazz.getName());
                 return Collections.emptyList();
             }
+        }
+
+    }
+
+    /**
+     * General useful utility methods.
+     */
+    public static final class General {
+        private General() {}
+
+        public static <T> Set<T> createClassesInDir(String packageName, Class<T> clazz, ScannerFlags flags) {
+            return Scanner.tryGetClasses(packageName, clazz, flags)
+              .stream().map(ReflectionUtils.Instance::tryCreate)
+              .map(optional -> optional.orElse(null))
+              .filter(Objects::nonNull)
+              .collect(HashSet::new, Set::add, Set::addAll);
+        }
+
+        public static <T, A extends Annotation> Set<T> createAnnotatedClassesInDir(String packageName, Class<A> annotationClazz, Class<T> clazz, ScannerFlags flags) {
+            return Scanner.tryGetAnnotatedClasses(packageName, annotationClazz, flags)
+              .stream().map(ReflectionUtils.Instance::tryCreate)
+              .map(optional -> optional.orElse(null))
+              .filter(Objects::nonNull)
+              .map(clazz::cast)
+              .collect(HashSet::new, Set::add, Set::addAll);
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T> Map<Class<?>, T> createClassesInDirMapped(String packageName, Class<? extends T> clazz, ScannerFlags flags) {
+            return Scanner.tryGetClasses(packageName, clazz, flags)
+              .stream().map(ReflectionUtils.Instance::tryCreate)
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .map(i -> Map.entry(i.getClass(), i))
+              .collect(Collectors.toMap(e -> (Class<? extends T>)e.getKey(), Map.Entry::getValue));
         }
 
     }

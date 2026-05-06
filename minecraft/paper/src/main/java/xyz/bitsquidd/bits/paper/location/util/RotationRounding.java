@@ -9,62 +9,89 @@ package xyz.bitsquidd.bits.paper.location.util;
 
 import org.joml.Quaternionf;
 
-public enum RotationRounding {
-    NONE,          // Nothing applied
-    ZERO,          // No rotation at all.
-    ZERO_XZ,       // Only rotate Y.
-    NEAREST_90,    // Rotate Y to the nearest 90 degrees.
-    NEAREST_45,    // Rotate Y to the nearest 45 degrees.
-    NEAREST_225,   // Rotate Y to the nearest 22.5 degrees.
-    BLOCKFACE_90,  // Rotate to the nearest blockface.
-    ;
+import xyz.bitsquidd.bits.paper.location.wrapper.YawAndPitch;
 
-    public final Quaternionf applyTo(Quaternionf rotation) {
-        return switch (this) {
-            case BLOCKFACE_90 -> {
-                float yaw = 2 * (float)Math.atan2(rotation.y, rotation.w);
-                yaw = (yaw % (2 * (float)Math.PI) + 2 * (float)Math.PI) % (2 * (float)Math.PI);
-                float snappedYaw = Math.round(yaw / ((float)Math.PI / 2)) * ((float)Math.PI / 2);
+/**
+ * Functional interface for rounding a rotation.
+ *
+ * @since 0.0.13
+ */
+@FunctionalInterface
+public interface RotationRounding {
+    Quaternionf apply(Quaternionf rotation);
 
-                float pitch = (float)Math.asin(2 * (rotation.w * rotation.x - rotation.y * rotation.z));
-                float snappedPitch = Math.round(pitch / ((float)Math.PI / 2)) * ((float)Math.PI / 2);
+    default YawAndPitch apply(YawAndPitch rotation) {
+        return YawAndPitch.from(apply(rotation.toQuaternion()));
+    }
 
-                rotation.identity().rotateY(snappedYaw).rotateX(snappedPitch);
-                yield rotation;
-            }
-            case NEAREST_90 -> {
-                float yaw = 2 * (float)Math.atan2(rotation.y, rotation.w);
-                yaw = (yaw % (2 * (float)Math.PI) + 2 * (float)Math.PI) % (2 * (float)Math.PI);
-                float roundedYaw = Math.round(yaw / ((float)Math.PI / 2)) * ((float)Math.PI / 2);
-                rotation.identity().rotateY(roundedYaw);
-                yield rotation;
-            }
-            case NEAREST_45 -> {
-                float yaw = 2 * (float)Math.atan2(rotation.y, rotation.w);
-                yaw = (yaw % (2 * (float)Math.PI) + 2 * (float)Math.PI) % (2 * (float)Math.PI);
-                float roundedYaw = Math.round(yaw / ((float)Math.PI / 4)) * ((float)Math.PI / 4);
-                rotation.identity().rotateY(roundedYaw);
-                yield rotation;
-            }
-            case NEAREST_225 -> {
-                float yaw = 2 * (float)Math.atan2(rotation.y, rotation.w);
-                yaw = (yaw % (2 * (float)Math.PI) + 2 * (float)Math.PI) % (2 * (float)Math.PI);
-                float roundedYaw = Math.round(yaw / ((float)Math.PI / 8)) * ((float)Math.PI / 8);
-                rotation.identity().rotateY(roundedYaw);
-                yield rotation;
-            }
-            case ZERO_XZ -> {
-                float yaw = 2 * (float)Math.atan2(rotation.y, rotation.w);
-                rotation.identity().rotateY(yaw);
-                yield rotation;
-            }
-            case ZERO -> {
-                rotation.rotationX(0);
-                rotation.rotationY(0);
-                rotation.rotationZ(0);
-                yield rotation;
-            }
-            default -> rotation;
+    RotationRounding NONE = rotation -> rotation;
+
+    RotationRounding ZERO = rotation -> {
+        rotation.rotationX(0);
+        rotation.rotationY(0);
+        rotation.rotationZ(0);
+        return rotation;
+    };
+
+    RotationRounding ZERO_XZ = rotation -> {
+        float yaw = 2 * (float)Math.atan2(rotation.y, rotation.w);
+        rotation.identity().rotateY(yaw);
+        return rotation;
+    };
+
+    RotationRounding NEAREST_90 = combined(roundedYaw(90), roundedPitch(90));
+
+    RotationRounding NEAREST_45 = combined(roundedYaw(45), roundedPitch(0));
+
+    RotationRounding NEAREST_225 = combined(roundedYaw(22.5f), roundedPitch(0));
+
+    RotationRounding BLOCKFACE_90 = rotation -> {
+        float yaw = 2 * (float)Math.atan2(rotation.y, rotation.w);
+        yaw = (yaw % (2 * (float)Math.PI) + 2 * (float)Math.PI) % (2 * (float)Math.PI);
+        float snappedYaw = Math.round(yaw / ((float)Math.PI / 2)) * ((float)Math.PI / 2);
+
+        float pitch = (float)Math.asin(2 * (rotation.w * rotation.x - rotation.y * rotation.z));
+        float snappedPitch = Math.round(pitch / ((float)Math.PI / 2)) * ((float)Math.PI / 2);
+
+        rotation.identity().rotateY(snappedYaw).rotateX(snappedPitch);
+        return rotation;
+    };
+
+
+    //region Util
+    static RotationRounding setYaw(float yaw) {
+        return rotation -> {
+            rotation.rotationY((float)Math.toRadians(yaw));
+            return rotation;
         };
     }
+
+    static RotationRounding setPitch(float pitch) {
+        return rotation -> {
+            rotation.rotationX((float)Math.toRadians(pitch));
+            return rotation;
+        };
+    }
+
+    static RotationRounding roundedYaw(float multiple) {
+        return rotation -> YawAndPitch.from(rotation).roundYaw(multiple).toQuaternion();
+    }
+
+    static RotationRounding roundedPitch(float multiple) {
+        return rotation -> YawAndPitch.from(rotation).roundPitch(multiple).toQuaternion();
+    }
+    //endregion
+
+
+    //region Combination
+    static RotationRounding combined(RotationRounding... roundings) {
+        return rotation -> {
+            for (RotationRounding rounding : roundings) {
+                rotation = rounding.apply(rotation);
+            }
+            return rotation;
+        };
+    }
+    //endregion
+
 }

@@ -1,5 +1,8 @@
 [versions]
-paper-api = "1.21.11-R0.1-SNAPSHOT"
+paper-api = "26.1.2.build.+"
+
+[libraries]
+paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api" }
 
 [plugins]
-paperweight-userdev = { id = "io.papermc.paperweight.userdev", version = "2.0.0-beta.19" }
+paperweight-userdev = { id = "io.papermc.paperweight.userdev", version = "2.0.0-beta.21" }

@@ -8,11 +8,10 @@
 package xyz.bitsquidd.bits.util.serializer;
 
 
-import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.MapperFeature;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
-import tools.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
 import xyz.bitsquidd.bits.util.reflection.ReflectionException;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
@@ -30,13 +29,15 @@ public final class SerializationManager {
 
     private static ObjectMapper createMapper() {
         JsonMapper.Builder builder = JsonMapper.builder()
-          .enable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
-          .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-          .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
           .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
+          .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+          .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+          .disable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
+          .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
           .annotationIntrospector(new NullableAwareIntrospector());
 
         getSerializers().forEach(serializer -> registerSerializer(serializer, builder));
+        builder.addModule(new GuavaModule());
         return builder.build();
     }
 
@@ -45,6 +46,12 @@ public final class SerializationManager {
         Class<T> targetClass = serializer.getTargetClass();
         module.addSerializer(targetClass, serializer.jacksonSerializer());
         module.addDeserializer(targetClass, serializer.jacksonDeserializer());
+
+        JsonSerializer<? super T> keySerializer = serializer.jacksonKeySerializer();
+        if (keySerializer != null) module.addKeySerializer(targetClass, keySerializer);
+        KeyDeserializer keyDeserializer = serializer.jacksonKeyDeserializer();
+        if (keyDeserializer != null) module.addKeyDeserializer(targetClass, keyDeserializer);
+
         builder.addModule(module);
     }
 

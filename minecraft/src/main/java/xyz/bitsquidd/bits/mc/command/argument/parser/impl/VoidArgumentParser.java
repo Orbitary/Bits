@@ -8,6 +8,7 @@
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
@@ -20,6 +21,7 @@ import java.util.List;
  *
  * @since 0.0.10
  */
+@ArgumentParser
 public final class VoidArgumentParser extends AbstractArgumentParser<Void> {
 
     public VoidArgumentParser() {
