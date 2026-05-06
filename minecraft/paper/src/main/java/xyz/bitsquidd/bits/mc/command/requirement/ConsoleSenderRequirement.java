@@ -26,7 +26,7 @@ public class ConsoleSenderRequirement extends BitsCommandRequirement {
 
     @Override
     public @Nullable Text getFailureMessage(BitsCommandSourceContext<?> ctx) {
-        return Text.of(Component.text("This command can only be executed by the console."));
+        return Text.of(Component.translatable("command.requirement.console_only.fail"));
     }
 
 }

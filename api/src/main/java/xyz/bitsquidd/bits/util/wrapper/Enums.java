@@ -106,4 +106,16 @@ public final class Enums {
         return getValuesFromEnum(enumClass, Enum::name);
     }
 
+
+    /**
+     * Returns the set of enum constants that match a specific predicate.
+     *
+     * @since 0.0.14
+     */
+    public static <E extends Enum<E>> Collection<E> filterConstants(Class<E> enumClass, Predicate<E> filter) {
+        return Arrays.stream(enumClass.getEnumConstants())
+          .filter(filter)
+          .toList();
+    }
+
 }

@@ -13,6 +13,7 @@ import xyz.bitsquidd.bits.mc.command.PaperBitsCommandSourceContext;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
 
 
+@Deprecated(forRemoval = true) // Not working!
 public class PlayerGamemodeRequirement extends PlayerSenderRequirement {
     public static final PlayerGamemodeRequirement CREATIVE = new PlayerGamemodeRequirement(GameMode.CREATIVE);
     public static final PlayerGamemodeRequirement SURVIVAL = new PlayerGamemodeRequirement(GameMode.SURVIVAL);

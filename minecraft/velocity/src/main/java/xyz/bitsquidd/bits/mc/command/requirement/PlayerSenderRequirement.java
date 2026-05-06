@@ -7,8 +7,8 @@
 
 package xyz.bitsquidd.bits.mc.command.requirement;
 
+import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
