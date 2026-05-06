@@ -7,6 +7,7 @@
 
 package xyz.bitsquidd.bits.config;
 
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.exception.BitsException;
@@ -50,6 +51,11 @@ public abstract class Bits extends ManagerContainer {
     public static Bits get() {
         if (instance == null) throw BitsException.INSTANCE_NOT_FOUND(Bits.class);
         return instance;
+    }
+
+
+    public static Key key(String key) {
+        return Key.key("bits", key);
     }
 
 

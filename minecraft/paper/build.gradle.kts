@@ -22,6 +22,7 @@ allprojects {
 dependencies {
     api(project(":minecraft"))
     api(project(":minecraft:module:command"))
+    api(project(":minecraft:module:sendable"))
 }
 
 java {

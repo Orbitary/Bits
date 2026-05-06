@@ -17,6 +17,8 @@ import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 
 
 /**
@@ -66,5 +68,14 @@ public abstract class KeyedSendableCollection<K, S extends Sendable> extends Sen
     public void add(Map<K, ? extends S> sendables) {
         sendables.forEach(this::add);
     }
+
+    public Optional<SendableHandle<S>> get(K key) {
+        return Optional.ofNullable(sendables.get(key));
+    }
+
+    public void forEach(BiConsumer<? super K, ? super SendableHandle<S>> action) {
+        sendables.forEach(action);
+    }
+
 
 }

@@ -14,4 +14,6 @@ public enum BossBarOverlay {
     NOTCHED_12,
     NOTCHED_20,
     ;
+
+    public static BossBarOverlay DEFAULT = PROGRESS;
 }

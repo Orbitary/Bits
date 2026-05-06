@@ -10,6 +10,7 @@ package xyz.bitsquidd.bits.mc.sendable.impl.title;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
+import xyz.bitsquidd.bits.format.Time;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 
@@ -35,13 +36,13 @@ public abstract class AbstractTitle extends Sendable {
     public final Title.Times getTimes(SendableState state) {
         if (state.tick() < config().fadeInEndTick) {
             // Currently fading in
-            return Title.Times.times(FROM_TICKS(config().fadeInDuration), Duration.ofHours(1), Duration.ZERO);
+            return Title.Times.times(Time.FROM_TICKS(config().fadeInDuration), Duration.ofHours(1), Duration.ZERO);
         } else if (state.tick() < config().fadeOutStartTick) {
             // Currently staying (fully visible)
             return Title.Times.times(Duration.ZERO, Duration.ofHours(1), Duration.ZERO);
         } else {
             // Currently fading out
-            return Title.Times.times(Duration.ZERO, Duration.ZERO, FROM_TICKS(config().fadeOutDuration));
+            return Title.Times.times(Duration.ZERO, Duration.ZERO, Time.FROM_TICKS(config().fadeOutDuration));
         }
     }
 

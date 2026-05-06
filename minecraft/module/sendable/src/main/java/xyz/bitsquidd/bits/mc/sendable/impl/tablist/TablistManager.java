@@ -9,23 +9,13 @@ package xyz.bitsquidd.bits.mc.sendable.impl.tablist;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.KeyedSendableCollection;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
-import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
-
-import java.util.UUID;
 
 
-public final class TablistManager extends SendableManager<AbstractTablist> {
+public abstract class TablistManager extends SendableManager<AbstractTablist, TablistSendableCollection> {
 
     @Override
-    protected void render(UUID uuid, SendableCollection<AbstractTablist> collection) {
-        // TODO
-    }
-
-    @Override
-    protected SendableCollection<AbstractTablist> createCollection(Receiver receiver) {
-        return new KeyedSendableCollection<TablistPosition, AbstractTablist>(receiver) {};
+    protected TablistSendableCollection createCollection(Receiver receiver) {
+        return new TablistSendableCollection(receiver);
     }
 
 }

@@ -9,22 +9,13 @@ package xyz.bitsquidd.bits.mc.sendable.impl.title;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
-
-import java.util.UUID;
 
 
-public final class TitleManager extends SendableManager<AbstractTitle> {
+public abstract class TitleManager extends SendableManager<AbstractTitle, TitleSendableCollection> {
 
     @Override
-    protected void render(UUID uuid, SendableCollection<AbstractTitle> collection) {
-        // TODO
-    }
-
-    @Override
-    protected SendableCollection<AbstractTitle> createCollection(Receiver receiver) {
-        return new ListSendableCollection<AbstractTitle>(receiver) {};
+    protected TitleSendableCollection createCollection(Receiver receiver) {
+        return new TitleSendableCollection(receiver);
     }
 
 }

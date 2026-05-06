@@ -12,10 +12,12 @@ import java.util.UUID;
 
 /**
  * A receiver of sendables, such as a player.
+ * <p>
+ * Developer note: Receivers should hashCode() and equals() based on their uniqueId, as this is used for storing sendables in the SendableManager.
  */
 public interface Receiver {
     //region General
-    UUID uniqueId();
+    UUID getUniqueId();
     //endregion
 
     // TODO utility methods e.g. addTitle, addActionbar() etc.

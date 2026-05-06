@@ -9,22 +9,13 @@ package xyz.bitsquidd.bits.mc.sendable.impl.sidebar;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
-
-import java.util.UUID;
 
 
-public final class SidebarManager extends SendableManager<AbstractSidebar> {
+public abstract class SidebarManager extends SendableManager<AbstractSidebar, SidebarSendableCollection> {
 
     @Override
-    protected void render(UUID uuid, SendableCollection<AbstractSidebar> collection) {
-        // TODO
-    }
-
-    @Override
-    protected SendableCollection<AbstractSidebar> createCollection(Receiver receiver) {
-        return new ListSendableCollection<AbstractSidebar>(receiver) {};
+    protected SidebarSendableCollection createCollection(Receiver receiver) {
+        return new SidebarSendableCollection(receiver);
     }
 
 }

@@ -7,40 +7,41 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import xyz.bitsquidd.bits.lifecycle.manager.CoreManager;
 import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public abstract class SendableManager<S extends Sendable> {
-    private final Map<UUID, SendableCollection<S>> playerSendables = new ConcurrentHashMap<>();
+public abstract class SendableManager<S extends Sendable, C extends SendableCollection<S>> implements CoreManager {
+    private final Map<Receiver, C> playerSendables = new ConcurrentHashMap<>();
 
 
     public final void tick() {
-        playerSendables.forEach((uuid, c) -> {
+        playerSendables.forEach((r, c) -> {
             c.tick();
             if (c.needsRender()) {
-                render(uuid, c);
+                render(r, c);
                 c.markRendered();
             }
         });
 
     }
 
-    protected abstract void render(UUID uuid, SendableCollection<S> collection);
+    protected abstract void render(Receiver receiver, C collection);
 
-    protected abstract SendableCollection<S> createCollection(Receiver receiver);
+    protected abstract C createCollection(Receiver receiver);
 
 
     protected void initialisePlayer(Receiver receiver) {
-        playerSendables.computeIfAbsent(receiver.uniqueId(), k -> createCollection(receiver));
+        cleanupPlayer(receiver);
+        playerSendables.computeIfAbsent(receiver, k -> createCollection(receiver));
     }
 
     protected void cleanupPlayer(Receiver receiver) {
-        playerSendables.remove(receiver.uniqueId());
+        playerSendables.remove(receiver);
     }
 
 }

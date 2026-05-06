@@ -16,4 +16,7 @@ public enum BossBarColor {
     PURPLE,
     WHITE,
     ;
+
+    public static BossBarColor DEFAULT = WHITE;
+
 }

@@ -93,7 +93,7 @@ public final class SendableHandle<S extends Sendable> {
     //endregion
 
 
-    private SendableState state() {
+    public SendableState state() {
         return new SendableState(
           receiver,
           tick,

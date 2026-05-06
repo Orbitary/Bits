@@ -9,22 +9,13 @@ package xyz.bitsquidd.bits.mc.sendable.impl.bossbar;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.KeyedSendableCollection;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
-
-import java.util.UUID;
 
 
-public final class BossbarManager extends SendableManager<AbstractBossbar> {
+public abstract class BossbarManager extends SendableManager<AbstractBossbar, BossbarSendableCollection> {
 
     @Override
-    protected void render(UUID uuid, SendableCollection<AbstractBossbar> collection) {
-        // TODO
-    }
-
-    @Override
-    protected SendableCollection<AbstractBossbar> createCollection(Receiver receiver) {
-        return new KeyedSendableCollection<Integer, AbstractBossbar>(receiver) {};
+    protected BossbarSendableCollection createCollection(Receiver receiver) {
+        return new BossbarSendableCollection(receiver);
     }
 
 }
