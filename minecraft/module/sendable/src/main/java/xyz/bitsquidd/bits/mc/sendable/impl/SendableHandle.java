@@ -17,7 +17,7 @@ import java.util.UUID;
 
 
 /**
- * All runtime state lives here, one instance per active sendable. One handle per viewer.
+ * All runtime state lives here, one instance per active sendable. One handle per receiver.
  */
 public final class SendableHandle<S extends Sendable> {
     public final S definition;
@@ -37,6 +37,8 @@ public final class SendableHandle<S extends Sendable> {
     }
 
     public void tick() {
+        if (!definition.canTick(state())) return;
+
         if (reversing) {
             tick--;
         } else {

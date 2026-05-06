@@ -19,7 +19,7 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
     private final Map<Receiver, C> playerSendables = new ConcurrentHashMap<>();
 
 
-    public final void tick() {
+    public final void tickAll() {
         playerSendables.forEach((r, c) -> {
             c.tick();
             if (c.needsRender()) {
@@ -27,7 +27,6 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
                 c.markRendered();
             }
         });
-
     }
 
     protected abstract void render(Receiver receiver, C collection);

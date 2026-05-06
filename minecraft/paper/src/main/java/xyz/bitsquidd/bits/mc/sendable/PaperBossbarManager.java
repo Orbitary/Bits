@@ -9,6 +9,7 @@ package xyz.bitsquidd.bits.mc.sendable;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.resources.Identifier;
@@ -148,7 +149,7 @@ public class PaperBossbarManager extends BossbarManager {
         Map<Integer, BossEvent> bossEvents = new ConcurrentHashMap<>();
 
         for (int i = 0; i < MAX_BOSSBARS; i++) {
-            BossEvent bossEvent = new CustomBossEvent(UUID.randomUUID(), Identifier.parse(Bits.key("bossbar_" + i).toString()), net.minecraft.network.chat.Component.empty(), () -> {});
+            BossEvent bossEvent = new CustomBossEvent(UUID.randomUUID(), Identifier.parse(Bits.key("bossbar_" + i).toString()), CommonComponents.EMPTY, () -> {});
             paperReceiver.sendPacket(ClientboundBossEventPacket.createAddPacket(bossEvent));
 
             bossEvents.put(i, bossEvent);

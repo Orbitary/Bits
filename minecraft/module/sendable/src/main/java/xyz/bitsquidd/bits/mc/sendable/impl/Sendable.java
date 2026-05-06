@@ -47,5 +47,9 @@ public abstract class Sendable {
         return tickRate > 0 && state.tick() % tickRate == 0;
     }
 
+    public boolean canTick(SendableState state) {
+        return true; // Can be overridden to "pause" for updates.
+    }
+
 
 }
