@@ -5,10 +5,10 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.configuration.migration;
+package xyz.bitsquidd.bits.config.migration;
 
-import xyz.bitsquidd.bits.configuration.ConfigException;
-import xyz.bitsquidd.bits.configuration.node.ConfigSection;
+import xyz.bitsquidd.bits.config.ConfigException;
+import xyz.bitsquidd.bits.config.node.ConfigSection;
 
 
 /**

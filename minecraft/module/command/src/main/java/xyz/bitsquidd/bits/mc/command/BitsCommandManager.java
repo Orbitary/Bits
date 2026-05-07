@@ -13,7 +13,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.BitsMinecraft;
+import xyz.bitsquidd.bits.BitsMinecraft;
 import xyz.bitsquidd.bits.exception.BitsException;
 import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.mc.command.annotation.Command;
@@ -22,15 +22,12 @@ import xyz.bitsquidd.bits.mc.command.requirement.BitsRequirementRegistry;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
 import xyz.bitsquidd.bits.mc.permission.Permission;
-import xyz.bitsquidd.bits.util.reflection.ReflectionException;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
 import xyz.bitsquidd.bits.util.reflection.ScannerFlags;
 import xyz.bitsquidd.bits.wrapper.collection.AddableSet;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 // TODO:
 //  - Allow for @Range annotations for Numbers.
@@ -199,21 +196,8 @@ public abstract class BitsCommandManager<T> implements BitsModule {
      *
      * @since 0.0.10
      */
-    @SuppressWarnings("unchecked")
     protected AddableSet<BitsCommand> getAllCommands() {
-        return AddableSet.of((Set<BitsCommand>)ReflectionUtils.Scanner.tryGetAnnotatedClasses("*", Command.class, ScannerFlags.DEFAULT)
-          .stream()
-          .filter(BitsCommand.class::isAssignableFrom)
-          .map(clazz -> {
-              try {
-                  return ReflectionUtils.Instance.create(clazz);
-              } catch (ReflectionException e) {
-                  return null;
-              }
-          })
-          .filter(Objects::nonNull)
-          .collect(Collectors.toSet())
-        );
+        return AddableSet.of(ReflectionUtils.General.createAnnotatedClassesInDir("*", Command.class, BitsCommand.class, ScannerFlags.DEFAULT));
     }
 
     /**

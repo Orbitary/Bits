@@ -7,10 +7,13 @@
 
 package xyz.bitsquidd.bits.lifecycle.manager;
 
+import xyz.bitsquidd.bits.Bits;
+
+
 /**
  * SPI marker for optional platform modules discovered via {@link java.util.ServiceLoader}.
  * <p>
- * Implementations are registered automatically by {@link xyz.bitsquidd.bits.config.Bits}
+ * Implementations are registered automatically by {@link Bits}
  * at construction time. Annotate implementations with {@code @AutoService(BitsModule.class)}.
  *
  * @since 0.0.14

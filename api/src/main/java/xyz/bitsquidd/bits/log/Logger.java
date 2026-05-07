@@ -9,7 +9,7 @@ package xyz.bitsquidd.bits.log;
 
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.Bits;
+import xyz.bitsquidd.bits.Bits;
 
 
 /**

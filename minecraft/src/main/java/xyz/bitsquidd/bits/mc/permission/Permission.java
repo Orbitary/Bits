@@ -9,7 +9,7 @@ package xyz.bitsquidd.bits.mc.permission;
 
 import net.kyori.adventure.audience.Audience;
 
-import xyz.bitsquidd.bits.config.BitsMinecraft;
+import xyz.bitsquidd.bits.BitsMinecraft;
 
 
 /**

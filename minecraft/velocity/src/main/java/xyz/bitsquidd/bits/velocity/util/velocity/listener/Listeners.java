@@ -9,7 +9,7 @@ package xyz.bitsquidd.bits.velocity.util.velocity.listener;
 
 import com.velocitypowered.api.event.EventManager;
 
-import xyz.bitsquidd.bits.config.BitsVelocity;
+import xyz.bitsquidd.bits.BitsVelocity;
 
 import java.util.Collection;
 

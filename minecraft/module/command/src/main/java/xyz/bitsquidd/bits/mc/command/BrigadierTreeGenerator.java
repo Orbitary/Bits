@@ -13,7 +13,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.Bits;
+import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.argument.BrigadierArgumentMapping;
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;

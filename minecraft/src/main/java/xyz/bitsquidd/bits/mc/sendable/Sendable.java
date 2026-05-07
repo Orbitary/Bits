@@ -9,7 +9,7 @@ package xyz.bitsquidd.bits.mc.sendable;
 
 import net.kyori.adventure.audience.Audience;
 
-import xyz.bitsquidd.bits.config.BitsMinecraft;
+import xyz.bitsquidd.bits.BitsMinecraft;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 
 import java.util.Collection;

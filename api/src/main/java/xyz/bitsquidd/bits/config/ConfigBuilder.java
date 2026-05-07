@@ -5,17 +5,18 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.configuration;
+package xyz.bitsquidd.bits.config;
 
-import xyz.bitsquidd.bits.configuration.loader.ConfigLoader;
-import xyz.bitsquidd.bits.configuration.migration.ConfigMigration;
+import xyz.bitsquidd.bits.Bits;
+import xyz.bitsquidd.bits.config.loader.ConfigLoader;
+import xyz.bitsquidd.bits.config.migration.ConfigMigration;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Fluent builder for creating a {@link xyz.bitsquidd.bits.config.Bits}.
+ * Fluent builder for creating a {@link Bits}.
  * <p>
  * This is the primary entry point for both internal and third-party plugin use.
  * <p>

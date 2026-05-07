@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.BitsPaper;
+import xyz.bitsquidd.bits.BitsPaper;
 import xyz.bitsquidd.bits.lifecycle.builder.ExtendableBuildable;
 
 import java.util.Collection;

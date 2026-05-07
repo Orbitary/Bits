@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.configuration;
+package xyz.bitsquidd.bits.config;
 
 /**
  * Base exception for all configuration failures.
@@ -86,7 +86,7 @@ public class ConfigException extends Exception {
     }
 
     /**
-     * The {@link xyz.bitsquidd.bits.configuration.ConfigBuilder} is misconfigured.
+     * The {@link xyz.bitsquidd.bits.config.ConfigBuilder} is misconfigured.
      *
      * @since 0.0.14
      */

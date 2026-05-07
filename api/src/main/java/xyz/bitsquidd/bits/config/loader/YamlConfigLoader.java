@@ -5,20 +5,21 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.configuration.loader;
+package xyz.bitsquidd.bits.config.loader;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
-import xyz.bitsquidd.bits.configuration.ConfigException;
-import xyz.bitsquidd.bits.configuration.node.ConfigSection;
-import xyz.bitsquidd.bits.configuration.node.impl.JacksonConfigSection;
+import xyz.bitsquidd.bits.config.ConfigException;
+import xyz.bitsquidd.bits.config.node.ConfigSection;
+import xyz.bitsquidd.bits.config.node.impl.JacksonConfigSection;
 import xyz.bitsquidd.bits.util.serializer.SerializationManager;
 
 import java.io.File;
 import java.io.IOException;
+
 
 /**
  * A {@link ConfigLoader} that reads and writes YAML files.

@@ -12,7 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.slf4j.LoggerFactory;
 
-import xyz.bitsquidd.bits.config.ClientBitsFabric;
+import xyz.bitsquidd.bits.ClientBitsFabric;
 
 
 @Environment(EnvType.CLIENT)

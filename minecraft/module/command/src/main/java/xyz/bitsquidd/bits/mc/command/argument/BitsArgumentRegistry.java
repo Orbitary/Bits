@@ -7,20 +7,24 @@
 
 package xyz.bitsquidd.bits.mc.command.argument;
 
-import com.mojang.brigadier.arguments.*;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.LongArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.impl.GreedyStringArgumentParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.impl.LinkArgumentParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.impl.UUIDArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.impl.VoidArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.impl.generic.GenericEnumParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive.*;
 import xyz.bitsquidd.bits.mc.command.exception.CommandBuildException;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
+import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
+import xyz.bitsquidd.bits.util.reflection.ScannerFlags;
 import xyz.bitsquidd.bits.wrapper.GreedyString;
 import xyz.bitsquidd.bits.wrapper.collection.AddableSet;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
@@ -29,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 
 /**
  * Registry responsible for mapping generic Java types to command argument parsers.
@@ -51,8 +57,7 @@ public abstract class BitsArgumentRegistry<T> {
     private final Map<TypeSignature<?>, AbstractArgumentParser<?>> parsers = new HashMap<>();
 
     public BitsArgumentRegistry() {
-        List<AbstractArgumentParser<?>> initialParsers = new ArrayList<>(initialisePrimitiveParsers());
-        initialParsers.addAll(initialiseParsers().build());
+        List<AbstractArgumentParser<?>> initialParsers = new ArrayList<>(initialiseParsers().build());
         initialParsers.forEach(parser -> parsers.put(parser.getTypeSignature(), parser));
     }
 
@@ -88,37 +93,15 @@ public abstract class BitsArgumentRegistry<T> {
     }
 
     /**
-     * Initialises the list of base primitive argument parsers provided by the core API.
-     *
-     * @return a list of primitive parsers
-     *
-     * @since 0.0.10
-     */
-    protected List<PrimitiveArgumentParser<?>> initialisePrimitiveParsers() {
-        return List.of(
-          new BooleanArgumentParser(),
-          new DoubleArgumentParser(),
-          new FloatArgumentParser(),
-          new IntegerArgumentParser(),
-          new LongArgumentParser(),
-          new StringArgumentParser()
-        );
-    }
-
-    /**
      * Initialises the list of abstract argument parsers provided by the implementation.
      *
      * @return a list of additional registered parsers
      *
      * @since 0.0.10
      */
+    @SuppressWarnings("unchecked")
     protected AddableSet<AbstractArgumentParser<?>> initialiseParsers() {
-        // Override to add custom parsers
-        return AddableSet.of(
-          new GreedyStringArgumentParser(),
-          new LinkArgumentParser(),
-          new UUIDArgumentParser()
-        );
+        return AddableSet.of((Set<AbstractArgumentParser<?>>)(Set<?>)ReflectionUtils.General.createClassesInDir("*", AbstractArgumentParser.class, ScannerFlags.DEFAULT));
     }
 
     /**

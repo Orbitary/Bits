@@ -1,4 +1,4 @@
 @NotNullByDefault
-package xyz.bitsquidd.bits.configuration;
+package xyz.bitsquidd.bits.config.node;
 
 import org.jetbrains.annotations.NotNullByDefault;

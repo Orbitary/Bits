@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.bossevents.CustomBossEvent;
 import net.minecraft.world.BossEvent;
 
-import xyz.bitsquidd.bits.config.Bits;
+import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.AbstractBossbar;

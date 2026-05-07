@@ -5,19 +5,20 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.configuration.node.impl;
+package xyz.bitsquidd.bits.config.node.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.configuration.ConfigException;
-import xyz.bitsquidd.bits.configuration.node.ConfigNode;
-import xyz.bitsquidd.bits.configuration.node.ConfigSection;
+import xyz.bitsquidd.bits.config.ConfigException;
+import xyz.bitsquidd.bits.config.node.ConfigNode;
+import xyz.bitsquidd.bits.config.node.ConfigSection;
 import xyz.bitsquidd.bits.util.serializer.SerializationManager;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 
 /**
  * A {@link ConfigNode} backed by a Jackson {@link JsonNode} scalar (string, number, boolean, array).

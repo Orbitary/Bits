@@ -5,18 +5,19 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.configuration;
+package xyz.bitsquidd.bits.config;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import xyz.bitsquidd.bits.configuration.loader.ConfigLoader;
-import xyz.bitsquidd.bits.configuration.loader.YamlConfigLoader;
-import xyz.bitsquidd.bits.configuration.node.ConfigSection;
+import xyz.bitsquidd.bits.config.loader.ConfigLoader;
+import xyz.bitsquidd.bits.config.loader.YamlConfigLoader;
+import xyz.bitsquidd.bits.config.node.ConfigSection;
 
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
+
 
 /**
  * A {@link ConfigLoader} decorator that adds Paper-specific convenience to any

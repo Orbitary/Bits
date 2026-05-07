@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.config;
+package xyz.bitsquidd.bits;
 
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +15,8 @@ import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
 import xyz.bitsquidd.bits.log.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
 
 
@@ -41,7 +43,19 @@ public abstract class Bits extends ManagerContainer {
         instance = this;
 
         this.logger = createLogger();
-        registerManagers(ServiceLoader.load(BitsModule.class, getClass().getClassLoader()));
+
+        List<BitsModule> modules = new ArrayList<>();
+        ServiceLoader.load(BitsModule.class, getClass().getClassLoader()).forEach(modules::add);
+
+        // For each module, remove it if any other module is a more-derived subclass of it
+        // Although not perfect, all instances should only define one fully-derived class.
+        modules.removeIf(candidate ->
+          modules.stream().anyMatch(other ->
+            other != candidate && candidate.getClass().isAssignableFrom(other.getClass())
+          )
+        );
+
+        registerManagers(modules);
     }
 
     /**

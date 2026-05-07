@@ -13,7 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import xyz.bitsquidd.bits.config.BitsPaper;
+import xyz.bitsquidd.bits.BitsPaper;
 
 import java.util.Collection;
 import java.util.function.Predicate;

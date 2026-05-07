@@ -5,15 +5,16 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.configuration.node;
+package xyz.bitsquidd.bits.config.node;
 
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.configuration.ConfigException;
+import xyz.bitsquidd.bits.config.ConfigException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 
 /**
  * A {@link ConfigNode} that contains child nodes, representing a YAML/JSON map.

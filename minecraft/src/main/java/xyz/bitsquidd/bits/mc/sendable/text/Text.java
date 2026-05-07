@@ -10,7 +10,7 @@ package xyz.bitsquidd.bits.mc.sendable.text;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 
-import xyz.bitsquidd.bits.config.BitsMinecraft;
+import xyz.bitsquidd.bits.BitsMinecraft;
 import xyz.bitsquidd.bits.mc.sendable.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.text.decorator.ITextDecorator;
 import xyz.bitsquidd.bits.mc.sendable.text.decorator.impl.BlankDecorator;

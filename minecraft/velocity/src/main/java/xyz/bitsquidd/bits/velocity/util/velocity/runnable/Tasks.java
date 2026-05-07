@@ -13,7 +13,7 @@ import com.velocitypowered.api.scheduler.Scheduler;
 import com.velocitypowered.api.scheduler.TaskStatus;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.config.BitsVelocity;
+import xyz.bitsquidd.bits.BitsVelocity;
 
 import java.util.Collection;
 import java.util.Set;

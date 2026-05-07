@@ -10,7 +10,7 @@ package xyz.bitsquidd.bits.paper.util.bukkit.runnable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import xyz.bitsquidd.bits.config.BitsMinecraft;
+import xyz.bitsquidd.bits.BitsMinecraft;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

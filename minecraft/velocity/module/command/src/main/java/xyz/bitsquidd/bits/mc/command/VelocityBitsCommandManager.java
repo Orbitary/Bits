@@ -12,7 +12,7 @@ import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
 
-import xyz.bitsquidd.bits.config.BitsVelocity;
+import xyz.bitsquidd.bits.BitsVelocity;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.requirement.BitsRequirementRegistry;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;

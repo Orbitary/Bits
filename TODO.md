@@ -1,4 +1,6 @@
 # Modules
+[ ] Finalise if we prefer @AutoService or manual bookkeeping of modules in Bits
+ 
 ## Fabric
 [ ] Optional command module
 [ ] Sendables

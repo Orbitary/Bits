@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.config;
+package xyz.bitsquidd.bits;
 
 import xyz.bitsquidd.bits.log.FabricBitsLogger;
 import xyz.bitsquidd.bits.log.Logger;
