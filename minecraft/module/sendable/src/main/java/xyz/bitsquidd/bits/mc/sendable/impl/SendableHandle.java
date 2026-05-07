@@ -20,10 +20,10 @@ import java.util.UUID;
  * All runtime state lives here, one instance per active sendable. One handle per receiver.
  */
 public final class SendableHandle<S extends Sendable> {
-    public final S definition;
-    public final Receiver receiver;
-    public final SendableConfig config;
-    public final UUID uuid = UUID.randomUUID();
+    private final S definition;
+    private final Receiver receiver;
+    private final SendableConfig config;
+    private final UUID uuid = UUID.randomUUID();
 
     private int tick = -1; // Start at -1 so that the first tick (tick 0) happens immediately on add.
     private boolean reversing = false;
@@ -36,7 +36,8 @@ public final class SendableHandle<S extends Sendable> {
         this.receiver = receiver;
     }
 
-    public void tick() {
+    @ApiStatus.Internal
+    public void bits$tick() {
         if (!definition.canTick(state())) return;
 
         if (reversing) {
@@ -52,20 +53,40 @@ public final class SendableHandle<S extends Sendable> {
                 reversing = true;
                 tick = maxTicks;
             } else {
-                markForExpire();
+                bits$markForExpire();
                 return;
             }
         }
 
-        if (definition.needsRender(state())) markForRender();
+        if (definition.needsRender(state())) bits$markForRender();
 
         if (tick == 0) definition.onAdd(state());
         definition.onTick(state());
     }
 
-    public Percentage progress() {
-        return Percentage.ofFraction(tick, definition.config().maxTicks());
+    //region Experimental
+
+    /**
+     * <b>Generally unsupported, most cases should never need this. Use with caution.</b>
+     * <p>
+     * Manually set the tick of this sendable. Use with caution.
+     */
+    @ApiStatus.Experimental
+    public void setTick(int tick) {
+        this.tick = tick;
     }
+
+    /**
+     * <b>Generally unsupported, most cases should never need this. Use with caution.</b>
+     * <p>
+     * Manually set the reversing state of this sendable.
+     */
+    @ApiStatus.Experimental
+    public void setReversing(boolean reversing) {
+        this.reversing = reversing;
+    }
+
+    //endregion
 
     public boolean needsRender() {
         return needsRender;
@@ -78,31 +99,59 @@ public final class SendableHandle<S extends Sendable> {
 
     //region Flag marking
     @ApiStatus.Internal
-    public void markForRender() {
+    public void bits$markForRender() {
         needsRender = true;
     }
 
     @ApiStatus.Internal
-    public void markRendered() {
+    public void bits$markRendered() {
         needsRender = false;
     }
 
     @ApiStatus.Internal
-    public void markForExpire() {
+    public void bits$markForExpire() {
         expired = true;
         definition.onExpire(state());
     }
     //endregion
 
 
+    //region Getters
+    public S definition() {
+        return definition;
+    }
+
+    public SendableConfig config() {
+        return config;
+    }
+
+    public Receiver getReceiver() {
+        return receiver;
+    }
+
+    public int getTick() {
+        return tick;
+    }
+
+    public Percentage getProgress() {
+        return Percentage.ofFraction(tick, definition.config().maxTicks());
+    }
+
+    public boolean isReversing() {
+        return reversing;
+    }
+
+
     public SendableState state() {
         return new SendableState(
           receiver,
           tick,
-          progress(),
-          reversing
+          getProgress(),
+          reversing,
+          this
         );
     }
+    //endregion
 
 
     @Override

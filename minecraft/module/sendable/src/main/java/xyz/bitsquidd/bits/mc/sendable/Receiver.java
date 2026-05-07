@@ -45,6 +45,31 @@ public interface Receiver {
     //endregion
 
 
+    //region Actionbar
+    default void addActionbar(AbstractActionbar actionbar) {
+        SendableOrchestrator.get().actionbar().getSendables(this).add(actionbar);
+    }
+
+    default void removeActionbar(SendableFilter<? super AbstractActionbar> filter) {
+        SendableOrchestrator.get().actionbar().getSendables(this).remove(filter);
+    }
+
+    default Collection<? extends SendableHandle<AbstractActionbar>> getActionbars(SendableFilter<? super AbstractActionbar> filter) {
+        return SendableOrchestrator.get().actionbar().getSendables(this).get(filter);
+    }
+
+    @SuppressWarnings("unchecked")
+    default <S extends AbstractActionbar> Collection<? extends SendableHandle<S>> getActionbars(Class<? extends S> clazz) {
+        return SendableOrchestrator.get().actionbar().getSendables(this)
+          .get(SendableFilter.ofClass(clazz))
+          .stream()
+          .map(handle -> (SendableHandle<S>)handle)
+          .toList();
+    }
+
+    //endregion
+
+
     //region Bossbar
     default void addBossbar(Integer index, AbstractBossbar bossbar) {
         SendableOrchestrator.get().bossbar().getSendables(this).add(index, bossbar);
@@ -57,20 +82,14 @@ public interface Receiver {
     default Collection<? extends SendableHandle<AbstractBossbar>> getBossbars(SendableFilter<? super AbstractBossbar> filter) {
         return SendableOrchestrator.get().bossbar().getSendables(this).get(filter);
     }
-    //endregion
 
-
-    //region Actionbar
-    default void addActionbar(AbstractActionbar actionbar) {
-        SendableOrchestrator.get().actionbar().getSendables(this).add(actionbar);
-    }
-
-    default void removeActionbar(SendableFilter<? super AbstractActionbar> filter) {
-        SendableOrchestrator.get().actionbar().getSendables(this).remove(filter);
-    }
-
-    default Collection<? extends SendableHandle<AbstractActionbar>> getActionbars(SendableFilter<? super AbstractActionbar> filter) {
-        return SendableOrchestrator.get().actionbar().getSendables(this).get(filter);
+    @SuppressWarnings("unchecked")
+    default <S extends AbstractBossbar> Collection<? extends SendableHandle<S>> getBossbars(Class<? extends S> clazz) {
+        return SendableOrchestrator.get().bossbar().getSendables(this)
+          .get(SendableFilter.ofClass(clazz))
+          .stream()
+          .map(handle -> (SendableHandle<S>)handle)
+          .toList();
     }
     //endregion
 
@@ -87,6 +106,15 @@ public interface Receiver {
     default Collection<? extends SendableHandle<AbstractSidebar>> getSidebars(SendableFilter<? super AbstractSidebar> filter) {
         return SendableOrchestrator.get().sidebar().getSendables(this).get(filter);
     }
+
+    @SuppressWarnings("unchecked")
+    default <S extends AbstractSidebar> Collection<? extends SendableHandle<S>> getSidebars(Class<? extends S> clazz) {
+        return SendableOrchestrator.get().sidebar().getSendables(this)
+          .get(SendableFilter.ofClass(clazz))
+          .stream()
+          .map(handle -> (SendableHandle<S>)handle)
+          .toList();
+    }
     //endregion
 
 
@@ -102,6 +130,15 @@ public interface Receiver {
     default Collection<? extends SendableHandle<AbstractTablist>> getTablists(SendableFilter<? super AbstractTablist> filter) {
         return SendableOrchestrator.get().tablist().getSendables(this).get(filter);
     }
+
+    @SuppressWarnings("unchecked")
+    default <S extends AbstractTablist> Collection<? extends SendableHandle<S>> getTablists(Class<? extends S> clazz) {
+        return SendableOrchestrator.get().tablist().getSendables(this)
+          .get(SendableFilter.ofClass(clazz))
+          .stream()
+          .map(handle -> (SendableHandle<S>)handle)
+          .toList();
+    }
     //endregion
 
 
@@ -116,6 +153,15 @@ public interface Receiver {
 
     default Collection<? extends SendableHandle<AbstractTitle>> getTitles(SendableFilter<? super AbstractTitle> filter) {
         return SendableOrchestrator.get().title().getSendables(this).get(filter);
+    }
+
+    @SuppressWarnings("unchecked")
+    default <S extends AbstractTitle> Collection<? extends SendableHandle<S>> getTitles(Class<? extends S> clazz) {
+        return SendableOrchestrator.get().title().getSendables(this)
+          .get(SendableFilter.ofClass(clazz))
+          .stream()
+          .map(handle -> (SendableHandle<S>)handle)
+          .toList();
     }
     //endregion
 

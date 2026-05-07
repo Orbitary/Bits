@@ -49,7 +49,7 @@ public abstract class SendableCollection<S extends Sendable> {
 
     public final void remove(SendableFilter<? super S> filter) {
         get(filter).forEach(handle -> {
-            if (handle.isExpired()) handle.markForExpire();
+            if (handle.isExpired()) handle.bits$markForExpire();
             removeInternal(handle);
         });
     }
@@ -59,7 +59,7 @@ public abstract class SendableCollection<S extends Sendable> {
 
 
     public final void tick() {
-        getAll().forEach(SendableHandle::tick);
+        getAll().forEach(SendableHandle::bits$tick);
         remove(SendableHandle::isExpired);
     }
 
@@ -68,7 +68,7 @@ public abstract class SendableCollection<S extends Sendable> {
     }
 
     public final void markRendered() {
-        getAll().forEach(SendableHandle::markRendered);
+        getAll().forEach(SendableHandle::bits$markRendered);
     }
 
 

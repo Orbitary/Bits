@@ -36,7 +36,7 @@ public class PaperTablistManager extends TablistManager {
             SendableHandle<AbstractTablist> handle = collection.get(value).orElse(null);
             if (handle != null) {
                 SendableState state = handle.state();
-                content = handle.definition.content(state);
+                content = handle.definition().content(state);
             }
 
             positionContentMap.put(value, content);

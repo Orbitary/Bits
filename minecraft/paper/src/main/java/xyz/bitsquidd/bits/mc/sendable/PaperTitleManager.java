@@ -32,7 +32,7 @@ public class PaperTitleManager extends TitleManager {
 
         SendableState state = handle.state();
 
-        Title.Times times = handle.definition.getTimes(state);
+        Title.Times times = handle.definition().getTimes(state);
         paperReceiver.sendPacket(new ClientboundSetTitlesAnimationPacket(
           Time.TO_TICKS(times.fadeIn()),
           Time.TO_TICKS(times.stay()),
@@ -40,11 +40,11 @@ public class PaperTitleManager extends TitleManager {
         ));
 
         paperReceiver.sendPacket(new ClientboundSetSubtitleTextPacket(
-          PaperAdventure.asVanillaNullToEmpty(handle.definition.subTitle(state))
+          PaperAdventure.asVanillaNullToEmpty(handle.definition().subtitle(state))
         ));
 
         paperReceiver.sendPacket(new ClientboundSetTitleTextPacket(
-          PaperAdventure.asVanillaNullToEmpty(handle.definition.title(state))
+          PaperAdventure.asVanillaNullToEmpty(handle.definition().title(state))
         ));
     }
 

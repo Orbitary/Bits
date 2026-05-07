@@ -18,5 +18,6 @@ public record SendableState(
   Receiver receiver,
   int tick,
   Percentage progress,
-  boolean reversing
+  boolean reversing,
+  SendableHandle<?> handle
 ) {}

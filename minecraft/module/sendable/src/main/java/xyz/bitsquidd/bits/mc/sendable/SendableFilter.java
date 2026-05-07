@@ -15,4 +15,10 @@ import java.util.function.Predicate;
 
 
 @FunctionalInterface
-public interface SendableFilter<S extends Sendable> extends Predicate<SendableHandle<? extends S>> {}
+public interface SendableFilter<S extends Sendable> extends Predicate<SendableHandle<? extends S>> {
+
+    static <S extends Sendable> SendableFilter<S> ofClass(Class<? extends S> clazz) {
+        return handle -> clazz.isAssignableFrom(handle.definition().getClass());
+    }
+
+}

@@ -22,7 +22,10 @@ public abstract class AbstractTitle extends Sendable {
 
     @Override
     protected TitleSendableConfig.Builder createConfig() {
-        return new TitleSendableConfig.Builder();
+        return new TitleSendableConfig.Builder()
+          .maxTicks(40)
+          .fadeIn(5)
+          .fadeOut(5);
     }
 
     @Override
@@ -33,7 +36,7 @@ public abstract class AbstractTitle extends Sendable {
 
     public abstract Component title(SendableState state);
 
-    public abstract Component subTitle(SendableState state);
+    public abstract Component subtitle(SendableState state);
 
     public final Title.Times getTimes(SendableState state) {
         if (state.tick() < config().fadeInEndTick) {

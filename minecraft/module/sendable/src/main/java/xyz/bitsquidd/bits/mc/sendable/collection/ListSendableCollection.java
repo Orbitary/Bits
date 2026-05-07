@@ -51,8 +51,8 @@ public abstract class ListSendableCollection<S extends Sendable> extends Sendabl
         int priority = sendable.config().priority();
         int index = 0;
 
-        List.copyOf(sendables).stream().filter(handle -> sendable.config().replaces(handle.definition)).forEach(h -> this.remove(h::equals));
-        while (index < sendables.size() && sendables.get(index).definition.config().priority() >= priority) {
+        List.copyOf(sendables).stream().filter(handle -> sendable.config().replaces(handle.definition())).forEach(h -> this.remove(h::equals));
+        while (index < sendables.size() && sendables.get(index).config().priority() >= priority) {
             index++;
         }
 

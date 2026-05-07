@@ -52,10 +52,10 @@ public class PaperBossbarManager extends BossbarManager {
             SendableHandle<AbstractBossbar> handle = collection.get(i).orElse(null);
             if (handle != null) {
                 SendableState state = handle.state();
-                content = handle.definition.content(state);
-                color = handle.definition.color(state);
-                overlay = handle.definition.overlay(state);
-                progress = handle.definition.progress(state);
+                content = handle.definition().content(state);
+                color = handle.definition().color(state);
+                overlay = handle.definition().overlay(state);
+                progress = handle.definition().progress(state);
             }
 
             sendEventPacket(

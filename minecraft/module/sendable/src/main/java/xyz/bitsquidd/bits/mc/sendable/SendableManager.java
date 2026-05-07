@@ -12,6 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 import xyz.bitsquidd.bits.lifecycle.manager.CoreManager;
 import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
+import xyz.bitsquidd.bits.util.Safety;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,13 +23,16 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
 
     public final void tickAll() {
-        playerSendables.forEach((r, c) -> {
-            c.tick();
-            if (c.needsRender()) {
-                render(r, c);
-                c.markRendered();
-            }
-        });
+        playerSendables.forEach((r, c) -> Safety.safeExecute(
+          c.getClass().getSimpleName(),
+          () -> {
+              c.tick();
+              if (c.needsRender()) {
+                  render(r, c);
+                  c.markRendered();
+              }
+          }
+        ));
     }
 
     protected abstract void render(Receiver receiver, C collection);
