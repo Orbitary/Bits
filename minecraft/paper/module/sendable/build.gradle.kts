@@ -5,10 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-allprojects {
-    group = "xyz.bitsquidd.bits.minecraft.module"
 
-    dependencies {
-        implementation(project(":minecraft"))
-    }
+dependencies {
+    api(project(":minecraft:module:sendable"))
 }

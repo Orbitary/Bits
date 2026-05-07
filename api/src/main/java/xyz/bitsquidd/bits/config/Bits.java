@@ -11,8 +11,11 @@ import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.exception.BitsException;
+import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
 import xyz.bitsquidd.bits.log.Logger;
+
+import java.util.ServiceLoader;
 
 
 /**
@@ -38,6 +41,7 @@ public abstract class Bits extends ManagerContainer {
         instance = this;
 
         this.logger = createLogger();
+        registerManagers(ServiceLoader.load(BitsModule.class, getClass().getClassLoader()));
     }
 
     /**

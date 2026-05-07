@@ -15,7 +15,11 @@ import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.command.argument.BitsArgumentRegistry;
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.impl.*;
+import xyz.bitsquidd.bits.mc.command.argument.parser.impl.BlockPosArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.impl.LocationArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.impl.PlayerCollectionArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.impl.PlayerSingleArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.impl.WorldArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive.EntitySelectorArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive.PrimitiveArgumentParser;
 import xyz.bitsquidd.bits.wrapper.collection.AddableSet;
@@ -23,6 +27,7 @@ import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class PaperBitsArgumentRegistry extends BitsArgumentRegistry<CommandSourceStack> {
 

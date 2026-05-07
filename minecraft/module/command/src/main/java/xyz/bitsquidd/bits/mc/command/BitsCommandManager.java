@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.config.BitsMinecraft;
 import xyz.bitsquidd.bits.exception.BitsException;
-import xyz.bitsquidd.bits.lifecycle.manager.CoreManager;
+import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.mc.command.annotation.Command;
 import xyz.bitsquidd.bits.mc.command.argument.BitsArgumentRegistry;
 import xyz.bitsquidd.bits.mc.command.requirement.BitsRequirementRegistry;
@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
  *
  * @since 0.0.10
  */
-public abstract class BitsCommandManager<T> implements CoreManager {
+public abstract class BitsCommandManager<T> implements BitsModule {
     private static @Nullable BitsCommandManager<?> instance;
 
     protected final BitsArgumentRegistry<T> argumentRegistry;
