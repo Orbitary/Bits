@@ -32,6 +32,8 @@ repositories {
 }
 
 dependencies {
+    group = "xyz.bitsquidd.bits.fabric"
+
     minecraft("com.mojang:minecraft:26.1.2")
 
     shade(project(":minecraft"), transitive = true)

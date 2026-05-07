@@ -29,13 +29,18 @@ repositories {
 }
 
 dependencies {
-    // Core API (required)
+    // Core API
     implementation("xyz.bitsquidd.bits:api:0.0.13")
 
-    // Platform implementation (optional)
-    implementation("xyz.bitsquidd.bits:paper:0.0.13")
-    implementation("xyz.bitsquidd.bits:velocity:0.0.13")
-    implementation("xyz.bitsquidd.bits:fabric:0.0.13")
+    // Platform implementation
+    implementation("xyz.bitsquidd.bits.paper:paper:0.0.13")
+    implementation("xyz.bitsquidd.bits.velocity:velocity:0.0.13")
+    implementation("xyz.bitsquidd.bits.fabric:fabric:0.0.13")
+    
+    // Optional: Platform-specific modules
+    implementation("xyz.bitsquidd.bits.paper:sendable:0.0.13")
+    implementation("xyz.bitsquidd.bits.paper:command:0.0.13")
+    implementation("xyz.bitsquidd.bits.velocity:command:0.0.13")
 }
 ```
 
@@ -60,8 +65,18 @@ dependencies {
 
 <!-- Platform implementation (optional) -->
 <dependency>
-    <groupId>xyz.bitsquidd.bits</groupId>
-    <artifactId>paper/velocity/fabric</artifactId>
+    <groupId>xyz.bitsquidd.bits.paper</groupId>
+    <artifactId>paper</artifactId>
+    <version>0.0.13</version>
+</dependency>
+<dependency>
+    <groupId>xyz.bitsquidd.bits.velocity</groupId>
+    <artifactId>velocity</artifactId>
+    <version>0.0.13</version>
+</dependency>
+<dependency>
+    <groupId>xyz.bitsquidd.bits.fabric</groupId>
+    <artifactId>fabric</artifactId>
     <version>0.0.13</version>
 </dependency>
 </dependencies>

@@ -6,8 +6,6 @@
  */
 
 allprojects {
-    group = "xyz.bitsquidd.bits.minecraft.paper.module"
-
     dependencies {
         implementation(project(":minecraft:paper"))
     }

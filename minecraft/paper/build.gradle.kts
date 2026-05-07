@@ -13,6 +13,8 @@ val paperweightPlugin = paperLibs.plugins.paperweight.userdev.get().pluginId
 val paperApiVersion = paperLibs.versions.paper.api.get()
 
 allprojects {
+    group = "xyz.bitsquidd.bits.paper"
+
     plugins.apply(paperweightPlugin)
 
     java {

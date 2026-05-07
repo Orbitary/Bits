@@ -9,3 +9,7 @@ dependencies {
     api(project(":api"))
 }
 
+allprojects {
+    group = "xyz.bitsquidd.bits.minecraft"
+
+}

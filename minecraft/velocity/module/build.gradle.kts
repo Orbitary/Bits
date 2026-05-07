@@ -6,8 +6,6 @@
  */
 
 allprojects {
-    group = "xyz.bitsquidd.bits.minecraft.velocity.module"
-
     dependencies {
         implementation(project(":minecraft:velocity"))
     }

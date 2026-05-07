@@ -6,3 +6,8 @@
 
 ## Velocity
 [ ] Sendables
+
+# Wiki
+[ ] Release wiki
+[ ] Document wiki in readme
+[ ] Have a list of all modules available

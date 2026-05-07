@@ -8,6 +8,8 @@
 import xyz.bitsquidd.util.providedApi
 
 allprojects {
+    group = "xyz.bitsquidd.bits.velocity"
+
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     }
