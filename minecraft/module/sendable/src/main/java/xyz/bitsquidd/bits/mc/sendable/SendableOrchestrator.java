@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import xyz.bitsquidd.bits.exception.BitsException;
 import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
+import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarManager;
@@ -23,7 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-public abstract class SendableOrchestrator implements BitsModule {
+public abstract class SendableOrchestrator extends ManagerContainer implements BitsModule {
     private static @Nullable SendableOrchestrator instance;
 
     private final ActionbarManager actionbarManager = registerManager(createActionbarManager());

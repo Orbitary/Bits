@@ -35,6 +35,7 @@ dependencies {
     minecraft("com.mojang:minecraft:26.1.2")
 
     shade(project(":minecraft"), transitive = true)
+    shade(project(":minecraft:module:command"), transitive = true)
 
     api("net.kyori:adventure-platform-fabric:6.9.0")
     api("me.lucko:fabric-permissions-api:0.5.0")

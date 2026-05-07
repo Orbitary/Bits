@@ -37,17 +37,14 @@ rootProject.name = "Bits"
 include("api")
 
 include("minecraft")
-include("minecraft:module")
 include("minecraft:module:command")
 include("minecraft:module:sendable")
 
 include("minecraft:paper")
-include("minecraft:paper:module")
 include("minecraft:paper:module:command")
 include("minecraft:paper:module:sendable")
 
 include("minecraft:velocity")
-include("minecraft:velocity:module")
 include("minecraft:velocity:module:command")
 
 

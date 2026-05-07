@@ -7,13 +7,13 @@
 
 import xyz.bitsquidd.util.providedApi
 
-repositories {
-    maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
-}
-
 allprojects {
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    }
+
+    repositories {
+        maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
     }
 }
 
