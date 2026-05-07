@@ -20,11 +20,6 @@ allprojects {
         mavenCentral()
     }
 
-    dependencies {
-        annotationProcessor(rootProject.libs.auto.service)
-        compileOnly(rootProject.libs.auto.service)
-    }
-
     publishing {
         repositories {
             maven {

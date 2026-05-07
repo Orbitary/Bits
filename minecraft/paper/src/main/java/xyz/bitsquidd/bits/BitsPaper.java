@@ -22,15 +22,20 @@ import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 import java.util.Locale;
 
 
-public abstract class BitsPaper extends BitsMinecraft {
+public class BitsPaper extends BitsMinecraft {
     private final JavaPlugin plugin;
 
-    public BitsPaper(JavaPlugin plugin) {
+
+    protected BitsPaper(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     public static BitsPaper get() {
         return (BitsPaper)Bits.get();
+    }
+
+    public static BitsPaper generic(JavaPlugin plugin) {
+        return new BitsPaper(plugin);
     }
 
 

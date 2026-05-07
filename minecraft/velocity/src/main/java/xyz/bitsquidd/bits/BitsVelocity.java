@@ -11,6 +11,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.audience.Audience;
+import org.slf4j.LoggerFactory;
 
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.log.VelocityBitsLogger;
@@ -21,12 +22,13 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 
-public abstract class BitsVelocity extends BitsMinecraft {
+public class BitsVelocity extends BitsMinecraft {
     private final Object plugin;
     private final ProxyServer server;
     private final org.slf4j.Logger slf4j;
 
-    public BitsVelocity(ProxyServer server, Object plugin, org.slf4j.Logger slf4j) {
+
+    protected BitsVelocity(ProxyServer server, Object plugin, org.slf4j.Logger slf4j) {
         this.server = server;
         this.plugin = plugin;
         this.slf4j = slf4j;
@@ -34,6 +36,10 @@ public abstract class BitsVelocity extends BitsMinecraft {
 
     public static BitsVelocity get() {
         return (BitsVelocity)Bits.get();
+    }
+
+    public static BitsVelocity generic(ProxyServer server, Object plugin) {
+        return new BitsVelocity(server, plugin, LoggerFactory.getLogger("BitsVelocity")) {};
     }
 
 

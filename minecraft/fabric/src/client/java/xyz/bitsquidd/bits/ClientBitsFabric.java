@@ -22,13 +22,18 @@ import java.util.Locale;
 @Environment(EnvType.CLIENT)
 public class ClientBitsFabric extends BitsFabric {
 
-    public ClientBitsFabric(org.slf4j.Logger slf4j) {
+    protected ClientBitsFabric(org.slf4j.Logger slf4j) {
         super(slf4j);
     }
 
     public static ClientBitsFabric get() {
         return (ClientBitsFabric)Bits.get();
     }
+
+    public static ClientBitsFabric generic() {
+        return new ClientBitsFabric(org.slf4j.LoggerFactory.getLogger("BitsClient"));
+    }
+
 
     @Override
     public void startup() {

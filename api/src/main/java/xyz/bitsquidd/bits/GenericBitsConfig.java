@@ -19,7 +19,7 @@ import xyz.bitsquidd.bits.log.Logger;
 public final class GenericBitsConfig extends Bits {
     private final String platformName;
 
-    public GenericBitsConfig(String platformName) {
+    GenericBitsConfig(String platformName) {
         this.platformName = platformName;
     }
 

@@ -7,18 +7,15 @@
 
 package xyz.bitsquidd.bits.mc.command;
 
-import com.google.auto.service.AutoService;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 
-import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;
 
 
-@AutoService(BitsModule.class)
 public class PaperBitsCommandManager extends BitsCommandManager<CommandSourceStack> {
 
     public static PaperBitsCommandManager get() {

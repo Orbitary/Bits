@@ -10,7 +10,6 @@ package xyz.bitsquidd.bits.fabric;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.slf4j.LoggerFactory;
 
 import xyz.bitsquidd.bits.ClientBitsFabric;
 
@@ -20,7 +19,7 @@ public class BitsClientInitializer implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        new ClientBitsFabric(LoggerFactory.getLogger("Bits")).startup();
+        ClientBitsFabric.generic().startup();
     }
 
 }

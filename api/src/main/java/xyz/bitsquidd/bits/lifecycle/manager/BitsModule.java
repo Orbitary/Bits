@@ -11,10 +11,9 @@ import xyz.bitsquidd.bits.Bits;
 
 
 /**
- * SPI marker for optional platform modules discovered via {@link java.util.ServiceLoader}.
+ * Common module definition for Bits.
  * <p>
- * Implementations are registered automatically by {@link Bits}
- * at construction time. Annotate implementations with {@code @AutoService(BitsModule.class)}.
+ * Implementations are not automatically registered by {@link Bits}, you must register it in the {@code modules()} constructor of your platform implementation.
  *
  * @since 0.0.14
  */

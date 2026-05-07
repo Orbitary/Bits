@@ -14,10 +14,7 @@ import xyz.bitsquidd.bits.exception.BitsException;
 import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
 import xyz.bitsquidd.bits.log.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ServiceLoader;
+import xyz.bitsquidd.bits.wrapper.collection.AddableList;
 
 
 /**
@@ -43,20 +40,13 @@ public abstract class Bits extends ManagerContainer {
         instance = this;
 
         this.logger = createLogger();
-
-        List<BitsModule> modules = new ArrayList<>();
-        ServiceLoader.load(BitsModule.class, getClass().getClassLoader()).forEach(modules::add);
-
-        // For each module, remove it if any other module is a more-derived subclass of it
-        // Although not perfect, all instances should only define one fully-derived class.
-        modules.removeIf(candidate ->
-          modules.stream().anyMatch(other ->
-            other != candidate && candidate.getClass().isAssignableFrom(other.getClass())
-          )
-        );
-
-        registerManagers(modules);
+        registerManagers(modules().build());
     }
+
+    public static Bits generic(String platformName) {
+        return new GenericBitsConfig(platformName);
+    }
+
 
     /**
      * Retrieves the active configuration instance.
@@ -69,6 +59,16 @@ public abstract class Bits extends ManagerContainer {
     public static Bits get() {
         if (instance == null) throw BitsException.INSTANCE_NOT_FOUND(Bits.class);
         return instance;
+    }
+
+
+    /**
+     * Defines the modules to be registered with the library.
+     *
+     * @since 0.0.14
+     */
+    protected AddableList<BitsModule> modules() {
+        return new AddableList<>();
     }
 
 

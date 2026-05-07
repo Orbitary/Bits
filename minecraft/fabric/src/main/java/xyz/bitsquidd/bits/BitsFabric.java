@@ -19,10 +19,10 @@ public abstract class BitsFabric extends BitsMinecraft {
 
     private final List<ScheduledTask> pendingTasks = new ArrayList<>();
 
-    public BitsFabric(org.slf4j.Logger slf4j) {
+
+    protected BitsFabric(org.slf4j.Logger slf4j) {
         this.slf4j = slf4j;
     }
-
 
     public static BitsFabric get() {
         return (BitsFabric)Bits.get();

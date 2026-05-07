@@ -7,13 +7,11 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
-import com.google.auto.service.AutoService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarManager;
@@ -22,7 +20,6 @@ import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
 
-@AutoService(BitsModule.class)
 public class PaperSendableOrchestrator extends SendableOrchestrator {
     private @Nullable BukkitTask ticker;
     private @Nullable BukkitTask renderer;
