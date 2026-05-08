@@ -14,14 +14,14 @@ import java.util.function.Predicate;
 
 
 public abstract class SendableConfig {
-    protected final int tickRate; // How often the tick is incremented. <=0 for never.
-    protected final int maxTicks; // How many ticks until the sendable is removed. -1 for infinite.
+    protected final int tickRate;               // How often the tick is incremented. <=0 for never.
+    protected final int maxTicks;               // How many (global) ticks until the sendable is removed. -1 for infinite.
 
-    private final int priority; // The priority of the sendable. Higher priority = replace / overlap lower priority ones.
+    private final int priority;                 // The priority of the sendable. Higher priority = replace / overlap lower priority ones.
     private final Predicate<Sendable> replaces; // A predicate to determine whether this sendable should replace another sendable.
 
-    private final boolean reverseOnExpire; // Whether the sendable should reverse when it reaches max ticks.
-    private final boolean persistent;      // Whether the sendable should persist (e.g. through player respawns, world changing, disconnect etc.)
+    private final boolean reverseOnExpire;      // Whether the sendable should reverse when it reaches max ticks.
+    private final boolean persistent;           // Whether the sendable should persist (e.g. through player respawns, world changing, disconnect etc.)
 
     protected SendableConfig(Builder<?> builder) {
         this.tickRate = builder.tickRate;
@@ -59,7 +59,7 @@ public abstract class SendableConfig {
 
 
     public abstract static class Builder<B extends Builder<B>> extends ExtendableBuildable<SendableConfig, B> {
-        private int tickRate = 0;
+        private int tickRate = 20;
         private int maxTicks = -1;
 
         private int priority = 0;
