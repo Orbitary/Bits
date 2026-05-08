@@ -29,12 +29,12 @@ public abstract class Sendable {
     }
 
 
-    public void onTick(SendableState state) {
-        // Default implementation does nothing, override to add tick behavior.
-    }
-
     public void onAdd(SendableState state) {
         // Default implementation does nothing, override to add add behavior.
+    }
+
+    public void onTick(SendableState state) {
+        // Default implementation does nothing, override to add tick behavior.
     }
 
     public void onExpire(SendableState state) {

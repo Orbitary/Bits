@@ -34,6 +34,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 
+// TODO: Optimise, no need to re-render blank bossbars.
 public class PaperBossbarManager extends BossbarManager {
     private static final int MAX_BOSSBARS = 10; // Arbitrary limit for allowed bossbars
 
@@ -85,7 +86,7 @@ public class PaperBossbarManager extends BossbarManager {
       Percentage progress
     ) {
         BossEvent bossEvent = getBossEvent(receiver.getUniqueId(), index).orElse(null);
-        if (bossEvent == null) return;
+        if (bossEvent == null) return; // Should never happen, we check just in case.
 
         net.minecraft.network.chat.Component nmsComponent = PaperAdventure.asVanillaNullToEmpty(component);
         BossEvent.BossBarColor nmsColor = switch (color) {

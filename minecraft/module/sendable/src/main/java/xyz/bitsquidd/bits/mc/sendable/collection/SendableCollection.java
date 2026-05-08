@@ -30,6 +30,7 @@ import java.util.List;
  */
 @DoNotMock
 public abstract class SendableCollection<S extends Sendable> {
+    private boolean needsForceRender = false;
 
     protected SendableCollection() {}
 
@@ -47,6 +48,7 @@ public abstract class SendableCollection<S extends Sendable> {
             if (handle.isExpired()) handle.bits$markForExpire();
             removeInternal(handle);
         });
+        needsForceRender = true; // We mark a final render on remove.
     }
 
     protected abstract void removeInternal(SendableHandle<? super S> handle);
@@ -59,11 +61,12 @@ public abstract class SendableCollection<S extends Sendable> {
     }
 
     public final boolean needsRender() {
-        return getAll().stream().anyMatch(SendableHandle::needsRender);
+        return getAll().stream().anyMatch(SendableHandle::needsRender) || needsForceRender;
     }
 
     public final void markRendered() {
         getAll().forEach(SendableHandle::bits$markRendered);
+        needsForceRender = false;
     }
 
 

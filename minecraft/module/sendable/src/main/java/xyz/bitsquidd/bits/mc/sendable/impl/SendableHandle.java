@@ -11,6 +11,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
+import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 import xyz.bitsquidd.bits.wrapper.Percentage;
 
 import java.util.UUID;
@@ -21,6 +22,7 @@ import java.util.UUID;
  */
 public final class SendableHandle<S extends Sendable> {
     private final S definition;
+    private final SendableManager<S, ?> manager; // Internal use only for manager callbacks.
     private final Receiver receiver;
     private final SendableConfig config;
     private final UUID uuid = UUID.randomUUID();
@@ -30,9 +32,10 @@ public final class SendableHandle<S extends Sendable> {
     private boolean needsRender = true;
     private boolean expired = false;
 
-    public SendableHandle(S definition, Receiver receiver) {
+    public SendableHandle(S definition, SendableManager<S, ?> manager, Receiver receiver) {
         this.definition = definition;
         this.config = definition.config();
+        this.manager = manager;
         this.receiver = receiver;
     }
 
@@ -60,8 +63,8 @@ public final class SendableHandle<S extends Sendable> {
 
         if (definition.needsRender(state())) bits$markForRender();
 
-        if (tick == 0) definition.onAdd(state());
-        definition.onTick(state());
+        if (tick == 0) triggerAdd();
+        triggerTick();
     }
 
     //region Experimental
@@ -111,12 +114,32 @@ public final class SendableHandle<S extends Sendable> {
     @ApiStatus.Internal
     public void bits$markForExpire() {
         expired = true;
-        definition.onExpire(state());
+        triggerExpire();
     }
     //endregion
 
 
+    private void triggerAdd() {
+        definition.onAdd(state());
+        manager.onAdd(receiver, this);
+    }
+
+    private void triggerTick() {
+        definition.onTick(state());
+        manager.onTick(receiver, this);
+    }
+
+    private void triggerExpire() {
+        definition.onExpire(state());
+        manager.onExpire(receiver, this);
+    }
+
+
     //region Getters
+    public UUID uuid() {
+        return uuid;
+    }
+
     public S definition() {
         return definition;
     }

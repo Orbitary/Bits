@@ -12,14 +12,16 @@ import org.jetbrains.annotations.ApiStatus;
 import xyz.bitsquidd.bits.lifecycle.manager.CoreManager;
 import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.util.Safety;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public abstract class SendableManager<S extends Sendable, C extends SendableCollection<S>> implements CoreManager {
-    private final Map<Receiver, C> playerSendables = new ConcurrentHashMap<>();
+    protected final Map<Receiver, C> playerSendables = new ConcurrentHashMap<>();
 
 
     public final void tickAll() {
@@ -39,11 +41,6 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
     protected abstract C createCollection();
 
-    @ApiStatus.Internal
-    public final C getSendables(Receiver receiver) {
-        return playerSendables.computeIfAbsent(receiver, k -> createCollection());
-    }
-
     protected void initialiseReceiver(Receiver receiver) {
         cleanupReceiver(receiver);
         playerSendables.computeIfAbsent(receiver, k -> createCollection());
@@ -52,5 +49,31 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
     protected void cleanupReceiver(Receiver receiver) {
         playerSendables.remove(receiver);
     }
+
+
+    @ApiStatus.Internal
+    public void onAdd(Receiver receiver, SendableHandle<? extends S> handle) {
+        // Default implementation does nothing.
+    }
+
+    @ApiStatus.Internal
+    public void onTick(Receiver receiver, SendableHandle<? extends S> handle) {
+        // Default implementation does nothing.
+    }
+
+    @ApiStatus.Internal
+    public void onExpire(Receiver receiver, SendableHandle<? extends S> handle) {
+        // Default implementation does nothing.
+    }
+
+
+    //region Collection accessors
+    public final Collection<? extends SendableHandle<S>> getSendables(Receiver receiver, Class<? extends S> clazz) {
+        return playerSendables.getOrDefault(receiver, createCollection())
+          .get(SendableFilter.ofClass(clazz))
+          .stream()
+          .toList();
+    }
+    //endregion
 
 }

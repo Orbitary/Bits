@@ -70,13 +70,8 @@ public interface Receiver {
         return SendableOrchestrator.get().actionbar().getSendables(this).get(filter);
     }
 
-    @SuppressWarnings("unchecked")
-    default <S extends AbstractActionbar> Collection<? extends SendableHandle<S>> getActionbars(Class<? extends S> clazz) {
-        return SendableOrchestrator.get().actionbar().getSendables(this)
-          .get(SendableFilter.ofClass(clazz))
-          .stream()
-          .map(handle -> (SendableHandle<S>)handle)
-          .toList();
+    default <S extends AbstractActionbar> Collection<? extends SendableHandle<AbstractActionbar>> getActionbars(Class<? extends S> clazz) {
+        return SendableOrchestrator.get().actionbar().getSendables(this, clazz);
     }
 
     //endregion

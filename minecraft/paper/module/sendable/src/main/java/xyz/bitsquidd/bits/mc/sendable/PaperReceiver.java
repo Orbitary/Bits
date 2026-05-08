@@ -18,11 +18,12 @@ import java.util.UUID;
 /**
  * A wrapper around a Bukkit player, allowing us to abstract the platform.
  */
-public abstract class PaperReceiver implements Receiver {
-    public static PaperReceiver from(final Player player) {
+public interface PaperReceiver extends Receiver {
+
+    static PaperReceiver from(final Player player) {
         return new PaperReceiver() {
             @Override
-            protected void sendPacket(Packet<?> packet) {
+            public void sendPacket(Packet<?> packet) {
                 ((CraftPlayer)player).getHandle().connection.send(packet);
             }
 
@@ -33,9 +34,9 @@ public abstract class PaperReceiver implements Receiver {
         };
     }
 
-    protected abstract void sendPacket(final Packet<?> packet);
+    void sendPacket(final Packet<?> packet);
 
-    protected void sendPackets(final Collection<? extends Packet<?>> packets) {
+    default void sendPackets(final Collection<? extends Packet<?>> packets) {
         packets.forEach(this::sendPacket);
     }
 
