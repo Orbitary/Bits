@@ -16,6 +16,8 @@ import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.wrapper.collection.AddableList;
 
+import java.util.Optional;
+
 
 /**
  * The main configuration class for the Bits library.
@@ -59,6 +61,15 @@ public abstract class Bits extends ManagerContainer {
     public static Bits get() {
         if (instance == null) throw BitsException.INSTANCE_NOT_FOUND(Bits.class);
         return instance;
+    }
+
+    public static void init() {
+        get().startup();
+        get().initialise();
+    }
+
+    public static <M extends BitsModule> Optional<M> getModule(Class<M> clazz) {
+        return get().getManager(clazz);
     }
 
 

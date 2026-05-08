@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.lifecycle.manager;
@@ -12,7 +11,9 @@ import xyz.bitsquidd.bits.util.Safety;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
 
 /**
  * A container that orchestrates the lifecycle of multiple {@link CoreManager} instances.
@@ -55,6 +56,23 @@ public abstract class ManagerContainer implements CoreManager {
      */
     public final List<CoreManager> getAllManagers() {
         return List.copyOf(managers);
+    }
+
+    /**
+     * Retrieves a manager of the specified type, if present.
+     *
+     * @param <T>          the specific type of manager
+     * @param managerClass the class object representing the manager type
+     *
+     * @return an optional containing the manager if found, or empty if not found
+     *
+     * @since 0.0.14
+     */
+    public final <T extends CoreManager> Optional<T> getManager(Class<T> managerClass) {
+        return getAllManagers().stream()
+          .filter(managerClass::isInstance)
+          .map(managerClass::cast)
+          .findFirst();
     }
 
 
