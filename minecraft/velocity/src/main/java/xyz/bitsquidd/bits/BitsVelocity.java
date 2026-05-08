@@ -7,39 +7,55 @@
 
 package xyz.bitsquidd.bits;
 
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.audience.Audience;
-import org.slf4j.LoggerFactory;
+import org.bstats.velocity.Metrics;
 
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.log.VelocityBitsLogger;
 import xyz.bitsquidd.bits.mc.permission.Permission;
+import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
 import xyz.bitsquidd.bits.velocity.util.velocity.runnable.Tasks;
 
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 
 public class BitsVelocity extends BitsMinecraft {
+    private static final int BSTATS_ID = 31211;
+
     private final Object plugin;
     private final ProxyServer server;
     private final org.slf4j.Logger slf4j;
+    private final Path dataDir;
 
 
-    protected BitsVelocity(ProxyServer server, Object plugin, org.slf4j.Logger slf4j) {
-        this.server = server;
+    protected BitsVelocity(Object plugin, Injector injector) {
         this.plugin = plugin;
-        this.slf4j = slf4j;
+        this.server = injector.getInstance(ProxyServer.class);
+        this.slf4j = injector.getInstance(org.slf4j.Logger.class);
+        this.dataDir = injector.getInstance(Key.get(Path.class, DataDirectory.class));
     }
 
     public static BitsVelocity get() {
         return (BitsVelocity)Bits.get();
     }
 
-    public static BitsVelocity generic(ProxyServer server, Object plugin) {
-        return new BitsVelocity(server, plugin, LoggerFactory.getLogger("BitsVelocity")) {};
+    public static BitsVelocity generic(Object plugin, Injector injector) {
+        return new BitsVelocity(plugin, injector) {};
+    }
+
+
+    @Override
+    public void startup() {
+        super.startup();
+        ReflectionUtils.Instance.tryCreate(Metrics.class, plugin, server, logger, dataDir, BSTATS_ID);
     }
 
 

@@ -8,6 +8,7 @@
 package xyz.bitsquidd.bits;
 
 import net.kyori.adventure.audience.Audience;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,6 +24,8 @@ import java.util.Locale;
 
 
 public class BitsPaper extends BitsMinecraft {
+    private static final int BSTATS_ID = 31210;
+
     private final JavaPlugin plugin;
 
 
@@ -42,6 +45,7 @@ public class BitsPaper extends BitsMinecraft {
     @Override
     public void startup() {
         super.startup();
+        new Metrics(plugin, BSTATS_ID);
         CommonPaperFormatters.init();
     }
 
