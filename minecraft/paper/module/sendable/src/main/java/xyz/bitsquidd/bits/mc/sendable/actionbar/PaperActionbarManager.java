@@ -5,13 +5,15 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.mc.sendable;
+package xyz.bitsquidd.bits.mc.sendable.actionbar;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 
+import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
 

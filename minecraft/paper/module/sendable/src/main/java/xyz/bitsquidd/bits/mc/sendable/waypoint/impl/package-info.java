@@ -5,9 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
+@NotNullByDefault
+package xyz.bitsquidd.bits.mc.sendable.waypoint.impl;
 
-public enum WaypointTransmitType {
-    STATIC,
-    DYNAMIC
-}
+import org.jetbrains.annotations.NotNullByDefault;

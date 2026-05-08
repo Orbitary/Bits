@@ -7,7 +7,11 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 
+import java.util.UUID;
+
+
 public non-sealed abstract class AbstractTransmittingWaypoint extends AbstractWaypoint {
-    WaypointTransmitt
+
+    public abstract UUID getTransmitterUUID();
 
 }

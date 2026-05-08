@@ -12,11 +12,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
+import xyz.bitsquidd.bits.mc.sendable.actionbar.PaperActionbarManager;
+import xyz.bitsquidd.bits.mc.sendable.bossbar.PaperBossbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
+import xyz.bitsquidd.bits.mc.sendable.sidebar.PaperSidebarManager;
+import xyz.bitsquidd.bits.mc.sendable.tablist.PaperTablistManager;
+import xyz.bitsquidd.bits.mc.sendable.title.PaperTitleManager;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
 

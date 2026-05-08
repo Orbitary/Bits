@@ -11,7 +11,6 @@ import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
 
 
 public final class WaypointSendableConfig extends SendableConfig {
-    private final WaypointTransmitType transmitType;
 
     private WaypointSendableConfig(Builder builder) {
         super(builder);

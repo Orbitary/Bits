@@ -28,11 +28,18 @@ public interface PaperReceiver extends Receiver {
             }
 
             @Override
-            public UUID getUniqueId() {
-                return player.getUniqueId();
+            public Player getPlayer() {
+                return player;
             }
         };
     }
+
+    @Override
+    default UUID getUniqueId() {
+        return getPlayer().getUniqueId();
+    }
+
+    Player getPlayer();
 
     void sendPacket(final Packet<?> packet);
 

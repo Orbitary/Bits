@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.mc.sendable;
+package xyz.bitsquidd.bits.mc.sendable.title;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.title.Title;
@@ -14,6 +14,8 @@ import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 
 import xyz.bitsquidd.bits.format.Time;
+import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.AbstractTitle;

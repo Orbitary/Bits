@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.mc.sendable;
+package xyz.bitsquidd.bits.mc.sendable.bossbar;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -17,6 +17,8 @@ import net.minecraft.server.bossevents.CustomBossEvent;
 import net.minecraft.world.BossEvent;
 
 import xyz.bitsquidd.bits.Bits;
+import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.AbstractBossbar;

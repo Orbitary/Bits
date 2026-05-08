@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.mc.sendable;
+package xyz.bitsquidd.bits.mc.sendable.sidebar;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -20,6 +20,8 @@ import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
+import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarManager;
 

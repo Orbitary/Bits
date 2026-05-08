@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.mc.sendable;
+package xyz.bitsquidd.bits.mc.sendable.waypoint;
 
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.Vec3i;
@@ -13,12 +13,20 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundTrackedWaypointPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.waypoints.Waypoint;
 import net.minecraft.world.waypoints.WaypointStyleAsset;
 import net.minecraft.world.waypoints.WaypointStyleAssets;
 import net.minecraft.world.waypoints.WaypointTransmitter;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.joml.Vector3i;
 
+import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractLocationalWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractTransmittingWaypoint;
@@ -30,6 +38,7 @@ import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,7 +79,30 @@ public class PaperWaypointManager extends WaypointManager {
 
                 tracked.computeIfAbsent(receiver.getUniqueId(), _ -> ConcurrentHashMap.newKeySet()).add(handleUUID);
             } else if (waypointDefinition instanceof AbstractTransmittingWaypoint transmittingWaypoint) {
-                // TODO ADD TO TRANSMITTORS
+                UUID receiverUUID = receiver.getUniqueId();
+                Map<UUID, WaypointTransmitter.Connection> receiverConnections = transmittors.computeIfAbsent(receiverUUID, _ -> new ConcurrentHashMap<>());
+
+                WaypointTransmitter.Connection existing = receiverConnections.get(handleUUID);
+
+                if (existing == null) {
+                    Player player = Bukkit.getPlayer(receiverUUID);
+                    if (player == null) return;
+                    ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
+
+                    resolveConnection(transmittingWaypoint.getTransmitterUUID(), serverPlayer).ifPresentOrElse(
+                      connection -> {
+                          receiverConnections.put(handleUUID, connection);
+                          connection.connect();
+                      },
+                      waypointHandle::bits$markForExpire
+                    );
+                } else if (existing.isBroken()) {
+                    existing.disconnect();
+                    receiverConnections.remove(handleUUID);
+                    waypointHandle.bits$markForExpire();
+                } else {
+                    existing.update();
+                }
             } else {
                 throw new IllegalStateException("Unknown waypoint type: " + waypointDefinition.getClass());
             }
@@ -87,15 +119,36 @@ public class PaperWaypointManager extends WaypointManager {
 
         AbstractWaypoint waypointDefinition = handle.definition();
         UUID waypointUUID = handle.uuid();
+        UUID receiverUUID = receiver.getUniqueId();
 
         if (waypointDefinition instanceof AbstractLocationalWaypoint) {
             paperReceiver.sendPacket(ClientboundTrackedWaypointPacket.removeWaypoint(waypointUUID));
-        } else if (waypointDefinition instanceof AbstractTransmittingWaypoint transmittingWaypoint) {
-            WaypointTransmitter.Connection connection = transmittors.getOrDefault(receiver.getUniqueId(), Map.of()).remove(waypointUUID);
-            if (connection != null) connection.disconnect();
+            Set<UUID> receiverTracked = tracked.get(receiverUUID);
+            if (receiverTracked != null) receiverTracked.remove(waypointUUID);
+        } else if (waypointDefinition instanceof AbstractTransmittingWaypoint) {
+            Map<UUID, WaypointTransmitter.Connection> receiverConnections = transmittors.get(receiverUUID);
+            if (receiverConnections != null) {
+                WaypointTransmitter.Connection connection = receiverConnections.remove(waypointUUID);
+                if (connection != null) connection.disconnect();
+            }
         } else {
             throw new IllegalStateException("Unknown waypoint type: " + waypointDefinition.getClass());
         }
+    }
+
+
+    /**
+     * Resolves a {@link WaypointTransmitter.Connection} from a UUID.
+     * Returns empty if the connection cannot be made, the waypoint will be expired.
+     */
+    protected Optional<WaypointTransmitter.Connection> resolveConnection(UUID uuid, ServerPlayer player) {
+        Entity entity = Bukkit.getEntity(uuid);
+
+        // TODO add support for non-living entities by creating our own connection.
+        if (entity instanceof CraftLivingEntity craftLiving) {
+            return craftLiving.getHandle().makeWaypointConnectionWith(player);
+        }
+        return Optional.empty();
     }
 
 }
