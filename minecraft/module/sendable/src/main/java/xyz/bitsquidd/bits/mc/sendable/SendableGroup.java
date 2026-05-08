@@ -17,6 +17,7 @@ import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.AbstractSidebar;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.AbstractTablist;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.AbstractTitle;
+import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractWaypoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ public final class SendableGroup {
     private final ImmutableList<AbstractSidebar> sidebars;
     private final ImmutableMap<TablistPosition, AbstractTablist> tablists;
     private final ImmutableList<AbstractTitle> titles;
+    private final ImmutableList<AbstractWaypoint> waypoints;
 
     private SendableGroup(Builder builder) {
         this.actionbars = ImmutableList.copyOf(builder.actionbars);
@@ -40,6 +42,7 @@ public final class SendableGroup {
         this.sidebars = ImmutableList.copyOf(builder.sidebars);
         this.tablists = ImmutableMap.copyOf(builder.tablists);
         this.titles = ImmutableList.copyOf(builder.titles);
+        this.waypoints = ImmutableList.copyOf(builder.waypoints);
     }
 
     public void applyTo(Receiver receiver) {
@@ -61,8 +64,10 @@ public final class SendableGroup {
         private final List<AbstractSidebar> sidebars = new ArrayList<>();
         private final Map<TablistPosition, AbstractTablist> tablists = new HashMap<>();
         private final List<AbstractTitle> titles = new ArrayList<>();
+        private final List<AbstractWaypoint> waypoints = new ArrayList<>();
 
         private Builder() {}
+
 
         public Builder actionbar(AbstractActionbar actionbar) {
             this.actionbars.add(actionbar);
@@ -88,6 +93,12 @@ public final class SendableGroup {
             this.titles.add(title);
             return this;
         }
+
+        public Builder waypoint(AbstractWaypoint waypoint) {
+            this.waypoints.add(waypoint);
+            return this;
+        }
+
 
         @Override
         public SendableGroup build() {

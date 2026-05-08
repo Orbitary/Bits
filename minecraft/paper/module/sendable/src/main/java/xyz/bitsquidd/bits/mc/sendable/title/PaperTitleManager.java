@@ -29,7 +29,7 @@ public class PaperTitleManager extends TitleManager {
     protected void render(Receiver receiver, TitleCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
-        SendableHandle<AbstractTitle> handle = collection.getAll().stream().findFirst().orElse(null);
+        SendableHandle<? extends AbstractTitle> handle = collection.getAll().stream().findFirst().orElse(null);
         if (handle == null) return; // Titles do not need cleanup, they time out on their own!
 
         SendableState state = handle.state();

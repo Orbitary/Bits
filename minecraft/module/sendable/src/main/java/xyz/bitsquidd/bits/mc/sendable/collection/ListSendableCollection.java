@@ -15,13 +15,14 @@ import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
  * An ordered list of sendables. New sendables added based on priority. Higher priority sendables are before lower priority ones. Sendables with the same priority are ordered by insertion time.
  */
-public abstract class ListSendableCollection<S extends Sendable> extends SendableCollection<S> {
-    protected final List<SendableHandle<S>> sendables = new ArrayList<>();
+public abstract non-sealed class ListSendableCollection<S extends Sendable> extends SendableCollection<S> {
+    protected final List<SendableHandle<? extends S>> sendables = new ArrayList<>();
 
     protected ListSendableCollection() {}
 
@@ -34,17 +35,17 @@ public abstract class ListSendableCollection<S extends Sendable> extends Sendabl
 
     @Unmodifiable
     @Override
-    public final List<SendableHandle<S>> getAll() {
+    public final List<SendableHandle<? extends S>> getAll() {
         return List.copyOf(sendables);
     }
-    
+
     @Override
-    protected final void removeInternal(SendableHandle<? super S> handle) {
+    protected final void removeInternal(SendableHandle<? extends S> handle) {
         sendables.remove(handle);
     }
 
 
-    public void add(S sendable, Receiver receiver) {
+    public final <SE extends S> Optional<SendableHandle<SE>> add(SE sendable, Receiver receiver) {
         int priority = sendable.config().priority();
         int index = 0;
 
@@ -53,7 +54,9 @@ public abstract class ListSendableCollection<S extends Sendable> extends Sendabl
             index++;
         }
 
-        sendables.add(index, createHandle(sendable, receiver));
+        SendableHandle<SE> handle = createHandle(sendable, receiver);
+        sendables.add(index, handle);
+        return Optional.of(handle);
     }
 
 }

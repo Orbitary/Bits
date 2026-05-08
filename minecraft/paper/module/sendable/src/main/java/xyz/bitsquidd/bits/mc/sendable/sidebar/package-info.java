@@ -1,4 +1,4 @@
 @NotNullByDefault
-package xyz.bitsquidd.bits.mc.sendable.waypoint.impl;
+package xyz.bitsquidd.bits.mc.sendable.sidebar;
 
 import org.jetbrains.annotations.NotNullByDefault;

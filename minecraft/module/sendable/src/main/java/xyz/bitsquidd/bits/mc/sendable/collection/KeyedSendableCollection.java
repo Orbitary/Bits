@@ -26,8 +26,8 @@ import java.util.function.BiConsumer;
  * @param <K>
  * @param <S>
  */
-public abstract class KeyedSendableCollection<K, S extends Sendable> extends SendableCollection<S> {
-    protected final BiMap<K, SendableHandle<S>> sendables = HashBiMap.create();
+public abstract non-sealed class KeyedSendableCollection<K, S extends Sendable> extends SendableCollection<S> {
+    protected final BiMap<K, SendableHandle<? extends S>> sendables = HashBiMap.create();
 
     protected KeyedSendableCollection() {}
 
@@ -39,32 +39,34 @@ public abstract class KeyedSendableCollection<K, S extends Sendable> extends Sen
 
     @Unmodifiable
     @Override
-    public final List<SendableHandle<S>> getAll() {
+    public final List<SendableHandle<? extends S>> getAll() {
         return sendables.values().stream().toList();
     }
 
     @Override
-    protected final void removeInternal(SendableHandle<? super S> filter) {
+    protected final void removeInternal(SendableHandle<? extends S> filter) {
         sendables.values().remove(filter);
     }
 
 
-    public final void add(K key, S sendable, Receiver receiver) {
+    public final <SE extends S> Optional<SendableHandle<SE>> add(K key, SE sendable, Receiver receiver) {
         if (this.sendables.containsKey(key)) {
-            SendableHandle<S> existingHandle = this.sendables.get(key);
-            if (sendable.config().priority() < existingHandle.config().priority() && !sendable.config().replaces(existingHandle.definition())) return; // Existing sendable has higher priority, do not replace
+            SendableHandle<? extends S> existingHandle = this.sendables.get(key);
+            if (sendable.config().priority() < existingHandle.config().priority() && !sendable.config().replaces(existingHandle.definition())) return Optional.empty(); // Existing sendable has higher priority, do not replace
 
             remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
         }
 
-        sendables.put(key, createHandle(sendable, receiver));
+        SendableHandle<SE> handle = createHandle(sendable, receiver);
+        sendables.put(key, handle);
+        return Optional.of(handle);
     }
 
-    public Optional<SendableHandle<S>> get(K key) {
+    public final Optional<SendableHandle<? extends S>> get(K key) {
         return Optional.ofNullable(sendables.get(key));
     }
 
-    public void forEach(BiConsumer<? super K, ? super SendableHandle<S>> action) {
+    public final void forEach(BiConsumer<? super K, ? super SendableHandle<? extends S>> action) {
         sendables.forEach(action);
     }
 

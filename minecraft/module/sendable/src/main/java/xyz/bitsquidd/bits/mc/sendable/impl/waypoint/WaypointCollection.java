@@ -7,10 +7,17 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 
+import xyz.bitsquidd.bits.mc.sendable.SendableManager;
+import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
 import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
 
 
 public final class WaypointCollection extends ListSendableCollection<AbstractWaypoint> {
     WaypointCollection() {}
+
+    @Override
+    protected SendableManager<AbstractWaypoint, ?> manager() {
+        return SendableOrchestrator.get().waypoint();
+    }
 
 }

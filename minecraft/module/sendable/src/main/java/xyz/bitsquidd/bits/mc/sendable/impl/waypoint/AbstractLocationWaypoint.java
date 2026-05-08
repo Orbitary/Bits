@@ -10,7 +10,7 @@ package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 import org.joml.Vector3i;
 
 
-public non-sealed abstract class AbstractLocationalWaypoint extends AbstractWaypoint {
+public non-sealed abstract class AbstractLocationWaypoint extends AbstractWaypoint {
 
     public abstract Vector3i getPosition();
 

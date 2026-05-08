@@ -7,10 +7,17 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.title;
 
+import xyz.bitsquidd.bits.mc.sendable.SendableManager;
+import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
 import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
 
 
 public final class TitleCollection extends ListSendableCollection<AbstractTitle> {
     TitleCollection() {}
+
+    @Override
+    protected SendableManager<AbstractTitle, ?> manager() {
+        return SendableOrchestrator.get().title();
+    }
 
 }

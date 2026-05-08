@@ -7,11 +7,18 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.tablist;
 
+import xyz.bitsquidd.bits.mc.sendable.SendableManager;
+import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
 import xyz.bitsquidd.bits.mc.sendable.collection.KeyedSendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
 
 
 public final class TablistCollection extends KeyedSendableCollection<TablistPosition, AbstractTablist> {
     TablistCollection() {}
+
+    @Override
+    protected SendableManager<AbstractTablist, ?> manager() {
+        return SendableOrchestrator.get().tablist();
+    }
 
 }

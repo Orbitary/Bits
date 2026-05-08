@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 public final class SendableHandle<S extends Sendable> {
     private final S definition;
-    private final SendableManager<S, ?> manager; // Internal use only for manager callbacks.
+    private final SendableManager<? super S, ?> manager; // Internal use only for manager callbacks.
     private final Receiver receiver;
     private final SendableConfig config;
     private final UUID uuid = UUID.randomUUID();
@@ -32,7 +32,7 @@ public final class SendableHandle<S extends Sendable> {
     private boolean needsRender = true;
     private boolean expired = false;
 
-    public SendableHandle(S definition, SendableManager<S, ?> manager, Receiver receiver) {
+    public SendableHandle(S definition, SendableManager<? super S, ?> manager, Receiver receiver) {
         this.definition = definition;
         this.config = definition.config();
         this.manager = manager;

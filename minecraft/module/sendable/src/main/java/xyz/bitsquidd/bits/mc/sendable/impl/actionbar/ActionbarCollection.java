@@ -7,10 +7,17 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.actionbar;
 
+import xyz.bitsquidd.bits.mc.sendable.SendableManager;
+import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
 import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
 
 
 public final class ActionbarCollection extends ListSendableCollection<AbstractActionbar> {
     ActionbarCollection() {}
+
+    @Override
+    protected SendableManager<AbstractActionbar, ?> manager() {
+        return SendableOrchestrator.get().actionbar();
+    }
 
 }

@@ -10,19 +10,19 @@ package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
 
 
-public final class WaypointSendableConfig extends SendableConfig {
+public final class WaypointConfig extends SendableConfig {
 
-    private WaypointSendableConfig(Builder builder) {
+    private WaypointConfig(Builder builder) {
         super(builder);
     }
 
     public static final class Builder extends SendableConfig.Builder<Builder> {
 
-        private Builder() {}
+        Builder() {}
 
         @Override
-        public WaypointSendableConfig build() {
-            return new WaypointSendableConfig(this);
+        public WaypointConfig build() {
+            return new WaypointConfig(this);
         }
 
     }

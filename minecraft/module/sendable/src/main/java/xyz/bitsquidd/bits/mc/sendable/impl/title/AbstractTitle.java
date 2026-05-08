@@ -21,16 +21,16 @@ public abstract class AbstractTitle extends Sendable {
 
 
     @Override
-    protected TitleSendableConfig.Builder createConfig() {
-        return new TitleSendableConfig.Builder()
+    protected TitleConfig.Builder createConfig() {
+        return new TitleConfig.Builder()
           .maxTicks(40)
           .fadeIn(5)
           .fadeOut(5);
     }
 
     @Override
-    public final TitleSendableConfig config() {
-        return (TitleSendableConfig)super.config();
+    public final TitleConfig config() {
+        return (TitleConfig)super.config();
     }
 
 

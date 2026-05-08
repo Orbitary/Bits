@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableFilter;
+import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
@@ -29,18 +30,19 @@ import java.util.List;
  * @since 0.0.14
  */
 @DoNotMock
-public abstract class SendableCollection<S extends Sendable> {
+public sealed abstract class SendableCollection<S extends Sendable> permits KeyedSendableCollection, ListSendableCollection, SingleSendableCollection {
     private boolean needsForceRender = false;
 
     protected SendableCollection() {}
 
     //region Collection Operations
+    @SuppressWarnings("unchecked") // We cast to <S> for simplicity - especially for public-facing methods.
     public final Collection<SendableHandle<S>> get(SendableFilter<? super S> filter) {
-        return getAll().stream().filter(filter).toList();
+        return (Collection<SendableHandle<S>>)(Collection<?>)getAll().stream().filter(filter).toList();
     }
 
     @Unmodifiable
-    public abstract List<SendableHandle<S>> getAll();
+    public abstract List<SendableHandle<? extends S>> getAll();
 
 
     public final void remove(SendableFilter<? super S> filter) {
@@ -51,7 +53,7 @@ public abstract class SendableCollection<S extends Sendable> {
         needsForceRender = true; // We mark a final render on remove.
     }
 
-    protected abstract void removeInternal(SendableHandle<? super S> handle);
+    protected abstract void removeInternal(SendableHandle<? extends S> handle);
     //endregion
 
 
@@ -70,9 +72,11 @@ public abstract class SendableCollection<S extends Sendable> {
     }
 
 
-    protected final SendableHandle<S> createHandle(S sendable, Receiver receiver) {
-        return new SendableHandle<>(sendable, receiver);
+    protected final <SE extends S> SendableHandle<SE> createHandle(SE sendable, Receiver receiver) {
+        return new SendableHandle<>(sendable, manager(), receiver);
     }
+
+    protected abstract SendableManager<S, ?> manager();
 
 
     // Collections must override their toString.

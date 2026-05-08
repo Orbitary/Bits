@@ -15,10 +15,11 @@ import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.wrapper.collection.Single;
 
 import java.util.List;
+import java.util.Optional;
 
 
-public abstract class SingleSendableCollection<S extends Sendable> extends SendableCollection<S> {
-    protected final Single<SendableHandle<S>> sendables = new Single<>();
+public abstract non-sealed class SingleSendableCollection<S extends Sendable> extends SendableCollection<S> {
+    protected final Single<SendableHandle<? extends S>> sendables = new Single<>();
 
     protected SingleSendableCollection() {}
 
@@ -31,25 +32,27 @@ public abstract class SingleSendableCollection<S extends Sendable> extends Senda
 
     @Unmodifiable
     @Override
-    public final List<SendableHandle<S>> getAll() {
+    public final List<SendableHandle<? extends S>> getAll() {
         return sendables.asList();
     }
 
     @Override
-    protected final void removeInternal(SendableHandle<? super S> handle) {
+    protected final void removeInternal(SendableHandle<? extends S> handle) {
         sendables.removeIf(h -> h.equals(handle));
     }
 
 
-    public void add(S sendable, Receiver receiver) {
-        SendableHandle<S> existingHandle = this.sendables.get();
+    public final <SE extends S> Optional<SendableHandle<SE>> add(SE sendable, Receiver receiver) {
+        SendableHandle<? extends S> existingHandle = this.sendables.get();
         if (existingHandle != null) {
-            if (sendable.config().priority() < existingHandle.config().priority() && !sendable.config().replaces(existingHandle.definition())) return; // Existing sendable has higher priority, do not replace
+            if (sendable.config().priority() < existingHandle.config().priority() && !sendable.config().replaces(existingHandle.definition())) return Optional.empty(); // Existing sendable has higher priority, do not replace
 
             remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
         }
 
-        this.sendables.set(createHandle(sendable, receiver));
+        SendableHandle<SE> handle = createHandle(sendable, receiver);
+        this.sendables.set(handle);
+        return Optional.of(handle);
     }
 
 }

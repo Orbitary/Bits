@@ -14,7 +14,12 @@ import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import java.util.Optional;
 
 
-public sealed abstract class AbstractWaypoint extends Sendable permits AbstractLocationalWaypoint, AbstractTransmittingWaypoint {
+public sealed abstract class AbstractWaypoint extends Sendable permits AbstractLocationWaypoint, AbstractTransmittingWaypoint {
+
+    @Override
+    protected WaypointConfig.Builder createConfig() {
+        return new WaypointConfig.Builder();
+    }
 
     public abstract Key getAssetKey();
 

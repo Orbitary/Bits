@@ -8,12 +8,14 @@
 package xyz.bitsquidd.bits.mc.sendable.waypoint;
 
 import net.kyori.adventure.key.Key;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundTrackedWaypointPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.waypoints.Waypoint;
 import net.minecraft.world.waypoints.WaypointStyleAsset;
 import net.minecraft.world.waypoints.WaypointStyleAssets;
@@ -23,12 +25,13 @@ import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
-import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractLocationalWaypoint;
+import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractLocationWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractTransmittingWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.WaypointCollection;
@@ -38,6 +41,7 @@ import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -70,7 +74,7 @@ public class PaperWaypointManager extends WaypointManager {
 
             UUID handleUUID = waypointHandle.uuid();
 
-            if (waypointDefinition instanceof AbstractLocationalWaypoint locationalWaypoint) {
+            if (waypointDefinition instanceof AbstractLocationWaypoint locationalWaypoint) {
                 Vector3i position = locationalWaypoint.getPosition();
 
                 waypointPackets.add(ClientboundTrackedWaypointPacket.addWaypointPosition(
@@ -80,7 +84,8 @@ public class PaperWaypointManager extends WaypointManager {
                 tracked.computeIfAbsent(receiver.getUniqueId(), _ -> ConcurrentHashMap.newKeySet()).add(handleUUID);
             } else if (waypointDefinition instanceof AbstractTransmittingWaypoint transmittingWaypoint) {
                 UUID receiverUUID = receiver.getUniqueId();
-                Map<UUID, WaypointTransmitter.Connection> receiverConnections = transmittors.computeIfAbsent(receiverUUID, _ -> new ConcurrentHashMap<>());
+                Map<UUID, WaypointTransmitter.Connection> receiverConnections =
+                  transmittors.computeIfAbsent(receiverUUID, _ -> new ConcurrentHashMap<>());
 
                 WaypointTransmitter.Connection existing = receiverConnections.get(handleUUID);
 
@@ -89,13 +94,14 @@ public class PaperWaypointManager extends WaypointManager {
                     if (player == null) return;
                     ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
 
-                    resolveConnection(transmittingWaypoint.getTransmitterUUID(), serverPlayer).ifPresentOrElse(
-                      connection -> {
-                          receiverConnections.put(handleUUID, connection);
-                          connection.connect();
-                      },
-                      waypointHandle::bits$markForExpire
-                    );
+                    resolveConnection(transmittingWaypoint.getTransmitterUUID(), icon, handleUUID, serverPlayer)
+                      .ifPresentOrElse(
+                        connection -> {
+                            receiverConnections.put(handleUUID, connection);
+                            connection.connect();
+                        },
+                        waypointHandle::bits$markForExpire
+                      );
                 } else if (existing.isBroken()) {
                     existing.disconnect();
                     receiverConnections.remove(handleUUID);
@@ -121,7 +127,7 @@ public class PaperWaypointManager extends WaypointManager {
         UUID waypointUUID = handle.uuid();
         UUID receiverUUID = receiver.getUniqueId();
 
-        if (waypointDefinition instanceof AbstractLocationalWaypoint) {
+        if (waypointDefinition instanceof AbstractLocationWaypoint) {
             paperReceiver.sendPacket(ClientboundTrackedWaypointPacket.removeWaypoint(waypointUUID));
             Set<UUID> receiverTracked = tracked.get(receiverUUID);
             if (receiverTracked != null) receiverTracked.remove(waypointUUID);
@@ -138,17 +144,66 @@ public class PaperWaypointManager extends WaypointManager {
 
 
     /**
-     * Resolves a {@link WaypointTransmitter.Connection} from a UUID.
-     * Returns empty if the connection cannot be made, the waypoint will be expired.
+     * Resolves a {@link WaypointTransmitter.Connection} from a transmitter UUID.
+     * Returns a connection that uses the waypoint's custom icon, delegating {@code isBroken()} to
+     * the entity's native connection. Override to support packet entity systems.
+     * Returns empty if the entity cannot be found — the waypoint will be expired.
      */
-    protected Optional<WaypointTransmitter.Connection> resolveConnection(UUID uuid, ServerPlayer player) {
-        Entity entity = Bukkit.getEntity(uuid);
-
-        // TODO add support for non-living entities by creating our own connection.
+    protected Optional<WaypointTransmitter.Connection> resolveConnection(UUID transmitterUUID, Waypoint.Icon icon, UUID handleUUID, ServerPlayer player) {
+        Entity entity = Bukkit.getEntity(transmitterUUID);
         if (entity instanceof CraftLivingEntity craftLiving) {
-            return craftLiving.getHandle().makeWaypointConnectionWith(player);
+            LivingEntity nmsEntity = craftLiving.getHandle();
+            return nmsEntity.makeWaypointConnectionWith(player)
+              .map(inner -> new IconConnection(handleUUID, icon, nmsEntity, player, inner));
         }
         return Optional.empty();
+    }
+
+
+    private static class IconConnection implements WaypointTransmitter.Connection {
+        private final UUID uuid;
+        private final Waypoint.Icon icon;
+        private final LivingEntity entity;
+        private final ServerPlayer serverPlayer;
+        private final WaypointTransmitter.Connection inner;
+        private @Nullable BlockPos lastPos;
+
+        IconConnection(UUID uuid, Waypoint.Icon icon, LivingEntity entity, ServerPlayer serverPlayer, WaypointTransmitter.Connection inner) {
+            this.uuid = uuid;
+            this.icon = icon;
+            this.entity = entity;
+            this.serverPlayer = serverPlayer;
+            this.inner = inner;
+        }
+
+        @Override
+        public void connect() {
+            lastPos = entity.blockPosition();
+            serverPlayer.connection.send(ClientboundTrackedWaypointPacket.addWaypointPosition(
+              uuid, icon, new Vec3i(lastPos.getX(), lastPos.getY(), lastPos.getZ())
+            ));
+        }
+
+        @Override
+        public void update() {
+            BlockPos pos = entity.blockPosition();
+            if (Objects.equals(pos, lastPos)) return;
+            lastPos = pos;
+            serverPlayer.connection.send(ClientboundTrackedWaypointPacket.addWaypointPosition(
+              uuid, icon, new Vec3i(pos.getX(), pos.getY(), pos.getZ())
+            ));
+        }
+
+        @Override
+        public void disconnect() {
+            serverPlayer.connection.send(ClientboundTrackedWaypointPacket.removeWaypoint(uuid));
+        }
+
+        @Override
+        public boolean isBroken() {
+            return inner.isBroken();
+        }
+
     }
 
 }

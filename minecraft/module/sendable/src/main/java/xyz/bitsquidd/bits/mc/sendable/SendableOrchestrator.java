@@ -19,6 +19,7 @@ import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
+import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.WaypointManager;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
     private final SidebarManager sidebarManager = registerManager(createSidebarManager());
     private final TablistManager tablistManager = registerManager(createTablistManager());
     private final TitleManager titleManager = registerManager(createTitleManager());
+    private final WaypointManager waypointManager = registerManager(createWaypointManager());
 
     private final ImmutableSet<SendableManager<?, ?>> cachedManagers = ImmutableSet.copyOf(getAllManagers().stream().filter(m -> m instanceof SendableManager).map(m -> (SendableManager<?, ?>)m).collect(Collectors.toSet()));
 
@@ -55,11 +57,13 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
         getSendableManagers().forEach(SendableManager::tickAll);
     }
 
+
     protected abstract ActionbarManager createActionbarManager();
 
     public final ActionbarManager actionbar() {
         return actionbarManager;
     }
+
 
     protected abstract BossbarManager createBossbarManager();
 
@@ -67,11 +71,13 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
         return bossbarManager;
     }
 
+
     protected abstract SidebarManager createSidebarManager();
 
     public final SidebarManager sidebar() {
         return sidebarManager;
     }
+
 
     protected abstract TablistManager createTablistManager();
 
@@ -79,11 +85,18 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
         return tablistManager;
     }
 
+
     protected abstract TitleManager createTitleManager();
 
     public final TitleManager title() {
         return titleManager;
     }
 
+
+    protected abstract WaypointManager createWaypointManager();
+
+    public final WaypointManager waypoint() {
+        return waypointManager;
+    }
 
 }

@@ -10,8 +10,8 @@ package xyz.bitsquidd.bits.mc.sendable.impl.tablist;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
 
 
-public final class TablistSendableConfig extends SendableConfig {
-    private TablistSendableConfig(Builder builder) {
+public final class TablistConfig extends SendableConfig {
+    private TablistConfig(Builder builder) {
         super(builder);
     }
 
@@ -22,8 +22,8 @@ public final class TablistSendableConfig extends SendableConfig {
 
 
         @Override
-        public TablistSendableConfig build() {
-            return new TablistSendableConfig(this);
+        public TablistConfig build() {
+            return new TablistConfig(this);
         }
 
     }

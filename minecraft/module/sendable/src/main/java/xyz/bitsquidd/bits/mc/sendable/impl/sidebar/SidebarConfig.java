@@ -10,9 +10,9 @@ package xyz.bitsquidd.bits.mc.sendable.impl.sidebar;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
 
 
-public final class SidebarSendableConfig extends SendableConfig {
+public final class SidebarConfig extends SendableConfig {
 
-    private SidebarSendableConfig(Builder builder) {
+    private SidebarConfig(Builder builder) {
         super(builder);
     }
 
@@ -23,8 +23,8 @@ public final class SidebarSendableConfig extends SendableConfig {
 
 
         @Override
-        public SidebarSendableConfig build() {
-            return new SidebarSendableConfig(this);
+        public SidebarConfig build() {
+            return new SidebarConfig(this);
         }
 
     }

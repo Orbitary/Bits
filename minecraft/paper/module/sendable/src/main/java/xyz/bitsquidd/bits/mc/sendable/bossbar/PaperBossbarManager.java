@@ -52,7 +52,7 @@ public class PaperBossbarManager extends BossbarManager {
             BossBarOverlay overlay = BossBarOverlay.DEFAULT;
             Percentage progress = Percentage.ZERO;
 
-            SendableHandle<AbstractBossbar> handle = collection.get(i).orElse(null);
+            SendableHandle<? extends AbstractBossbar> handle = collection.get(i).orElse(null);
             if (handle != null) {
                 SendableState state = handle.state();
                 content = handle.definition().content(state);

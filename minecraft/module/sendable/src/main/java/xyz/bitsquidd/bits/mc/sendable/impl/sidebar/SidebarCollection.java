@@ -7,10 +7,17 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.sidebar;
 
+import xyz.bitsquidd.bits.mc.sendable.SendableManager;
+import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
 import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
 
 
 public final class SidebarCollection extends ListSendableCollection<AbstractSidebar> {
     SidebarCollection() {}
+
+    @Override
+    protected SendableManager<AbstractSidebar, ?> manager() {
+        return SendableOrchestrator.get().sidebar();
+    }
 
 }

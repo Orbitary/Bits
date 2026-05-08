@@ -10,10 +10,10 @@ package xyz.bitsquidd.bits.mc.sendable.impl.actionbar;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
 
 
-public final class ActionbarSendableConfig extends SendableConfig {
+public final class ActionbarConfig extends SendableConfig {
     public final int keepaliveTicks;
 
-    private ActionbarSendableConfig(Builder builder) {
+    private ActionbarConfig(Builder builder) {
         super(builder);
         this.keepaliveTicks = builder.keepaliveTicks;
     }
@@ -31,8 +31,8 @@ public final class ActionbarSendableConfig extends SendableConfig {
 
 
         @Override
-        public ActionbarSendableConfig build() {
-            return new ActionbarSendableConfig(this);
+        public ActionbarConfig build() {
+            return new ActionbarConfig(this);
         }
 
     }

@@ -13,19 +13,19 @@ import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.data.BossBarOverlay;
 import xyz.bitsquidd.bits.wrapper.Percentage;
 
 
-public final class BossbarSendableConfig extends SendableConfig {
+public final class BossbarConfig extends SendableConfig {
     public final BossBarOverlay defaultOverlay;
     public final BossBarColor defaultColor;
     public final Percentage defaultProgress;
 
-    private BossbarSendableConfig(Builder builder) {
+    private BossbarConfig(Builder builder) {
         super(builder);
         this.defaultOverlay = builder.defaultOverlay;
         this.defaultColor = builder.defaultColor;
         this.defaultProgress = builder.defaultProgress;
     }
 
-    
+
     public static final class Builder extends SendableConfig.Builder<Builder> {
         private BossBarOverlay defaultOverlay = BossBarOverlay.DEFAULT;
         private BossBarColor defaultColor = BossBarColor.DEFAULT;
@@ -51,8 +51,8 @@ public final class BossbarSendableConfig extends SendableConfig {
 
 
         @Override
-        public BossbarSendableConfig build() {
-            return new BossbarSendableConfig(this);
+        public BossbarConfig build() {
+            return new BossbarConfig(this);
         }
 
     }

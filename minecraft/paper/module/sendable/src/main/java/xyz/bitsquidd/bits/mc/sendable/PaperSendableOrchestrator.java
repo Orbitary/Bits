@@ -19,9 +19,11 @@ import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
+import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.WaypointManager;
 import xyz.bitsquidd.bits.mc.sendable.sidebar.PaperSidebarManager;
 import xyz.bitsquidd.bits.mc.sendable.tablist.PaperTablistManager;
 import xyz.bitsquidd.bits.mc.sendable.title.PaperTitleManager;
+import xyz.bitsquidd.bits.mc.sendable.waypoint.PaperWaypointManager;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
 
@@ -67,6 +69,11 @@ public class PaperSendableOrchestrator extends SendableOrchestrator {
     @Override
     protected TitleManager createTitleManager() {
         return new PaperTitleManager();
+    }
+
+    @Override
+    protected WaypointManager createWaypointManager() {
+        return new PaperWaypointManager();
     }
 
 

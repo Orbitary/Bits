@@ -10,14 +10,14 @@ package xyz.bitsquidd.bits.mc.sendable.impl.title;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
 
 
-public final class TitleSendableConfig extends SendableConfig {
+public final class TitleConfig extends SendableConfig {
     public final int fadeInEndTick;
     public final int fadeInDuration;
     public final int fadeOutStartTick;
     public final int fadeOutDuration;
     // Note: The title display time is defined by maxTicks.
 
-    private TitleSendableConfig(Builder builder) {
+    private TitleConfig(Builder builder) {
         super(builder);
         this.fadeInDuration = builder.fadeIn;
         this.fadeOutDuration = builder.fadeOut;
@@ -51,8 +51,8 @@ public final class TitleSendableConfig extends SendableConfig {
 
 
         @Override
-        public TitleSendableConfig build() {
-            return new TitleSendableConfig(this);
+        public TitleConfig build() {
+            return new TitleConfig(this);
         }
 
     }

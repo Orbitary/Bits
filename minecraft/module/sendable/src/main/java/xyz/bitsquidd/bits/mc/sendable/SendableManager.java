@@ -15,7 +15,6 @@ import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.util.Safety;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -66,14 +65,10 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
         // Default implementation does nothing.
     }
 
-
-    //region Collection accessors
-    public final Collection<? extends SendableHandle<S>> getSendables(Receiver receiver, Class<? extends S> clazz) {
-        return playerSendables.getOrDefault(receiver, createCollection())
-          .get(SendableFilter.ofClass(clazz))
-          .stream()
-          .toList();
+    // Receivers only.
+    @ApiStatus.Internal
+    protected C getCollection(Receiver receiver) {
+        return playerSendables.getOrDefault(receiver, createCollection());
     }
-    //endregion
 
 }
