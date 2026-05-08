@@ -12,14 +12,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 
+import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarSendableCollection;
 
 
 public class PaperActionbarManager extends ActionbarManager {
 
     @Override
-    protected void render(Receiver receiver, ActionbarSendableCollection collection) {
+    protected void render(Receiver receiver, ActionbarCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         TextComponent.Builder builder = Component.text();

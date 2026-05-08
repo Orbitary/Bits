@@ -20,8 +20,8 @@ import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.AbstractBossbar;
+import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarSendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.data.BossBarColor;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.data.BossBarOverlay;
 import xyz.bitsquidd.bits.wrapper.Percentage;
@@ -40,7 +40,7 @@ public class PaperBossbarManager extends BossbarManager {
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, BossEvent>> bossbarIds = new ConcurrentHashMap<>();
 
     @Override
-    protected void render(Receiver receiver, BossbarSendableCollection collection) {
+    protected void render(Receiver receiver, BossbarCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         for (int i = 0; i < MAX_BOSSBARS; i++) {

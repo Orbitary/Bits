@@ -7,15 +7,14 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.bossbar;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 
 
-public abstract class BossbarManager extends SendableManager<AbstractBossbar, BossbarSendableCollection> {
+public abstract class BossbarManager extends SendableManager<AbstractBossbar, BossbarCollection> {
 
     @Override
-    protected BossbarSendableCollection createCollection(Receiver receiver) {
-        return new BossbarSendableCollection(receiver);
+    protected BossbarCollection createCollection() {
+        return new BossbarCollection();
     }
 
 }

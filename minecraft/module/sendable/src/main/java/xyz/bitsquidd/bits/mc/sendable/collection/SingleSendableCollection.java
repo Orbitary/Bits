@@ -20,9 +20,7 @@ import java.util.List;
 public abstract class SingleSendableCollection<S extends Sendable> extends SendableCollection<S> {
     protected final Single<SendableHandle<S>> sendables = new Single<>();
 
-    protected SingleSendableCollection(Receiver receiver) {
-        super(receiver);
-    }
+    protected SingleSendableCollection() {}
 
 
     @Override
@@ -43,7 +41,7 @@ public abstract class SingleSendableCollection<S extends Sendable> extends Senda
     }
 
 
-    public void add(S sendable) {
+    public void add(S sendable, Receiver receiver) {
         SendableHandle<S> existingHandle = this.sendables.get();
         if (existingHandle != null) {
             if (sendable.config().priority() < existingHandle.config().priority() && !sendable.config().replaces(existingHandle.definition())) return; // Existing sendable has higher priority, do not replace
@@ -51,7 +49,7 @@ public abstract class SingleSendableCollection<S extends Sendable> extends Senda
             remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
         }
 
-        this.sendables.set(createHandle(sendable));
+        this.sendables.set(createHandle(sendable, receiver));
     }
 
 }

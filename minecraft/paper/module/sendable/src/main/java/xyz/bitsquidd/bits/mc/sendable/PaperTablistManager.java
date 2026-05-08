@@ -14,8 +14,8 @@ import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.AbstractTablist;
+import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistSendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
 
 import java.util.EnumMap;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class PaperTablistManager extends TablistManager {
 
     @Override
-    protected void render(Receiver receiver, TablistSendableCollection collection) {
+    protected void render(Receiver receiver, TablistCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         Map<TablistPosition, Component> positionContentMap = new EnumMap<>(TablistPosition.class);

@@ -7,14 +7,11 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.tablist;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.collection.KeyedSendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
 
 
-public final class TablistSendableCollection extends KeyedSendableCollection<TablistPosition, AbstractTablist> {
-    TablistSendableCollection(Receiver receiver) {
-        super(receiver);
-    }
+public final class TablistCollection extends KeyedSendableCollection<TablistPosition, AbstractTablist> {
+    TablistCollection() {}
 
 }

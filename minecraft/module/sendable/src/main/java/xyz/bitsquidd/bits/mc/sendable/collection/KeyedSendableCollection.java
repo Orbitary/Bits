@@ -16,7 +16,6 @@ import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
@@ -30,10 +29,7 @@ import java.util.function.BiConsumer;
 public abstract class KeyedSendableCollection<K, S extends Sendable> extends SendableCollection<S> {
     protected final BiMap<K, SendableHandle<S>> sendables = HashBiMap.create();
 
-    protected KeyedSendableCollection(Receiver receiver) {
-        super(receiver);
-    }
-
+    protected KeyedSendableCollection() {}
 
     @Override
     public String toString() {
@@ -53,7 +49,7 @@ public abstract class KeyedSendableCollection<K, S extends Sendable> extends Sen
     }
 
 
-    public void add(K key, S sendable) {
+    public final void add(K key, S sendable, Receiver receiver) {
         if (this.sendables.containsKey(key)) {
             SendableHandle<S> existingHandle = this.sendables.get(key);
             if (sendable.config().priority() < existingHandle.config().priority() && !sendable.config().replaces(existingHandle.definition())) return; // Existing sendable has higher priority, do not replace
@@ -61,11 +57,7 @@ public abstract class KeyedSendableCollection<K, S extends Sendable> extends Sen
             remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
         }
 
-        sendables.put(key, createHandle(sendable));
-    }
-
-    public void add(Map<K, ? extends S> sendables) {
-        sendables.forEach(this::add);
+        sendables.put(key, createHandle(sendable, receiver));
     }
 
     public Optional<SendableHandle<S>> get(K key) {

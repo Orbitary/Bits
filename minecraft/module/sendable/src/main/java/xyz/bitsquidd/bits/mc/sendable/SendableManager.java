@@ -37,16 +37,16 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
     protected abstract void render(Receiver receiver, C collection);
 
-    protected abstract C createCollection(Receiver receiver);
+    protected abstract C createCollection();
 
     @ApiStatus.Internal
     public final C getSendables(Receiver receiver) {
-        return playerSendables.computeIfAbsent(receiver, k -> createCollection(receiver));
+        return playerSendables.computeIfAbsent(receiver, k -> createCollection());
     }
 
     protected void initialiseReceiver(Receiver receiver) {
         cleanupReceiver(receiver);
-        playerSendables.computeIfAbsent(receiver, k -> createCollection(receiver));
+        playerSendables.computeIfAbsent(receiver, k -> createCollection());
     }
 
     protected void cleanupReceiver(Receiver receiver) {

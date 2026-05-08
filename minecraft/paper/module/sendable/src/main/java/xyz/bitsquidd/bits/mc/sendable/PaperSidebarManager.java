@@ -20,8 +20,8 @@ import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
+import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarSendableCollection;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +45,7 @@ public class PaperSidebarManager extends SidebarManager {
 
 
     @Override
-    protected void render(Receiver receiver, SidebarSendableCollection collection) {
+    protected void render(Receiver receiver, SidebarCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         List<Component> lineComponents = collection.getAll().stream()

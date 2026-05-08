@@ -7,15 +7,14 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.tablist;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 
 
-public abstract class TablistManager extends SendableManager<AbstractTablist, TablistSendableCollection> {
+public abstract class TablistManager extends SendableManager<AbstractTablist, TablistCollection> {
 
     @Override
-    protected TablistSendableCollection createCollection(Receiver receiver) {
-        return new TablistSendableCollection(receiver);
+    protected TablistCollection createCollection() {
+        return new TablistCollection();
     }
 
 }

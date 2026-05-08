@@ -7,15 +7,14 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.title;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 
 
-public abstract class TitleManager extends SendableManager<AbstractTitle, TitleSendableCollection> {
+public abstract class TitleManager extends SendableManager<AbstractTitle, TitleCollection> {
 
     @Override
-    protected TitleSendableCollection createCollection(Receiver receiver) {
-        return new TitleSendableCollection(receiver);
+    protected TitleCollection createCollection() {
+        return new TitleCollection();
     }
 
 }

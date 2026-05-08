@@ -7,13 +7,10 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.bossbar;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.collection.KeyedSendableCollection;
 
 
-public final class BossbarSendableCollection extends KeyedSendableCollection<Integer, AbstractBossbar> {
-    BossbarSendableCollection(Receiver receiver) {
-        super(receiver);
-    }
+public final class BossbarCollection extends KeyedSendableCollection<Integer, AbstractBossbar> {
+    BossbarCollection() {}
 
 }

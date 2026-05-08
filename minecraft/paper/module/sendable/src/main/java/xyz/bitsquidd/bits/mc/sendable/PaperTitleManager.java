@@ -17,14 +17,14 @@ import xyz.bitsquidd.bits.format.Time;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.AbstractTitle;
+import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleSendableCollection;
 
 
 public class PaperTitleManager extends TitleManager {
 
     @Override
-    protected void render(Receiver receiver, TitleSendableCollection collection) {
+    protected void render(Receiver receiver, TitleCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         SendableHandle<AbstractTitle> handle = collection.getAll().stream().findFirst().orElse(null);

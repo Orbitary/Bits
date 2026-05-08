@@ -7,15 +7,14 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.actionbar;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 
 
-public abstract class ActionbarManager extends SendableManager<AbstractActionbar, ActionbarSendableCollection> {
+public abstract class ActionbarManager extends SendableManager<AbstractActionbar, ActionbarCollection> {
 
     @Override
-    protected ActionbarSendableCollection createCollection(Receiver receiver) {
-        return new ActionbarSendableCollection(receiver);
+    protected ActionbarCollection createCollection() {
+        return new ActionbarCollection();
     }
 
 }

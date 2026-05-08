@@ -30,13 +30,8 @@ import java.util.List;
  */
 @DoNotMock
 public abstract class SendableCollection<S extends Sendable> {
-    private final Receiver receiver;
 
-
-    protected SendableCollection(Receiver receiver) {
-        this.receiver = receiver;
-    }
-
+    protected SendableCollection() {}
 
     //region Collection Operations
     public final Collection<SendableHandle<S>> get(SendableFilter<? super S> filter) {
@@ -72,7 +67,7 @@ public abstract class SendableCollection<S extends Sendable> {
     }
 
 
-    protected final SendableHandle<S> createHandle(S sendable) {
+    protected final SendableHandle<S> createHandle(S sendable, Receiver receiver) {
         return new SendableHandle<>(sendable, receiver);
     }
 

@@ -37,21 +37,33 @@ public interface Receiver {
         SendableOrchestrator.get().getSendableManagers().forEach(manager -> manager.getSendables(this).remove(filter));
     }
 
+    default void removeSendables(Class<? extends Sendable> clazz) {
+        removeSendables(SendableFilter.ofClass(clazz));
+    }
+
     default List<? extends SendableHandle<? extends Sendable>> getSendables(SendableFilter<? super Sendable> filter) {
         return SendableOrchestrator.get().getSendableManagers().stream()
           .flatMap(manager -> manager.getSendables(this).get(filter).stream())
           .toList();
+    }
+
+    default List<? extends SendableHandle<? extends Sendable>> getSendables(Class<? extends Sendable> clazz) {
+        return getSendables(SendableFilter.ofClass(clazz));
     }
     //endregion
 
 
     //region Actionbar
     default void addActionbar(AbstractActionbar actionbar) {
-        SendableOrchestrator.get().actionbar().getSendables(this).add(actionbar);
+        SendableOrchestrator.get().actionbar().getSendables(this).add(actionbar, this);
     }
 
     default void removeActionbar(SendableFilter<? super AbstractActionbar> filter) {
         SendableOrchestrator.get().actionbar().getSendables(this).remove(filter);
+    }
+
+    default void removeActionbar(Class<? extends AbstractActionbar> clazz) {
+        removeActionbar(SendableFilter.ofClass(clazz));
     }
 
     default Collection<? extends SendableHandle<AbstractActionbar>> getActionbars(SendableFilter<? super AbstractActionbar> filter) {
@@ -72,11 +84,15 @@ public interface Receiver {
 
     //region Bossbar
     default void addBossbar(Integer index, AbstractBossbar bossbar) {
-        SendableOrchestrator.get().bossbar().getSendables(this).add(index, bossbar);
+        SendableOrchestrator.get().bossbar().getSendables(this).add(index, bossbar, this);
     }
 
     default void removeBossbar(SendableFilter<? super AbstractBossbar> filter) {
         SendableOrchestrator.get().bossbar().getSendables(this).remove(filter);
+    }
+
+    default void removeBossbar(Class<? extends AbstractBossbar> clazz) {
+        removeBossbar(SendableFilter.ofClass(clazz));
     }
 
     default Collection<? extends SendableHandle<AbstractBossbar>> getBossbars(SendableFilter<? super AbstractBossbar> filter) {
@@ -96,11 +112,15 @@ public interface Receiver {
 
     //region Sidebar
     default void addSidebar(AbstractSidebar sidebar) {
-        SendableOrchestrator.get().sidebar().getSendables(this).add(sidebar);
+        SendableOrchestrator.get().sidebar().getSendables(this).add(sidebar, this);
     }
 
     default void removeSidebar(SendableFilter<? super AbstractSidebar> filter) {
         SendableOrchestrator.get().sidebar().getSendables(this).remove(filter);
+    }
+
+    default void removeSidebar(Class<? extends AbstractSidebar> clazz) {
+        removeSidebar(SendableFilter.ofClass(clazz));
     }
 
     default Collection<? extends SendableHandle<AbstractSidebar>> getSidebars(SendableFilter<? super AbstractSidebar> filter) {
@@ -120,11 +140,15 @@ public interface Receiver {
 
     //region Tablist
     default void addTablist(TablistPosition position, AbstractTablist tablist) {
-        SendableOrchestrator.get().tablist().getSendables(this).add(position, tablist);
+        SendableOrchestrator.get().tablist().getSendables(this).add(position, tablist, this);
     }
 
     default void removeTablist(SendableFilter<? super AbstractTablist> filter) {
         SendableOrchestrator.get().tablist().getSendables(this).remove(filter);
+    }
+
+    default void removeTablist(Class<? extends AbstractTablist> clazz) {
+        removeTablist(SendableFilter.ofClass(clazz));
     }
 
     default Collection<? extends SendableHandle<AbstractTablist>> getTablists(SendableFilter<? super AbstractTablist> filter) {
@@ -144,11 +168,15 @@ public interface Receiver {
 
     //region Title
     default void addTitle(AbstractTitle title) {
-        SendableOrchestrator.get().title().getSendables(this).add(title);
+        SendableOrchestrator.get().title().getSendables(this).add(title, this);
     }
 
     default void removeTitle(SendableFilter<? super AbstractTitle> filter) {
         SendableOrchestrator.get().title().getSendables(this).remove(filter);
+    }
+
+    default void removeTitle(Class<? extends AbstractTitle> clazz) {
+        removeTitle(SendableFilter.ofClass(clazz));
     }
 
     default Collection<? extends SendableHandle<AbstractTitle>> getTitles(SendableFilter<? super AbstractTitle> filter) {

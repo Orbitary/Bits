@@ -7,13 +7,10 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.actionbar;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
 
 
-public final class ActionbarSendableCollection extends ListSendableCollection<AbstractActionbar> {
-    ActionbarSendableCollection(Receiver receiver) {
-        super(receiver);
-    }
+public final class ActionbarCollection extends ListSendableCollection<AbstractActionbar> {
+    ActionbarCollection() {}
 
 }

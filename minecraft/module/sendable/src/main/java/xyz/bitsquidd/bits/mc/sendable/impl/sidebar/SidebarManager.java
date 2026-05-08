@@ -7,15 +7,14 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.sidebar;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 
 
-public abstract class SidebarManager extends SendableManager<AbstractSidebar, SidebarSendableCollection> {
+public abstract class SidebarManager extends SendableManager<AbstractSidebar, SidebarCollection> {
 
     @Override
-    protected SidebarSendableCollection createCollection(Receiver receiver) {
-        return new SidebarSendableCollection(receiver);
+    protected SidebarCollection createCollection() {
+        return new SidebarCollection();
     }
 
 }

@@ -7,13 +7,10 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.sidebar;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
 
 
-public final class SidebarSendableCollection extends ListSendableCollection<AbstractSidebar> {
-    SidebarSendableCollection(Receiver receiver) {
-        super(receiver);
-    }
+public final class SidebarCollection extends ListSendableCollection<AbstractSidebar> {
+    SidebarCollection() {}
 
 }

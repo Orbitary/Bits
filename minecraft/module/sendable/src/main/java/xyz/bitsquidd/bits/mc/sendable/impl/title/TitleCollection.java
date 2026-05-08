@@ -7,13 +7,10 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.title;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.collection.ListSendableCollection;
 
 
-public final class TitleSendableCollection extends ListSendableCollection<AbstractTitle> {
-    TitleSendableCollection(Receiver receiver) {
-        super(receiver);
-    }
+public final class TitleCollection extends ListSendableCollection<AbstractTitle> {
+    TitleCollection() {}
 
 }
