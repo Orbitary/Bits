@@ -8,6 +8,7 @@
 package xyz.bitsquidd.bits.mc.sendable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -25,14 +26,14 @@ import xyz.bitsquidd.bits.mc.sendable.sidebar.PaperSidebarManager;
 import xyz.bitsquidd.bits.mc.sendable.tablist.PaperTablistManager;
 import xyz.bitsquidd.bits.mc.sendable.title.PaperTitleManager;
 import xyz.bitsquidd.bits.mc.sendable.waypoint.PaperWaypointManager;
+import xyz.bitsquidd.bits.paper.util.bukkit.listener.PermanentListener;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
 import java.util.Collection;
 
 
-public class PaperSendableOrchestrator extends SendableOrchestrator {
+public class PaperSendableOrchestrator extends SendableOrchestrator implements PermanentListener {
     private @Nullable BukkitTask ticker;
-    private @Nullable BukkitTask renderer;
 
     @Override
     public void startup() {
@@ -46,7 +47,6 @@ public class PaperSendableOrchestrator extends SendableOrchestrator {
     @Override
     public void shutdown() {
         ticker = Runnables.cleanup(ticker);
-        renderer = Runnables.cleanup(renderer);
     }
 
     @Override
@@ -87,12 +87,17 @@ public class PaperSendableOrchestrator extends SendableOrchestrator {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        getSendableManagers().forEach(manager -> manager.initialiseReceiver(PaperReceiver.from(event.getPlayer())));
+        getSendableManagers().forEach(manager -> manager.initialiseReceiver(createReceiver(event.getPlayer())));
     }
 
     @EventHandler
     public final void onPlayerQuit(PlayerJoinEvent event) {
-        getSendableManagers().forEach(manager -> manager.cleanupReceiver(PaperReceiver.from(event.getPlayer())));
+        getSendableManagers().forEach(manager -> manager.cleanupReceiver(createReceiver(event.getPlayer())));
+    }
+
+
+    protected PaperReceiver createReceiver(Player player) {
+        return PaperReceiver.from(player);
     }
 
 }

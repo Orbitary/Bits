@@ -25,7 +25,7 @@ public class PaperManagerOrchestrator extends ManagerOrchestrator {
     @Override
     public void preStartup(CoreManager manager) {
         super.preStartup(manager);
-        if (manager instanceof Listener listener && !(manager instanceof PermanentListener)) Listeners.register(listener);
+        if (manager instanceof Listener listener) Listeners.register(listener);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class PaperManagerOrchestrator extends ManagerOrchestrator {
     @Override
     public void postShutdown(CoreManager manager) {
         super.postShutdown(manager);
-        if (manager instanceof Listener listener && !(manager instanceof PermanentListener)) Listeners.unregister(listener);
+        if (manager instanceof Listener listener) Listeners.unregister(listener);
     }
 
 }
