@@ -19,6 +19,7 @@ import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -44,7 +45,7 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
     //region Collection Operations
     @SuppressWarnings("unchecked") // We cast to <S> for simplicity - especially for public-facing methods.
     public final Set<SendableHandle<S>> get(SendableFilter<? super S> filter) {
-        return (Set<SendableHandle<S>>)getAll().stream().filter(filter);
+        return (Set<SendableHandle<S>>)(Set<?>)getAll().stream().filter(filter).collect(Collectors.toSet());
     }
 
     public void clear() {
