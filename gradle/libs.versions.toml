@@ -1,6 +1,7 @@
 [versions]
 adventure = "4.26.1"
 jackson = "2.21.2"
+auto-service = "1.1.1"
 
 [libraries]
 joml = { group = "org.joml", name = "joml", version = "1.10.8" }
@@ -9,6 +10,8 @@ classgraph = { group = "io.github.classgraph", name = "classgraph", version = "4
 guava = { group = "com.google.guava", name = "guava", version = "33.5.0-jre" }
 
 brigadier = { group = "com.mojang", name = "brigadier", version = "1.0.18" }
+
+auto-service = { group = "com.google.auto.service", name = "auto-service", version.ref = "auto-service" }
 
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }

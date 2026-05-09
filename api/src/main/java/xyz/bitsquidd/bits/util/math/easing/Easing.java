@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Range;
 
 import java.util.function.Function;
 
+
 /**
  * Represents an easing function that maps a progress value (between 0 and 1) to an eased progress value.
  *
@@ -43,7 +44,7 @@ public abstract class Easing {
     }
 
     /**
-     * Loops this easing: looped.progress(t) == this.progress(2 * t) for t <= 0.5, and this.progress(2 - 2 * t) for t > 0.5
+     * Loops this easing: looped.progress(t) == this.progress(2 * t) for t &lt;= 0.5, and this.progress(2 - 2 * t) for t > 0.5
      */
     public Easing looped() {
         Easing self = this;

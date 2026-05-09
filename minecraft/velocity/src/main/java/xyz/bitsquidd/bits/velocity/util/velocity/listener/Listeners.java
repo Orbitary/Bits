@@ -1,16 +1,15 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.velocity.util.velocity.listener;
 
 import com.velocitypowered.api.event.EventManager;
 
-import xyz.bitsquidd.bits.config.VelocityBitsConfig;
+import xyz.bitsquidd.bits.BitsVelocity;
 
 import java.util.Collection;
 
@@ -21,8 +20,8 @@ import java.util.Collection;
  * See <a href="https://docs.papermc.io/velocity/dev/event-api/">Working with events</a> for more information.
  */
 public final class Listeners {
-    private static final Object plugin = VelocityBitsConfig.get().getPlugin();
-    private static final EventManager eventManager = VelocityBitsConfig.get().getServer().getEventManager();
+    private static final Object plugin = BitsVelocity.get().getPlugin();
+    private static final EventManager eventManager = BitsVelocity.get().getServer().getEventManager();
 
     private Listeners() {}
 

@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.lifecycle.manager;
@@ -12,7 +11,9 @@ import xyz.bitsquidd.bits.util.Safety;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
 
 /**
  * A container that orchestrates the lifecycle of multiple {@link CoreManager} instances.
@@ -20,6 +21,8 @@ import java.util.Set;
  * This class allows for bulk registration of managers and ensures that lifecycle
  * events (startup, initialise, etc.) are propagated to all registered members
  * in the order they were added.
+ * <p>
+ * Generic onStartup, onInitialise, etc. functionality should be implemented in the {@link xyz.bitsquidd.bits.Bits Bits} {@link ManagerOrchestrator}.
  *
  * @since 0.0.10
  */
@@ -57,6 +60,23 @@ public abstract class ManagerContainer implements CoreManager {
         return List.copyOf(managers);
     }
 
+    /**
+     * Retrieves a manager of the specified type, if present.
+     *
+     * @param <T>          the specific type of manager
+     * @param managerClass the class object representing the manager type
+     *
+     * @return an optional containing the manager if found, or empty if not found
+     *
+     * @since 0.0.14
+     */
+    public final <T extends CoreManager> Optional<T> getManager(Class<T> managerClass) {
+        return getAllManagers().stream()
+          .filter(managerClass::isInstance)
+          .map(managerClass::cast)
+          .findFirst();
+    }
+
 
     @Override
     public void startup() {
@@ -64,7 +84,14 @@ public abstract class ManagerContainer implements CoreManager {
     }
 
     protected void startupManager(CoreManager manager) {
-        Safety.safeExecute(manager.getClass().getSimpleName(), manager::startup);
+        Safety.safeExecute(
+          manager.getClass().getSimpleName(),
+          () -> {
+              ManagerOrchestrator.get().preStartup(manager);
+              manager.startup();
+              ManagerOrchestrator.get().postStartup(manager);
+          }
+        );
     }
 
     @Override
@@ -73,7 +100,14 @@ public abstract class ManagerContainer implements CoreManager {
     }
 
     protected void initialiseManager(CoreManager manager) {
-        Safety.safeExecute(manager.getClass().getSimpleName(), manager::initialise);
+        Safety.safeExecute(
+          manager.getClass().getSimpleName(),
+          () -> {
+              ManagerOrchestrator.get().preInitialise(manager);
+              manager.initialise();
+              ManagerOrchestrator.get().postInitialise(manager);
+          }
+        );
     }
 
     @Override
@@ -82,7 +116,14 @@ public abstract class ManagerContainer implements CoreManager {
     }
 
     protected void cleanupManager(CoreManager manager) {
-        Safety.safeExecute(manager.getClass().getSimpleName(), manager::cleanup);
+        Safety.safeExecute(
+          manager.getClass().getSimpleName(),
+          () -> {
+              ManagerOrchestrator.get().preCleanup(manager);
+              manager.cleanup();
+              ManagerOrchestrator.get().postCleanup(manager);
+          }
+        );
     }
 
     @Override
@@ -91,7 +132,14 @@ public abstract class ManagerContainer implements CoreManager {
     }
 
     protected void shutdownManager(CoreManager manager) {
-        Safety.safeExecute(manager.getClass().getSimpleName(), manager::shutdown);
+        Safety.safeExecute(
+          manager.getClass().getSimpleName(),
+          () -> {
+              ManagerOrchestrator.get().preShutdown(manager);
+              manager.shutdown();
+              ManagerOrchestrator.get().postShutdown(manager);
+          }
+        );
     }
 
 }

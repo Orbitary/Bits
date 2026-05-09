@@ -1,17 +1,22 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.wrapper.collection;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+
 
 /**
  * A mutable container that holds a single, potentially nullable value.
@@ -25,7 +30,7 @@ public final class Single<T> {
     /**
      * The wrapped value. May be {@code null}.
      */
-    private @Nullable T value;
+    private @Nullable T value = null;
 
     /**
      * Initialises a new container with the given value.
@@ -37,6 +42,9 @@ public final class Single<T> {
     public Single(@Nullable T value) {
         this.value = value;
     }
+
+    public Single() {}
+
 
     /**
      * Creates a new container holding a non-null value.
@@ -63,7 +71,7 @@ public final class Single<T> {
      * @since 0.0.10
      */
     public static <T> Single<T> empty() {
-        return new Single<>(null);
+        return new Single<>();
     }
 
     /**
@@ -73,8 +81,8 @@ public final class Single<T> {
      *
      * @since 0.0.10
      */
-    public @Nullable T get() {
-        return value;
+    public Optional<T> get() {
+        return Optional.ofNullable(value);
     }
 
     /**
@@ -88,25 +96,21 @@ public final class Single<T> {
         this.value = value;
     }
 
-    /**
-     * Checks if this container currently holds a non-null value.
-     *
-     * @return true if a value is present, false otherwise
-     *
-     * @since 0.0.10
-     */
-    public boolean isPresent() {
-        return value != null;
+    public List<T> asList() {
+        final T currentValue = value;
+        return currentValue != null ? Collections.singletonList(currentValue) : Collections.emptyList();
     }
 
-    /**
-     * Resets the held value to null.
-     *
-     * @since 0.0.10
-     */
-    public void clear() {
-        this.value = null;
+    public Set<T> asSet() {
+        final T currentValue = value;
+        return currentValue != null ? Collections.singleton(currentValue) : Collections.emptySet();
     }
+
+    public void removeIf(Predicate<? super T> filter) {
+        final T currentValue = value;
+        if (currentValue != null && filter.test(currentValue)) this.value = null;
+    }
+
 
     /**
      * Transforms the current value and returns a new container with the result.
@@ -122,9 +126,9 @@ public final class Single<T> {
      */
     public <R> Single<R> map(Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper");
-        if (value == null) {
-            return new Single<>(null);
-        }
+
+        final T currentValue = value;
+        if (currentValue == null) return new Single<>();
         return new Single<>(mapper.apply(value));
     }
 
@@ -136,9 +140,7 @@ public final class Single<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Single<?> other)) return false;
-        return Objects.equals(this.value, other.value);
+        return this == obj || (obj instanceof Single<?> other && Objects.equals(this.value, other.value));
     }
 
     @Override
