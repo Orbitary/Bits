@@ -3,6 +3,7 @@ paper-api = "26.1.2.build.+"
 
 [libraries]
 paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api" }
+bstats = { group = "org.bstats", name = "bstats-bukkit", version = "3.2.1" }
 
 [plugins]
 paperweight-userdev = { id = "io.papermc.paperweight.userdev", version = "2.0.0-beta.21" }

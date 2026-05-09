@@ -6,6 +6,7 @@
  */
 
 import xyz.bitsquidd.util.providedApi
+import xyz.bitsquidd.util.shade
 
 allprojects {
     group = "xyz.bitsquidd.bits.velocity"
@@ -25,4 +26,12 @@ dependencies {
     api(project(":minecraft"))
 
     annotationProcessor(velocityLibs.velocity.api)
+
+    shade(velocityLibs.bstats, transitive = true)
+}
+
+tasks {
+    shadowJar {
+        relocate("org.bstats", project.group.toString())
+    }
 }

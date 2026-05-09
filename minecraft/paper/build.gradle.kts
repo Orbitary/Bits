@@ -5,6 +5,15 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
+import xyz.bitsquidd.util.shade
+
+/*
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
+ *
+ * Copyright (c) 2023-2026 ImBit
+ */
+
 plugins {
     alias(paperLibs.plugins.paperweight.userdev)
 }
@@ -32,4 +41,12 @@ allprojects {
 
 dependencies {
     api(project(":minecraft"))
+
+    shade(paperLibs.bstats, transitive = true)
+}
+
+tasks {
+    shadowJar {
+        relocate("org.bstats", project.group.toString())
+    }
 }
