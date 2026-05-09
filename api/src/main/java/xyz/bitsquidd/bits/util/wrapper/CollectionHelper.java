@@ -9,12 +9,15 @@ package xyz.bitsquidd.bits.util.wrapper;
 
 import org.jetbrains.annotations.Nullable;
 
+import xyz.bitsquidd.bits.data.Weighted;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+
 
 /**
  * Provides static utility methods for manipulated and querying Java {@link java.util.Collection}s.
@@ -143,6 +146,30 @@ public final class CollectionHelper {
         }
 
         return list;
+    }
+
+    /**
+     * Selects a random element from a collection based on weights defined by the {@link Weighted} interface.
+     *
+     * @param <T>        the element type, must implement Weighted
+     * @param collection the collection to select from
+     *
+     * @return a randomly selected element, weighted by the values returned by weight()
+     *
+     * @since 0.0.15
+     */
+    public static <T extends Weighted> T getWeightedElement(Collection<T> collection) {
+        double totalWeight = collection.stream().mapToDouble(Weighted::weight).sum();
+        double randomWeight = Math.random() * totalWeight;
+
+        double cumulativeWeight = 0.0;
+        for (T element : collection) {
+            cumulativeWeight += element.weight();
+            if (randomWeight < cumulativeWeight) return element;
+        }
+
+        // Fallback in case of rounding errors, should not happen if weights are valid
+        throw new IllegalStateException("Failed to select a weighted element");
     }
 
 }
