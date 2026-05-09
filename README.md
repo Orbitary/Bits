@@ -1,4 +1,4 @@
-# Bits
+<img width="4320" height="1080" alt="bits_logo" src="https://github.com/user-attachments/assets/fb7e3cc4-1533-40a9-b240-d2be153ea551" />
 
 💾 A Utility library for Minecraft development.
 
@@ -11,7 +11,8 @@ Bits is a multi-platform Minecraft utility library designed to streamline plugin
 ### Features:
 
 - Multi-platform support
-- Annotation-based [Brigadier](https://github.com/Mojang/brigadier) Command API (Paper, Velocity, +)
+- Annotation-based [Brigadier](https://github.com/Mojang/brigadier) Command API
+- Sendable lifecycle builders (Actionbars, Sidebars, Waypoints, +)
 - Automatic Text formatting
 - Common Plugin utilities (Color, Sound, Location, Item, Math, Permission APIs)
 
@@ -24,7 +25,6 @@ Bits is a multi-platform Minecraft utility library designed to streamline plugin
 
 ```kotlin
 repositories {
-    mavenCentral()
     maven { url = uri("https://repo.bitsquidd.xyz/repository/bit/") }
 }
 
