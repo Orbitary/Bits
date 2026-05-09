@@ -7,7 +7,12 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.actionbar;
 
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
+import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
+
+import java.util.Optional;
 
 
 public abstract class ActionbarManager extends SendableManager<AbstractActionbar, ActionbarCollection> {
@@ -16,5 +21,17 @@ public abstract class ActionbarManager extends SendableManager<AbstractActionbar
     protected ActionbarCollection createCollection() {
         return new ActionbarCollection();
     }
+
+
+    //region Operations
+    public final <S extends AbstractActionbar> Optional<SendableHandle<S>> add(Receiver receiver, S actionbar) {
+        return getCollection(receiver).add(actionbar);
+    }
+
+    public final <S extends AbstractActionbar> void addGlobal(S actionbar) {
+        globalSendables.add(actionbar);
+        SendableOrchestrator.get().getAllReceivers().forEach(r -> add(r, actionbar));
+    }
+    //endregion
 
 }

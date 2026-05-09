@@ -9,9 +9,9 @@ package xyz.bitsquidd.bits.mc.sendable.collection;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
@@ -37,6 +37,14 @@ public abstract non-sealed class KeyedSendableCollection<K, S extends Sendable> 
     }
 
 
+    @ApiStatus.Internal
+    @Override
+    public final void mergeInto(SendableCollection<S> other) {
+        if (!(other instanceof KeyedSendableCollection<K, S> otherKeyed)) throw new UnsupportedOperationException("Cannot merge KeyedSendableCollection into non-KeyedSendableCollection");
+
+        sendables.forEach((k, v) -> otherKeyed.sendables.put(k, v.clone()));
+    }
+
     @Unmodifiable
     @Override
     public final List<SendableHandle<? extends S>> getAll() {
@@ -49,7 +57,7 @@ public abstract non-sealed class KeyedSendableCollection<K, S extends Sendable> 
     }
 
 
-    public final <SE extends S> Optional<SendableHandle<SE>> add(K key, SE sendable, Receiver receiver) {
+    public final <SE extends S> Optional<SendableHandle<SE>> add(K key, SE sendable) {
         if (this.sendables.containsKey(key)) {
             SendableHandle<? extends S> existingHandle = this.sendables.get(key);
             if (sendable.config().priority() < existingHandle.config().priority() && !sendable.config().replaces(existingHandle.definition())) return Optional.empty(); // Existing sendable has higher priority, do not replace
@@ -57,7 +65,7 @@ public abstract non-sealed class KeyedSendableCollection<K, S extends Sendable> 
             remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
         }
 
-        SendableHandle<SE> handle = createHandle(sendable, receiver);
+        SendableHandle<SE> handle = createHandle(sendable);
         sendables.put(key, handle);
         return Optional.of(handle);
     }

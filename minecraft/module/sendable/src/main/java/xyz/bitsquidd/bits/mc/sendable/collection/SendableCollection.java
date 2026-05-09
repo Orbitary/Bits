@@ -8,6 +8,8 @@
 package xyz.bitsquidd.bits.mc.sendable.collection;
 
 import com.google.errorprone.annotations.DoNotMock;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
@@ -41,6 +43,12 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
         return (Collection<SendableHandle<S>>)(Collection<?>)getAll().stream().filter(filter).toList();
     }
 
+    /**
+     * Merges this collection into another collection of the same type. Used for merging global or grouped collections into player collections.
+     */
+    @ApiStatus.Internal
+    public abstract void mergeInto(SendableCollection<S> other);
+
     @Unmodifiable
     public abstract List<SendableHandle<? extends S>> getAll();
 
@@ -57,9 +65,9 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
     //endregion
 
 
-    public final void tick() {
-        getAll().forEach(SendableHandle::bits$tick);
-        remove(SendableHandle::isExpired);
+    public final void tick(@Nullable Receiver receiver) {
+        getAll().forEach(h -> h.bits$tick(receiver));
+        remove(SendableHandle::isExpired, receiver);
     }
 
     public final boolean needsRender() {
@@ -72,8 +80,8 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
     }
 
 
-    protected final <SE extends S> SendableHandle<SE> createHandle(SE sendable, Receiver receiver) {
-        return new SendableHandle<>(sendable, manager(), receiver);
+    protected final <SE extends S> SendableHandle<SE> createHandle(SE sendable) {
+        return new SendableHandle<>(sendable, manager());
     }
 
     protected abstract SendableManager<S, ?> manager();

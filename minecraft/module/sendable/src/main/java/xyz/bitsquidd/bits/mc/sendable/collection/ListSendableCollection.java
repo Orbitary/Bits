@@ -7,9 +7,9 @@
 
 package xyz.bitsquidd.bits.mc.sendable.collection;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
@@ -33,6 +33,14 @@ public abstract non-sealed class ListSendableCollection<S extends Sendable> exte
     }
 
 
+    @ApiStatus.Internal
+    @Override
+    public final void mergeInto(SendableCollection<S> other) {
+        if (!(other instanceof ListSendableCollection<S> otherList)) throw new UnsupportedOperationException("Cannot merge ListSendableCollection into non-ListSendableCollection");
+
+        sendables.forEach(handle -> otherList.sendables.add(handle.clone()));
+    }
+
     @Unmodifiable
     @Override
     public final List<SendableHandle<? extends S>> getAll() {
@@ -45,7 +53,7 @@ public abstract non-sealed class ListSendableCollection<S extends Sendable> exte
     }
 
 
-    public final <SE extends S> Optional<SendableHandle<SE>> add(SE sendable, Receiver receiver) {
+    public final <SE extends S> Optional<SendableHandle<SE>> add(SE sendable) {
         int priority = sendable.config().priority();
         int index = 0;
 
@@ -54,7 +62,7 @@ public abstract non-sealed class ListSendableCollection<S extends Sendable> exte
             index++;
         }
 
-        SendableHandle<SE> handle = createHandle(sendable, receiver);
+        SendableHandle<SE> handle = createHandle(sendable);
         sendables.add(index, handle);
         return Optional.of(handle);
     }

@@ -23,20 +23,30 @@ import java.util.UUID;
 public final class SendableHandle<S extends Sendable> {
     private final S definition;
     private final SendableManager<? super S, ?> manager; // Internal use only for manager callbacks.
-    private final Receiver receiver;
     private final SendableConfig config;
     private final UUID uuid = UUID.randomUUID();
 
     private int tick = -1; // Start at -1 so that the first tick (tick 0) happens immediately on add.
+    private boolean hasAdded = false;
     private boolean reversing = false;
     private boolean needsRender = true;
     private boolean expired = false;
 
-    public SendableHandle(S definition, SendableManager<? super S, ?> manager, Receiver receiver) {
+    public SendableHandle(S definition, SendableManager<? super S, ?> manager) {
         this.definition = definition;
         this.config = definition.config();
         this.manager = manager;
-        this.receiver = receiver;
+    }
+
+    @Override
+    public SendableHandle<S> clone() {
+        SendableHandle<S> clone = new SendableHandle<>(definition, manager);
+        clone.tick = this.tick;
+        clone.hasAdded = false; // Force set added to false. Important to ensure cloned handle is properly added.
+        clone.reversing = this.reversing;
+        clone.needsRender = this.needsRender;
+        clone.expired = this.expired;
+        return clone;
     }
 
     @ApiStatus.Internal
@@ -63,7 +73,7 @@ public final class SendableHandle<S extends Sendable> {
 
         if (definition.needsRender(state())) bits$markForRender();
 
-        if (tick == 0) triggerAdd();
+        if (!hasAdded) triggerAdd();
         triggerTick();
     }
 
@@ -120,18 +130,19 @@ public final class SendableHandle<S extends Sendable> {
 
 
     private void triggerAdd() {
+        hasAdded = true;
         definition.onAdd(state());
-        manager.onAdd(receiver, this);
+        manager.onAdd(this);
     }
 
     private void triggerTick() {
         definition.onTick(state());
-        manager.onTick(receiver, this);
+        manager.onTick(this);
     }
 
     private void triggerExpire() {
         definition.onExpire(state());
-        manager.onExpire(receiver, this);
+        manager.onExpire(this);
     }
 
 
@@ -148,10 +159,6 @@ public final class SendableHandle<S extends Sendable> {
         return config;
     }
 
-    public Receiver getReceiver() {
-        return receiver;
-    }
-
     public int getTick() {
         return tick;
     }
@@ -165,7 +172,7 @@ public final class SendableHandle<S extends Sendable> {
     }
 
 
-    public SendableState state() {
+    public SendableState state(Receiver receiver) {
         return new SendableState(
           receiver,
           tick,

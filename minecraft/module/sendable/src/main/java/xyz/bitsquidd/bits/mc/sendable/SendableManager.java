@@ -15,19 +15,23 @@ import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.util.Safety;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public abstract class SendableManager<S extends Sendable, C extends SendableCollection<S>> implements CoreManager {
     protected final Map<Receiver, C> playerSendables = new ConcurrentHashMap<>();
+    protected final C globalSendables = createCollection(); // Non-rendering collection: used to tick ghost sendables, ready to merge on initialisation.
 
 
     public final void tickAll() {
+        Safety.safeExecute(() -> globalSendables.tick(null));
+
         playerSendables.forEach((r, c) -> Safety.safeExecute(
           c.getClass().getSimpleName(),
           () -> {
-              c.tick();
+              c.tick(r);
               if (c.needsRender()) {
                   render(r, c);
                   c.markRendered();
@@ -42,7 +46,16 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
     protected void initialiseReceiver(Receiver receiver) {
         cleanupReceiver(receiver);
-        playerSendables.computeIfAbsent(receiver, k -> createCollection());
+
+        // Atomic: ensures adding a global at the same time as init does not break.
+        playerSendables.computeIfAbsent(
+          receiver,
+          k -> {
+              C personalCollection = createCollection();
+              globalSendables.mergeInto(personalCollection);
+              return personalCollection;
+          }
+        );
     }
 
     protected void cleanupReceiver(Receiver receiver) {
@@ -65,10 +78,33 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
         // Default implementation does nothing.
     }
 
-    // Receivers only.
     @ApiStatus.Internal
     protected C getCollection(Receiver receiver) {
         return playerSendables.getOrDefault(receiver, createCollection());
     }
+
+
+    //region Operations
+    public final void remove(Receiver receiver, SendableFilter<? super S> filter) {
+        getCollection(receiver).remove(filter);
+    }
+
+    public final Collection<SendableHandle<S>> get(Receiver receiver, SendableFilter<? super S> filter) {
+        return getCollection(receiver).get(filter);
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <SE extends S> Collection<SendableHandle<SE>> get(Receiver receiver, Class<? extends SE> clazz) {
+        return get(receiver, SendableFilter.ofClass(clazz))
+          .stream()
+          .map(handle -> (SendableHandle<SE>)handle)
+          .toList();
+    }
+
+    public final void removeGlobal(SendableFilter<? super S> filter) {
+        globalSendables.remove(filter);
+        playerSendables.forEach((r, c) -> c.remove(filter));
+    }
+    //endregion
 
 }

@@ -206,4 +206,14 @@ public class PaperWaypointManager extends WaypointManager {
 
     }
 
+
+    @Override
+    protected void cleanupReceiver(Receiver receiver) {
+        super.cleanupReceiver(receiver);
+        UUID uuid = receiver.getUniqueId();
+
+        transmittors.remove(uuid);
+        tracked.remove(uuid);
+    }
+
 }

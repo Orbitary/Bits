@@ -7,6 +7,7 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,6 +27,8 @@ import xyz.bitsquidd.bits.mc.sendable.title.PaperTitleManager;
 import xyz.bitsquidd.bits.mc.sendable.waypoint.PaperWaypointManager;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
+import java.util.Collection;
+
 
 public class PaperSendableOrchestrator extends SendableOrchestrator {
     private @Nullable BukkitTask ticker;
@@ -44,6 +47,11 @@ public class PaperSendableOrchestrator extends SendableOrchestrator {
     public void shutdown() {
         ticker = Runnables.cleanup(ticker);
         renderer = Runnables.cleanup(renderer);
+    }
+
+    @Override
+    public Collection<? extends Receiver> getAllReceivers() {
+        return Bukkit.getOnlinePlayers().stream().map(PaperReceiver::from).toList();
     }
 
     @Override

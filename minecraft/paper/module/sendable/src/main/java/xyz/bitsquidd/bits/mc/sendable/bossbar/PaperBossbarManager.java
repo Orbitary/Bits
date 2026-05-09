@@ -54,7 +54,7 @@ public class PaperBossbarManager extends BossbarManager {
 
             SendableHandle<? extends AbstractBossbar> handle = collection.get(i).orElse(null);
             if (handle != null) {
-                SendableState state = handle.state();
+                SendableState state = handle.state(receiver);
                 content = handle.definition().content(state);
                 color = handle.definition().color(state);
                 overlay = handle.definition().overlay(state);
@@ -164,8 +164,6 @@ public class PaperBossbarManager extends BossbarManager {
     @Override
     protected void cleanupReceiver(Receiver receiver) {
         super.cleanupReceiver(receiver);
-        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
-
         bossbarIds.remove(receiver.getUniqueId());
     }
 

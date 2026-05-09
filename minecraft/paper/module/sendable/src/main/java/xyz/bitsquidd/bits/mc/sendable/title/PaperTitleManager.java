@@ -32,7 +32,7 @@ public class PaperTitleManager extends TitleManager {
         SendableHandle<? extends AbstractTitle> handle = collection.getAll().stream().findFirst().orElse(null);
         if (handle == null) return; // Titles do not need cleanup, they time out on their own!
 
-        SendableState state = handle.state();
+        SendableState state = handle.state(receiver);
 
         Title.Times times = handle.definition().getTimes(state);
         paperReceiver.sendPacket(new ClientboundSetTitlesAnimationPacket(

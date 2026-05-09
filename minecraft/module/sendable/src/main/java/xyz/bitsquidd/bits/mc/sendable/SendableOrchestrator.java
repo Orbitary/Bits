@@ -21,6 +21,7 @@ import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.WaypointManager;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,10 +48,14 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
         return instance;
     }
 
+
     @Unmodifiable
     public final Set<SendableManager<?, ?>> getSendableManagers() {
         return cachedManagers;
     }
+
+
+    public abstract Collection<? extends Receiver> getAllReceivers();
 
 
     protected final void tickAll() {

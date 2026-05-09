@@ -51,6 +51,7 @@ public final class SendableGroup {
         sidebars.forEach(receiver::addSidebar);
         tablists.forEach(receiver::addTablist);
         titles.forEach(receiver::addTitle);
+        waypoints.forEach(receiver::addWaypoint);
     }
 
 

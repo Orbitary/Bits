@@ -7,7 +7,12 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.title;
 
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
+import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
+
+import java.util.Optional;
 
 
 public abstract class TitleManager extends SendableManager<AbstractTitle, TitleCollection> {
@@ -17,4 +22,15 @@ public abstract class TitleManager extends SendableManager<AbstractTitle, TitleC
         return new TitleCollection();
     }
 
+
+    //region Operations
+    public final <S extends AbstractTitle> Optional<SendableHandle<S>> add(Receiver receiver, S title) {
+        return getCollection(receiver).add(title);
+    }
+
+    public final <S extends AbstractTitle> void addGlobal(S title) {
+        globalSendables.add(title);
+        SendableOrchestrator.get().getAllReceivers().forEach(r -> add(r, title));
+    }
+    //endregion
 }

@@ -28,6 +28,7 @@ import java.util.UUID;
  * <p>
  * Developer note: Receivers should hashCode() and equals() based on their uniqueId, as this is used for storing sendables in the SendableManager.
  */
+@SuppressWarnings("UnusedReturnValue")
 public interface Receiver {
     //region General
     UUID getUniqueId();
@@ -50,7 +51,7 @@ public interface Receiver {
     }
 
     @SuppressWarnings("unchecked")
-    default <S extends AbstractActionbar> List<SendableHandle<S>> getSendables(Class<? extends S> clazz) {
+    default <S extends Sendable> List<SendableHandle<S>> getSendables(Class<? extends S> clazz) {
         return getSendables(SendableFilter.ofClass(clazz))
           .stream()
           .map(handle -> (SendableHandle<S>)handle)
@@ -61,27 +62,19 @@ public interface Receiver {
 
     //region Actionbar
     default <S extends AbstractActionbar> Optional<SendableHandle<S>> addActionbar(S actionbar) {
-        return SendableOrchestrator.get().actionbar().getCollection(this).add(actionbar, this);
+        return SendableOrchestrator.get().actionbar().add(this, actionbar);
     }
 
     default void removeActionbar(SendableFilter<? super AbstractActionbar> filter) {
-        SendableOrchestrator.get().actionbar().getCollection(this).remove(filter);
-    }
-
-    default void removeActionbar(Class<? extends AbstractActionbar> clazz) {
-        removeActionbar(SendableFilter.ofClass(clazz));
+        SendableOrchestrator.get().actionbar().remove(this, filter);
     }
 
     default Collection<SendableHandle<AbstractActionbar>> getActionbars(SendableFilter<? super AbstractActionbar> filter) {
-        return SendableOrchestrator.get().actionbar().getCollection(this).get(filter);
+        return SendableOrchestrator.get().actionbar().get(this, filter);
     }
 
-    @SuppressWarnings("unchecked")
     default <S extends AbstractActionbar> Collection<SendableHandle<S>> getActionbars(Class<? extends S> clazz) {
-        return getActionbars(SendableFilter.ofClass(clazz))
-          .stream()
-          .map(handle -> (SendableHandle<S>)handle)
-          .toList();
+        return SendableOrchestrator.get().actionbar().get(this, clazz);
     }
 
     //endregion
@@ -89,135 +82,95 @@ public interface Receiver {
 
     //region Bossbar
     default <S extends AbstractBossbar> Optional<SendableHandle<S>> addBossbar(Integer index, S bossbar) {
-        return SendableOrchestrator.get().bossbar().getCollection(this).add(index, bossbar, this);
+        return SendableOrchestrator.get().bossbar().add(this, index, bossbar);
     }
 
     default void removeBossbar(SendableFilter<? super AbstractBossbar> filter) {
-        SendableOrchestrator.get().bossbar().getCollection(this).remove(filter);
-    }
-
-    default void removeBossbar(Class<? extends AbstractBossbar> clazz) {
-        removeBossbar(SendableFilter.ofClass(clazz));
+        SendableOrchestrator.get().bossbar().remove(this, filter);
     }
 
     default Collection<SendableHandle<AbstractBossbar>> getBossbars(SendableFilter<? super AbstractBossbar> filter) {
-        return SendableOrchestrator.get().bossbar().getCollection(this).get(filter);
+        return SendableOrchestrator.get().bossbar().get(this, filter);
     }
 
-    @SuppressWarnings("unchecked")
     default <S extends AbstractBossbar> Collection<SendableHandle<S>> getBossbars(Class<? extends S> clazz) {
-        return getBossbars(SendableFilter.ofClass(clazz))
-          .stream()
-          .map(handle -> (SendableHandle<S>)handle)
-          .toList();
+        return SendableOrchestrator.get().bossbar().get(this, clazz);
     }
     //endregion
 
 
     //region Sidebar
     default <S extends AbstractSidebar> Optional<SendableHandle<S>> addSidebar(S sidebar) {
-        return SendableOrchestrator.get().sidebar().getCollection(this).add(sidebar, this);
+        return SendableOrchestrator.get().sidebar().add(this, sidebar);
     }
 
     default void removeSidebar(SendableFilter<? super AbstractSidebar> filter) {
-        SendableOrchestrator.get().sidebar().getCollection(this).remove(filter);
-    }
-
-    default void removeSidebar(Class<? extends AbstractSidebar> clazz) {
-        removeSidebar(SendableFilter.ofClass(clazz));
+        SendableOrchestrator.get().sidebar().remove(this, filter);
     }
 
     default Collection<SendableHandle<AbstractSidebar>> getSidebars(SendableFilter<? super AbstractSidebar> filter) {
-        return SendableOrchestrator.get().sidebar().getCollection(this).get(filter);
+        return SendableOrchestrator.get().sidebar().get(this, filter);
     }
 
-    @SuppressWarnings("unchecked")
     default <S extends AbstractSidebar> Collection<SendableHandle<S>> getSidebars(Class<? extends S> clazz) {
-        return getSidebars(SendableFilter.ofClass(clazz))
-          .stream()
-          .map(handle -> (SendableHandle<S>)handle)
-          .toList();
+        return SendableOrchestrator.get().sidebar().get(this, clazz);
     }
     //endregion
 
 
     //region Tablist
     default <S extends AbstractTablist> Optional<SendableHandle<S>> addTablist(TablistPosition position, S tablist) {
-        return SendableOrchestrator.get().tablist().getCollection(this).add(position, tablist, this);
+        return SendableOrchestrator.get().tablist().add(this, position, tablist);
     }
 
     default void removeTablist(SendableFilter<? super AbstractTablist> filter) {
-        SendableOrchestrator.get().tablist().getCollection(this).remove(filter);
-    }
-
-    default void removeTablist(Class<? extends AbstractTablist> clazz) {
-        removeTablist(SendableFilter.ofClass(clazz));
+        SendableOrchestrator.get().tablist().remove(this, filter);
     }
 
     default Collection<SendableHandle<AbstractTablist>> getTablists(SendableFilter<? super AbstractTablist> filter) {
-        return SendableOrchestrator.get().tablist().getCollection(this).get(filter);
+        return SendableOrchestrator.get().tablist().get(this, filter);
     }
 
-    @SuppressWarnings("unchecked")
     default <S extends AbstractTablist> Collection<SendableHandle<S>> getTablists(Class<? extends S> clazz) {
-        return getTablists(SendableFilter.ofClass(clazz))
-          .stream()
-          .map(handle -> (SendableHandle<S>)handle)
-          .toList();
+        return SendableOrchestrator.get().tablist().get(this, clazz);
     }
     //endregion
 
 
     //region Title
     default <S extends AbstractTitle> Optional<SendableHandle<S>> addTitle(S title) {
-        return SendableOrchestrator.get().title().getCollection(this).add(title, this);
+        return SendableOrchestrator.get().title().add(this, title);
     }
 
     default void removeTitle(SendableFilter<? super AbstractTitle> filter) {
-        SendableOrchestrator.get().title().getCollection(this).remove(filter);
-    }
-
-    default void removeTitle(Class<? extends AbstractTitle> clazz) {
-        removeTitle(SendableFilter.ofClass(clazz));
+        SendableOrchestrator.get().title().remove(this, filter);
     }
 
     default Collection<SendableHandle<AbstractTitle>> getTitles(SendableFilter<? super AbstractTitle> filter) {
-        return SendableOrchestrator.get().title().getCollection(this).get(filter);
+        return SendableOrchestrator.get().title().get(this, filter);
     }
 
-    @SuppressWarnings("unchecked")
     default <S extends AbstractTitle> Collection<SendableHandle<S>> getTitles(Class<? extends S> clazz) {
-        return getTitles(SendableFilter.ofClass(clazz))
-          .stream()
-          .map(handle -> (SendableHandle<S>)handle)
-          .toList();
+        return SendableOrchestrator.get().title().get(this, clazz);
     }
     //endregion
 
 
     //region Waypoint
     default <S extends AbstractWaypoint> Optional<SendableHandle<S>> addWaypoint(S waypoint) {
-        return SendableOrchestrator.get().waypoint().getCollection(this).add(waypoint, this);
+        return SendableOrchestrator.get().waypoint().add(this, waypoint);
     }
 
     default void removeWaypoint(SendableFilter<? super AbstractWaypoint> filter) {
-        SendableOrchestrator.get().waypoint().getCollection(this).remove(filter);
-    }
-
-    default void removeWaypoint(Class<? extends AbstractWaypoint> clazz) {
-        removeWaypoint(SendableFilter.ofClass(clazz));
+        SendableOrchestrator.get().waypoint().remove(this, filter);
     }
 
     default Collection<SendableHandle<AbstractWaypoint>> getWaypoints(SendableFilter<? super AbstractWaypoint> filter) {
-        return SendableOrchestrator.get().waypoint().getCollection(this).get(filter);
+        return SendableOrchestrator.get().waypoint().get(this, filter);
     }
 
-    @SuppressWarnings("unchecked")
     default <S extends AbstractWaypoint> Collection<SendableHandle<S>> getWaypoints(Class<? extends S> clazz) {
-        return getWaypoints(SendableFilter.ofClass(clazz))
-          .stream()
-          .map(handle -> (SendableHandle<S>)handle)
-          .toList();
+        return SendableOrchestrator.get().waypoint().get(this, clazz);
     }
     //endregion
 
