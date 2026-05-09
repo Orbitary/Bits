@@ -18,8 +18,7 @@ import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -44,8 +43,12 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
 
     //region Collection Operations
     @SuppressWarnings("unchecked") // We cast to <S> for simplicity - especially for public-facing methods.
-    public final Collection<SendableHandle<S>> get(SendableFilter<? super S> filter) {
-        return (Collection<SendableHandle<S>>)(Collection<?>)getAll().stream().filter(filter).toList();
+    public final Set<SendableHandle<S>> get(SendableFilter<? super S> filter) {
+        return (Set<SendableHandle<S>>)getAll().stream().filter(filter);
+    }
+
+    public void clear() {
+        getAll().forEach(h -> remove(h::equals));
     }
 
     /**
@@ -54,8 +57,7 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
     @ApiStatus.Internal
     public abstract void mergeInto(SendableCollection<S> other, Receiver receiver);
 
-    @Unmodifiable
-    public abstract List<SendableHandle<? extends S>> getAll();
+    public abstract @Unmodifiable Set<SendableHandle<? extends S>> getAll();
 
 
     public final void remove(SendableFilter<? super S> filter) {

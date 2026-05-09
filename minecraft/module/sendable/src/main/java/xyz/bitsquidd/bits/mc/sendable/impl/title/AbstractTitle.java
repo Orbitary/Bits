@@ -12,6 +12,7 @@ import net.kyori.adventure.title.Title;
 
 import xyz.bitsquidd.bits.format.Time;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 
 import java.time.Duration;
@@ -55,7 +56,13 @@ public abstract class AbstractTitle extends Sendable {
     @Override
     public final boolean needsRender(SendableState state) {
         // Only render if we're within the active lifecycle of the title.
-        return super.needsRender(state) && (state.tick() > config().fadeInEndTick && state.tick() < config().fadeOutStartTick);
+        return super.needsRender(state) && (state.tick() >= config().fadeInEndTick && state.tick() <= config().fadeOutStartTick);
+    }
+
+
+    // TODO not a massive fan of this being here. Consider repositioning.
+    public final void gracefullyExpire(SendableHandle<AbstractTitle> handle) {
+        handle.setTick(config().fadeOutStartTick);
     }
 
 }

@@ -54,6 +54,15 @@ public final class SendableGroup {
         waypoints.forEach(receiver::addWaypoint);
     }
 
+    public void applyGlobal() {
+        actionbars.forEach(a -> SendableOrchestrator.get().actionbar().addGlobal(a));
+        bossbars.forEach((i, b) -> SendableOrchestrator.get().bossbar().addGlobal(i, b));
+        sidebars.forEach(s -> SendableOrchestrator.get().sidebar().addGlobal(s));
+        tablists.forEach((p, t) -> SendableOrchestrator.get().tablist().addGlobal(p, t));
+        titles.forEach(t -> SendableOrchestrator.get().title().addGlobal(t));
+        waypoints.forEach(w -> SendableOrchestrator.get().waypoint().addGlobal(w));
+    }
+
 
     public static Builder builder() {
         return new Builder();

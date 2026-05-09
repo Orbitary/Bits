@@ -15,9 +15,10 @@ import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.util.Safety;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 
 public abstract class SendableManager<S extends Sendable, C extends SendableCollection<S>> implements CoreManager {
@@ -85,26 +86,48 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
 
     //region Operations
-    public final void remove(Receiver receiver, SendableFilter<? super S> filter) {
-        getOrCreateCollection(receiver).remove(filter);
-    }
-
-    public final Collection<SendableHandle<S>> get(Receiver receiver, SendableFilter<? super S> filter) {
+    public final Set<SendableHandle<S>> get(Receiver receiver, SendableFilter<? super S> filter) {
         return getOrCreateCollection(receiver).get(filter);
     }
 
     @SuppressWarnings("unchecked")
-    public final <SE extends S> Collection<SendableHandle<SE>> get(Receiver receiver, Class<? extends SE> clazz) {
+    public final <SE extends S> Set<SendableHandle<SE>> get(Receiver receiver, Class<? extends SE> clazz) {
         return get(receiver, SendableFilter.ofClass(clazz))
           .stream()
           .map(handle -> (SendableHandle<SE>)handle)
-          .toList();
+          .collect(Collectors.toSet());
     }
 
-    public final void removeGlobal(SendableFilter<? super S> filter) {
+    public final Set<SendableHandle<S>> getAll(SendableFilter<? super S> filter) {
+        Set<SendableHandle<S>> handles = globalSendables.get(filter);
+        playerSendables.forEach((r, c) -> handles.addAll(c.get(filter)));
+        return handles;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <SE extends S> Set<SendableHandle<SE>> getAll(Class<? extends SE> clazz) {
+        return getAll(SendableFilter.ofClass(clazz))
+          .stream()
+          .map(handle -> (SendableHandle<SE>)handle)
+          .collect(Collectors.toSet());
+    }
+
+    public final void remove(Receiver receiver, SendableFilter<? super S> filter) {
+        getOrCreateCollection(receiver).remove(filter);
+    }
+
+    public final void removeAll(SendableFilter<? super S> filter) {
         globalSendables.remove(filter);
         playerSendables.forEach((r, c) -> c.remove(filter));
     }
     //endregion
+
+
+    @Override
+    public void cleanup() {
+        globalSendables.clear();
+        playerSendables.values().forEach(c -> c.getAll().forEach(SendableHandle::bits$markForExpire));
+        playerSendables.clear();
+    }
 
 }

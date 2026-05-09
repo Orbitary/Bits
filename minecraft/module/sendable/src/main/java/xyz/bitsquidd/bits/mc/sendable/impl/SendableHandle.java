@@ -102,7 +102,6 @@ public final class SendableHandle<S extends Sendable> {
     //endregion
 
     //region Flag marking
-    @ApiStatus.Internal
     public void bits$markForRender() {
         needsRender = true;
     }

@@ -10,9 +10,9 @@ package xyz.bitsquidd.bits.wrapper.collection;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,7 +30,7 @@ public final class Single<T> {
     /**
      * The wrapped value. May be {@code null}.
      */
-    private final Set<T> value = new HashSet<>(1);
+    private @Nullable T value = null;
 
     /**
      * Initialises a new container with the given value.
@@ -39,8 +39,8 @@ public final class Single<T> {
      *
      * @since 0.0.10
      */
-    public Single(T value) {
-        this.value.add(value);
+    public Single(@Nullable T value) {
+        this.value = value;
     }
 
     public Single() {}
@@ -81,8 +81,8 @@ public final class Single<T> {
      *
      * @since 0.0.10
      */
-    public @Nullable T get() {
-        return value.isEmpty() ? null : value.iterator().next();
+    public Optional<T> get() {
+        return Optional.ofNullable(value);
     }
 
     /**
@@ -92,38 +92,23 @@ public final class Single<T> {
      *
      * @since 0.0.10
      */
-    public void set(T value) {
-        this.value.clear();
-        this.value.add(value);
+    public void set(@Nullable T value) {
+        this.value = value;
     }
-
-    /**
-     * Checks if this container currently holds a non-null value.
-     *
-     * @return true if a value is present, false otherwise
-     *
-     * @since 0.0.10
-     */
-    public boolean isPresent() {
-        return !value.isEmpty();
-    }
-
-    /**
-     * Resets the held value to null.
-     *
-     * @since 0.0.10
-     */
-    public void clear() {
-        this.value.clear();
-    }
-
 
     public List<T> asList() {
-        return isPresent() ? List.of(get()) : Collections.emptyList();
+        final T currentValue = value;
+        return currentValue != null ? Collections.singletonList(currentValue) : Collections.emptyList();
+    }
+
+    public Set<T> asSet() {
+        final T currentValue = value;
+        return currentValue != null ? Collections.singleton(currentValue) : Collections.emptySet();
     }
 
     public void removeIf(Predicate<? super T> filter) {
-        if (isPresent() && filter.test(get())) clear();
+        final T currentValue = value;
+        if (currentValue != null && filter.test(currentValue)) this.value = null;
     }
 
 
@@ -141,8 +126,10 @@ public final class Single<T> {
      */
     public <R> Single<R> map(Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper");
-        if (!isPresent()) return new Single<>();
-        return new Single<>(mapper.apply(get()));
+
+        final T currentValue = value;
+        if (currentValue == null) return new Single<>();
+        return new Single<>(mapper.apply(value));
     }
 
 
@@ -153,9 +140,7 @@ public final class Single<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Single<?> other)) return false;
-        return Objects.equals(this.value, other.value);
+        return this == obj || (obj instanceof Single<?> other && Objects.equals(this.value, other.value));
     }
 
     @Override

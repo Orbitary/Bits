@@ -16,8 +16,8 @@ import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 
@@ -37,7 +37,7 @@ public abstract non-sealed class KeyedSendableCollection<K, S extends Sendable> 
         return "KeyedSC{" + sendables + '}';
     }
 
-    
+
     @ApiStatus.Internal
     @Override
     public final void mergeInto(SendableCollection<S> other, Receiver receiver) {
@@ -47,10 +47,15 @@ public abstract non-sealed class KeyedSendableCollection<K, S extends Sendable> 
         sendables.forEach((k, v) -> otherKeyed.sendables.put(k, v.cloneWith(receiver)));
     }
 
-    @Unmodifiable
     @Override
-    public final List<SendableHandle<? extends S>> getAll() {
-        return sendables.values().stream().toList();
+    public void clear() {
+        super.clear();
+        sendables.clear();
+    }
+
+    @Override
+    public final @Unmodifiable Set<SendableHandle<? extends S>> getAll() {
+        return Set.copyOf(sendables.values());
     }
 
     @Override

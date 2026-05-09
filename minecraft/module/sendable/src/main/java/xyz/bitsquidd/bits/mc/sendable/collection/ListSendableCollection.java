@@ -17,6 +17,7 @@ import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -42,10 +43,15 @@ public abstract non-sealed class ListSendableCollection<S extends Sendable> exte
         sendables.forEach(handle -> otherList.sendables.add(handle.cloneWith(receiver)));
     }
 
-    @Unmodifiable
     @Override
-    public final List<SendableHandle<? extends S>> getAll() {
-        return List.copyOf(sendables);
+    public void clear() {
+        super.clear();
+        sendables.clear();
+    }
+
+    @Override
+    public final @Unmodifiable Set<SendableHandle<? extends S>> getAll() {
+        return Set.copyOf(sendables);
     }
 
     @Override

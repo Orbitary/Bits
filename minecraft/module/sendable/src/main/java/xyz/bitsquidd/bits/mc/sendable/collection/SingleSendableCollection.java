@@ -15,8 +15,8 @@ import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.wrapper.collection.Single;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 public abstract non-sealed class SingleSendableCollection<S extends Sendable> extends SendableCollection<S> {
@@ -36,14 +36,18 @@ public abstract non-sealed class SingleSendableCollection<S extends Sendable> ex
     public final void mergeInto(SendableCollection<S> other, Receiver receiver) {
         if (!(other instanceof SingleSendableCollection<S> otherSingle)) throw new UnsupportedOperationException("Cannot merge SingleSendableCollection into non-SingleSendableCollection");
 
-        SendableHandle<? extends S> handle = this.sendables.get();
-        if (handle != null) otherSingle.sendables.set(handle.cloneWith(receiver));
+        this.sendables.get().ifPresent(handle -> otherSingle.sendables.set(handle.cloneWith(receiver)));
     }
 
-    @Unmodifiable
     @Override
-    public final List<SendableHandle<? extends S>> getAll() {
-        return sendables.asList();
+    public void clear() {
+        super.clear();
+        sendables.set(null);
+    }
+
+    @Override
+    public final @Unmodifiable Set<SendableHandle<? extends S>> getAll() {
+        return sendables.asSet();
     }
 
     @Override
@@ -53,7 +57,7 @@ public abstract non-sealed class SingleSendableCollection<S extends Sendable> ex
 
 
     public final <SE extends S> Optional<SendableHandle<SE>> add(SE sendable) {
-        SendableHandle<? extends S> existingHandle = this.sendables.get();
+        SendableHandle<? extends S> existingHandle = this.sendables.get().orElse(null);
         if (existingHandle != null) {
             if (sendable.config().priority() < existingHandle.config().priority() && !sendable.config().replaces(existingHandle.definition())) return Optional.empty(); // Existing sendable has higher priority, do not replace
 
