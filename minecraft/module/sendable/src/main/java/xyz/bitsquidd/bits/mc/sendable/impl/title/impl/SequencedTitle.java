@@ -18,11 +18,8 @@ import java.util.List;
 
 
 public abstract class SequencedTitle extends AbstractTitle {
-
     private final List<TitlePhase> resolvedPhases;
     private final List<Integer> cumulativeTicks;
-    private int lastPhaseIndex = -1; // tracks phase transitions
-
 
     protected SequencedTitle(List<TitlePhase> phases) {
         resolvedPhases = List.copyOf(phases);
@@ -49,28 +46,34 @@ public abstract class SequencedTitle extends AbstractTitle {
         return resolvedPhases.get(currentPhaseIndex(state));
     }
 
+    private int phaseIndexAtTick(int tick) {
+        for (int i = 0; i < cumulativeTicks.size(); i++) {
+            if (tick < cumulativeTicks.get(i)) return i;
+        }
+        return resolvedPhases.size() - 1;
+    }
+
     @Override
     public void onTick(SendableState state) {
-        if (state.tick() > cumulativeTicks.getLast()) {
-            state.handle().setTick(config().fadeOutStartTick); // A little jank to allow for nice fading out
+        if (state.tick() >= cumulativeTicks.getLast()) {
+            state.handle().setTick(config().fadeOutStartTick);
             return;
         }
-
-        int phaseIndex = currentPhaseIndex(state);
+        int phaseIndex = phaseIndexAtTick(state.tick());
         TitlePhase phase = resolvedPhases.get(phaseIndex);
 
-        if (phaseIndex != lastPhaseIndex) {
-            if (lastPhaseIndex >= 0) resolvedPhases.get(lastPhaseIndex).onEnd.accept(state);
+        int prevPhaseIndex = state.tick() > 0 ? phaseIndexAtTick(state.tick() - 1) : -1;
+        if (phaseIndex != prevPhaseIndex) {
+            if (prevPhaseIndex >= 0) resolvedPhases.get(prevPhaseIndex).onEnd.accept(state);
             phase.onStart.accept(state);
-            lastPhaseIndex = phaseIndex;
         }
-
         phase.onTick.accept(state);
     }
 
     @Override
     public void onExpire(SendableState state) {
-        if (lastPhaseIndex >= 0) resolvedPhases.get(lastPhaseIndex).onEnd.accept(state);
+        int phaseIndex = phaseIndexAtTick(state.tick());
+        resolvedPhases.get(phaseIndex).onEnd.accept(state);
     }
 
 
