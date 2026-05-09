@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,7 +92,7 @@ public class PaperSendableOrchestrator extends SendableOrchestrator implements P
     }
 
     @EventHandler
-    public final void onPlayerQuit(PlayerJoinEvent event) {
+    public final void onPlayerQuit(PlayerQuitEvent event) {
         getSendableManagers().forEach(manager -> manager.cleanupReceiver(createReceiver(event.getPlayer())));
     }
 
