@@ -18,6 +18,7 @@ import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.log.PaperBitsLogger;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 import xyz.bitsquidd.bits.paper.format.CommonPaperFormatters;
+import xyz.bitsquidd.bits.paper.lifecycle.manager.PaperManagerOrchestrator;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
 import java.util.Locale;
@@ -57,6 +58,11 @@ public class BitsPaper extends BitsMinecraft {
     @Override
     protected PaperBitsLogger createLogger() {
         return new PaperBitsLogger(plugin, Logger.LogFlags.defaultFlags());
+    }
+
+    @Override
+    protected PaperManagerOrchestrator createManagerOrchestrator() {
+        return new PaperManagerOrchestrator();
     }
 
     @Override

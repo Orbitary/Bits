@@ -21,6 +21,8 @@ import java.util.Set;
  * This class allows for bulk registration of managers and ensures that lifecycle
  * events (startup, initialise, etc.) are propagated to all registered members
  * in the order they were added.
+ * <p>
+ * Generic onStartup, onInitialise, etc. functionality should be implemented in the {@link xyz.bitsquidd.bits.Bits Bits} {@link ManagerOrchestrator}.
  *
  * @since 0.0.10
  */
@@ -82,7 +84,14 @@ public abstract class ManagerContainer implements CoreManager {
     }
 
     protected void startupManager(CoreManager manager) {
-        Safety.safeExecute(manager.getClass().getSimpleName(), manager::startup);
+        Safety.safeExecute(
+          manager.getClass().getSimpleName(),
+          () -> {
+              ManagerOrchestrator.get().preStartup(manager);
+              manager.startup();
+              ManagerOrchestrator.get().postStartup(manager);
+          }
+        );
     }
 
     @Override
@@ -91,7 +100,14 @@ public abstract class ManagerContainer implements CoreManager {
     }
 
     protected void initialiseManager(CoreManager manager) {
-        Safety.safeExecute(manager.getClass().getSimpleName(), manager::initialise);
+        Safety.safeExecute(
+          manager.getClass().getSimpleName(),
+          () -> {
+              ManagerOrchestrator.get().preInitialise(manager);
+              manager.initialise();
+              ManagerOrchestrator.get().postInitialise(manager);
+          }
+        );
     }
 
     @Override
@@ -100,7 +116,14 @@ public abstract class ManagerContainer implements CoreManager {
     }
 
     protected void cleanupManager(CoreManager manager) {
-        Safety.safeExecute(manager.getClass().getSimpleName(), manager::cleanup);
+        Safety.safeExecute(
+          manager.getClass().getSimpleName(),
+          () -> {
+              ManagerOrchestrator.get().preCleanup(manager);
+              manager.cleanup();
+              ManagerOrchestrator.get().postCleanup(manager);
+          }
+        );
     }
 
     @Override
@@ -109,7 +132,14 @@ public abstract class ManagerContainer implements CoreManager {
     }
 
     protected void shutdownManager(CoreManager manager) {
-        Safety.safeExecute(manager.getClass().getSimpleName(), manager::shutdown);
+        Safety.safeExecute(
+          manager.getClass().getSimpleName(),
+          () -> {
+              ManagerOrchestrator.get().preShutdown(manager);
+              manager.shutdown();
+              ManagerOrchestrator.get().postShutdown(manager);
+          }
+        );
     }
 
 }

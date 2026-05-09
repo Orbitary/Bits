@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.bitsquidd.bits.exception.BitsException;
 import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
+import xyz.bitsquidd.bits.lifecycle.manager.ManagerOrchestrator;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.wrapper.collection.AddableList;
 
@@ -31,7 +32,6 @@ public abstract class Bits extends ManagerContainer {
     private static @Nullable Bits instance;
 
     protected final boolean developmentMode = false;
-    protected final Logger logger;
 
     /**
      * @throws BitsException if an instance already exists
@@ -41,7 +41,9 @@ public abstract class Bits extends ManagerContainer {
         if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(Bits.class);
         instance = this;
 
-        this.logger = createLogger();
+        createLogger();
+        createManagerOrchestrator();
+
         registerManagers(modules().build());
     }
 
@@ -101,6 +103,10 @@ public abstract class Bits extends ManagerContainer {
     }
 
     protected abstract Logger createLogger();
+
+    protected ManagerOrchestrator createManagerOrchestrator() {
+        return new ManagerOrchestrator();
+    }
 
 
     public abstract void runLater(Runnable runnable, long delayMs);

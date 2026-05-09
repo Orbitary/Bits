@@ -55,7 +55,7 @@ public class BitsVelocity extends BitsMinecraft {
     @Override
     public void startup() {
         super.startup();
-        ReflectionUtils.Instance.tryCreate(Metrics.class, plugin, server, logger, dataDir, BSTATS_ID);
+        ReflectionUtils.Instance.tryCreate(Metrics.class, plugin, server, Logger.get(), dataDir, BSTATS_ID);
     }
 
 
