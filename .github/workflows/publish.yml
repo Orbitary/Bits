@@ -11,4 +11,5 @@ jobs:
     uses: Orbitary/Convention/.github/workflows/publish.yml@main
     with:
       modules: "api,fabric,paper,velocity"
+      gradleGroup: "xyz.bitsquidd.bits"
     secrets: inherit
