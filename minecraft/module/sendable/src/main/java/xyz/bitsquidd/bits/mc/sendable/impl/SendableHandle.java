@@ -8,6 +8,7 @@
 package xyz.bitsquidd.bits.mc.sendable.impl;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
@@ -22,6 +23,7 @@ import java.util.UUID;
  */
 public final class SendableHandle<S extends Sendable> {
     private final S definition;
+    private final @Nullable Receiver receiver;
     private final SendableManager<? super S, ?> manager; // Internal use only for manager callbacks.
     private final SendableConfig config;
     private final UUID uuid = UUID.randomUUID();
@@ -32,17 +34,17 @@ public final class SendableHandle<S extends Sendable> {
     private boolean needsRender = true;
     private boolean expired = false;
 
-    public SendableHandle(S definition, SendableManager<? super S, ?> manager) {
+    public SendableHandle(S definition, @Nullable Receiver receiver, SendableManager<? super S, ?> manager) {
         this.definition = definition;
+        this.receiver = receiver;
         this.config = definition.config();
         this.manager = manager;
     }
 
-    @Override
-    public SendableHandle<S> clone() {
-        SendableHandle<S> clone = new SendableHandle<>(definition, manager);
+    public SendableHandle<S> cloneWith(@Nullable Receiver receiver) {
+        SendableHandle<S> clone = new SendableHandle<>(definition, receiver, manager);
         clone.tick = this.tick;
-        clone.hasAdded = false; // Force set added to false. Important to ensure cloned handle is properly added.
+        clone.hasAdded = false;
         clone.reversing = this.reversing;
         clone.needsRender = this.needsRender;
         clone.expired = this.expired;
@@ -51,8 +53,6 @@ public final class SendableHandle<S extends Sendable> {
 
     @ApiStatus.Internal
     public void bits$tick() {
-        if (!definition.canTick(state())) return;
-
         if (reversing) {
             tick--;
         } else {
@@ -71,7 +71,7 @@ public final class SendableHandle<S extends Sendable> {
             }
         }
 
-        if (definition.needsRender(state())) bits$markForRender();
+        if (receiver != null && definition.needsRender(state(receiver))) bits$markForRender();
 
         if (!hasAdded) triggerAdd();
         triggerTick();
@@ -101,15 +101,6 @@ public final class SendableHandle<S extends Sendable> {
 
     //endregion
 
-    public boolean needsRender() {
-        return needsRender;
-    }
-
-    public boolean isExpired() {
-        return expired;
-    }
-
-
     //region Flag marking
     @ApiStatus.Internal
     public void bits$markForRender() {
@@ -130,19 +121,24 @@ public final class SendableHandle<S extends Sendable> {
 
 
     private void triggerAdd() {
-        hasAdded = true;
-        definition.onAdd(state());
-        manager.onAdd(this);
+        if (receiver != null) {
+            definition.onAdd(state(receiver));
+            manager.onAdd(receiver, this);
+        }
     }
 
     private void triggerTick() {
-        definition.onTick(state());
-        manager.onTick(this);
+        if (receiver != null) {
+            definition.onTick(state(receiver));
+            manager.onTick(receiver, this);
+        }
     }
 
     private void triggerExpire() {
-        definition.onExpire(state());
-        manager.onExpire(this);
+        if (receiver != null) {
+            definition.onExpire(state(receiver));
+            manager.onExpire(receiver, this);
+        }
     }
 
 
@@ -165,6 +161,14 @@ public final class SendableHandle<S extends Sendable> {
 
     public Percentage getProgress() {
         return Percentage.ofFraction(tick, definition.config().maxTicks());
+    }
+
+    public boolean needsRender() {
+        return needsRender;
+    }
+
+    public boolean isExpired() {
+        return expired;
     }
 
     public boolean isReversing() {

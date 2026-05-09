@@ -34,8 +34,13 @@ import java.util.List;
 @DoNotMock
 public sealed abstract class SendableCollection<S extends Sendable> permits KeyedSendableCollection, ListSendableCollection, SingleSendableCollection {
     private boolean needsForceRender = false;
+    private @Nullable Receiver receiver = null;
 
     protected SendableCollection() {}
+
+    public final void setReceiver(Receiver receiver) {
+        this.receiver = receiver;
+    }
 
     //region Collection Operations
     @SuppressWarnings("unchecked") // We cast to <S> for simplicity - especially for public-facing methods.
@@ -47,7 +52,7 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
      * Merges this collection into another collection of the same type. Used for merging global or grouped collections into player collections.
      */
     @ApiStatus.Internal
-    public abstract void mergeInto(SendableCollection<S> other);
+    public abstract void mergeInto(SendableCollection<S> other, Receiver receiver);
 
     @Unmodifiable
     public abstract List<SendableHandle<? extends S>> getAll();
@@ -55,7 +60,7 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
 
     public final void remove(SendableFilter<? super S> filter) {
         get(filter).forEach(handle -> {
-            if (handle.isExpired()) handle.bits$markForExpire();
+            if (!handle.isExpired()) handle.bits$markForExpire();
             removeInternal(handle);
         });
         needsForceRender = true; // We mark a final render on remove.
@@ -65,9 +70,9 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
     //endregion
 
 
-    public final void tick(@Nullable Receiver receiver) {
-        getAll().forEach(h -> h.bits$tick(receiver));
-        remove(SendableHandle::isExpired, receiver);
+    public final void tick() {
+        getAll().forEach(SendableHandle::bits$tick);
+        remove(SendableHandle::isExpired);
     }
 
     public final boolean needsRender() {
@@ -81,7 +86,7 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
 
 
     protected final <SE extends S> SendableHandle<SE> createHandle(SE sendable) {
-        return new SendableHandle<>(sendable, manager());
+        return new SendableHandle<>(sendable, receiver, manager());
     }
 
     protected abstract SendableManager<S, ?> manager();

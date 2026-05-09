@@ -12,6 +12,7 @@ import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
@@ -36,13 +37,14 @@ public abstract non-sealed class KeyedSendableCollection<K, S extends Sendable> 
         return "KeyedSC{" + sendables + '}';
     }
 
-
+    
     @ApiStatus.Internal
     @Override
-    public final void mergeInto(SendableCollection<S> other) {
-        if (!(other instanceof KeyedSendableCollection<K, S> otherKeyed)) throw new UnsupportedOperationException("Cannot merge KeyedSendableCollection into non-KeyedSendableCollection");
+    public final void mergeInto(SendableCollection<S> other, Receiver receiver) {
+        if (!(other instanceof KeyedSendableCollection<?, ?>)) throw new UnsupportedOperationException("Cannot merge KeyedSendableCollection into non-KeyedSendableCollection");
+        KeyedSendableCollection<K, S> otherKeyed = (KeyedSendableCollection<K, S>)other;
 
-        sendables.forEach((k, v) -> otherKeyed.sendables.put(k, v.clone()));
+        sendables.forEach((k, v) -> otherKeyed.sendables.put(k, v.cloneWith(receiver)));
     }
 
     @Unmodifiable

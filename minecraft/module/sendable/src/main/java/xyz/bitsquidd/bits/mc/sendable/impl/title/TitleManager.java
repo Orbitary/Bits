@@ -25,7 +25,7 @@ public abstract class TitleManager extends SendableManager<AbstractTitle, TitleC
 
     //region Operations
     public final <S extends AbstractTitle> Optional<SendableHandle<S>> add(Receiver receiver, S title) {
-        return getCollection(receiver).add(title);
+        return getOrCreateCollection(receiver).add(title);
     }
 
     public final <S extends AbstractTitle> void addGlobal(S title) {

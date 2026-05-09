@@ -26,12 +26,12 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
 
     public final void tickAll() {
-        Safety.safeExecute(() -> globalSendables.tick(null));
+        Safety.safeExecute(globalSendables::tick);
 
         playerSendables.forEach((r, c) -> Safety.safeExecute(
           c.getClass().getSimpleName(),
           () -> {
-              c.tick(r);
+              c.tick();
               if (c.needsRender()) {
                   render(r, c);
                   c.markRendered();
@@ -46,16 +46,7 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
     protected void initialiseReceiver(Receiver receiver) {
         cleanupReceiver(receiver);
-
-        // Atomic: ensures adding a global at the same time as init does not break.
-        playerSendables.computeIfAbsent(
-          receiver,
-          k -> {
-              C personalCollection = createCollection();
-              globalSendables.mergeInto(personalCollection);
-              return personalCollection;
-          }
-        );
+        getOrCreateCollection(receiver);
     }
 
     protected void cleanupReceiver(Receiver receiver) {
@@ -79,18 +70,27 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
     }
 
     @ApiStatus.Internal
-    protected C getCollection(Receiver receiver) {
-        return playerSendables.getOrDefault(receiver, createCollection());
+    protected C getOrCreateCollection(Receiver receiver) {
+        // Atomic: ensures adding a global at the same time as init does not break.
+        return playerSendables.computeIfAbsent(
+          receiver,
+          k -> {
+              C personalCollection = createCollection();
+              personalCollection.setReceiver(receiver);
+              globalSendables.mergeInto(personalCollection, receiver);
+              return personalCollection;
+          }
+        );
     }
 
 
     //region Operations
     public final void remove(Receiver receiver, SendableFilter<? super S> filter) {
-        getCollection(receiver).remove(filter);
+        getOrCreateCollection(receiver).remove(filter);
     }
 
     public final Collection<SendableHandle<S>> get(Receiver receiver, SendableFilter<? super S> filter) {
-        return getCollection(receiver).get(filter);
+        return getOrCreateCollection(receiver).get(filter);
     }
 
     @SuppressWarnings("unchecked")

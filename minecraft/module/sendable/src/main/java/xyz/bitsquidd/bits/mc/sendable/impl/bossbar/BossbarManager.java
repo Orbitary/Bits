@@ -25,7 +25,7 @@ public abstract class BossbarManager extends SendableManager<AbstractBossbar, Bo
 
     //region Operations
     public final <S extends AbstractBossbar> Optional<SendableHandle<S>> add(Receiver receiver, int index, S bossbar) {
-        return getCollection(receiver).add(index, bossbar);
+        return getOrCreateCollection(receiver).add(index, bossbar);
     }
 
     public final <S extends AbstractBossbar> void addGlobal(int index, S bossbar) {

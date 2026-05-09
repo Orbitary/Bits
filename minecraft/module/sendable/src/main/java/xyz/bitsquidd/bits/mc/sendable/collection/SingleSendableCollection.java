@@ -10,6 +10,7 @@ package xyz.bitsquidd.bits.mc.sendable.collection;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.wrapper.collection.Single;
@@ -32,11 +33,11 @@ public abstract non-sealed class SingleSendableCollection<S extends Sendable> ex
 
     @ApiStatus.Internal
     @Override
-    public final void mergeInto(SendableCollection<S> other) {
+    public final void mergeInto(SendableCollection<S> other, Receiver receiver) {
         if (!(other instanceof SingleSendableCollection<S> otherSingle)) throw new UnsupportedOperationException("Cannot merge SingleSendableCollection into non-SingleSendableCollection");
 
         SendableHandle<? extends S> handle = this.sendables.get();
-        if (handle != null) otherSingle.sendables.set(handle.clone());
+        if (handle != null) otherSingle.sendables.set(handle.cloneWith(receiver));
     }
 
     @Unmodifiable

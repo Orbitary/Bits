@@ -25,7 +25,7 @@ public abstract class ActionbarManager extends SendableManager<AbstractActionbar
 
     //region Operations
     public final <S extends AbstractActionbar> Optional<SendableHandle<S>> add(Receiver receiver, S actionbar) {
-        return getCollection(receiver).add(actionbar);
+        return getOrCreateCollection(receiver).add(actionbar);
     }
 
     public final <S extends AbstractActionbar> void addGlobal(S actionbar) {

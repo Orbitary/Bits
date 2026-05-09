@@ -15,6 +15,7 @@ import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
  * <p>
  * Developer Note: Each subclass must implement their own component getting logic.
  */
+@SuppressWarnings("unused")
 public abstract class Sendable {
     private final SendableConfig config;
 
@@ -46,10 +47,5 @@ public abstract class Sendable {
         int tickRate = config.tickRate();
         return tickRate > 0 && state.tick() % tickRate == 0;
     }
-
-    public boolean canTick(SendableState state) {
-        return true; // Can be overridden to "pause" for updates.
-    }
-
 
 }

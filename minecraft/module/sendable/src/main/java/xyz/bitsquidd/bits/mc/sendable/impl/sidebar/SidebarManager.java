@@ -25,7 +25,7 @@ public abstract class SidebarManager extends SendableManager<AbstractSidebar, Si
 
     //region Operations
     public final <S extends AbstractSidebar> Optional<SendableHandle<S>> add(Receiver receiver, S sidebar) {
-        return getCollection(receiver).add(sidebar);
+        return getOrCreateCollection(receiver).add(sidebar);
     }
 
     public final <S extends AbstractSidebar> void addGlobal(S sidebar) {

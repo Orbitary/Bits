@@ -37,7 +37,7 @@ public interface Receiver {
 
     //region Generic
     default void removeSendables(SendableFilter<? super Sendable> filter) {
-        SendableOrchestrator.get().getSendableManagers().forEach(manager -> manager.getCollection(this).remove(filter));
+        SendableOrchestrator.get().getSendableManagers().forEach(manager -> manager.getOrCreateCollection(this).remove(filter));
     }
 
     default void removeSendables(Class<? extends Sendable> clazz) {
@@ -46,7 +46,7 @@ public interface Receiver {
 
     default List<? extends SendableHandle<? extends Sendable>> getSendables(SendableFilter<? super Sendable> filter) {
         return SendableOrchestrator.get().getSendableManagers().stream()
-          .flatMap(manager -> manager.getCollection(this).get(filter).stream())
+          .flatMap(manager -> manager.getOrCreateCollection(this).get(filter).stream())
           .toList();
     }
 

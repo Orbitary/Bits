@@ -26,7 +26,7 @@ public abstract class TablistManager extends SendableManager<AbstractTablist, Ta
 
     //region Operations
     public final <S extends AbstractTablist> Optional<SendableHandle<S>> add(Receiver receiver, TablistPosition position, S tablist) {
-        return getCollection(receiver).add(position, tablist);
+        return getOrCreateCollection(receiver).add(position, tablist);
     }
 
     public final <S extends AbstractTablist> void addGlobal(TablistPosition position, S tablist) {

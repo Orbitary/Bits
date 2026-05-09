@@ -25,7 +25,7 @@ public abstract class WaypointManager extends SendableManager<AbstractWaypoint, 
 
     //region Operations
     public final <S extends AbstractWaypoint> Optional<SendableHandle<S>> add(Receiver receiver, S waypoint) {
-        return getCollection(receiver).add(waypoint);
+        return getOrCreateCollection(receiver).add(waypoint);
     }
 
     public final <S extends AbstractWaypoint> void addGlobal(S waypoint) {

@@ -10,6 +10,7 @@ package xyz.bitsquidd.bits.mc.sendable.collection;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
+import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
@@ -35,10 +36,10 @@ public abstract non-sealed class ListSendableCollection<S extends Sendable> exte
 
     @ApiStatus.Internal
     @Override
-    public final void mergeInto(SendableCollection<S> other) {
+    public final void mergeInto(SendableCollection<S> other, Receiver receiver) {
         if (!(other instanceof ListSendableCollection<S> otherList)) throw new UnsupportedOperationException("Cannot merge ListSendableCollection into non-ListSendableCollection");
 
-        sendables.forEach(handle -> otherList.sendables.add(handle.clone()));
+        sendables.forEach(handle -> otherList.sendables.add(handle.cloneWith(receiver)));
     }
 
     @Unmodifiable
