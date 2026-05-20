@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,11 +45,17 @@ public class PaperSidebarManager extends SidebarManager {
       .toArray(String[]::new);
 
     private final Map<UUID, Integer> playerLineCount = new ConcurrentHashMap<>();
-
+    private final Map<UUID, Component> playerTitle = new ConcurrentHashMap<>();
 
     @Override
     protected void render(Receiver receiver, SidebarCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
+
+        Component title = collection.getAll().stream()
+          .map(s -> s.definition().title(s.state(receiver)))
+          .filter(Objects::nonNull)
+          .findFirst()
+          .orElse(Component.empty());
 
         List<Component> lineComponents = collection.getAll().stream()
           .map(s -> s.definition().content(s.state(receiver)))
@@ -60,6 +67,25 @@ public class PaperSidebarManager extends SidebarManager {
         int oldLineCount = playerLineCount.getOrDefault(receiver.getUniqueId(), 0);
 
         List<Packet<?>> packets = new ArrayList<>();
+
+        Component lastTitle = playerTitle.get(receiver.getUniqueId());
+        if (!title.equals(lastTitle)) {
+            playerTitle.put(receiver.getUniqueId(), title);
+            Objective objective = new Objective(
+              NMS_SCOREBOARD,
+              id,
+              ObjectiveCriteria.DUMMY,
+              PaperAdventure.asVanillaNullToEmpty(title),
+              ObjectiveCriteria.RenderType.INTEGER,
+              true,
+              null
+            );
+
+            packets.add(new ClientboundSetObjectivePacket(
+              objective,
+              ClientboundSetObjectivePacket.METHOD_CHANGE
+            ));
+        }
 
         // Clear old lines that are no longer needed
         if (oldLineCount > newLineCount) {
@@ -101,7 +127,7 @@ public class PaperSidebarManager extends SidebarManager {
           NMS_SCOREBOARD,
           id,
           ObjectiveCriteria.DUMMY,
-          CommonComponents.EMPTY,
+          CommonComponents.EMPTY, // Empty for initialization
           ObjectiveCriteria.RenderType.INTEGER,
           true,
           null
@@ -125,6 +151,7 @@ public class PaperSidebarManager extends SidebarManager {
     protected void cleanupReceiver(Receiver receiver) {
         super.cleanupReceiver(receiver);
         playerLineCount.remove(receiver.getUniqueId());
+        playerTitle.remove(receiver.getUniqueId());
     }
 
 

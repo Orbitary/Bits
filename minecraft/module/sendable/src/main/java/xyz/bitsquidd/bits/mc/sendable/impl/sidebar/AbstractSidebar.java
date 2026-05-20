@@ -9,6 +9,8 @@ package xyz.bitsquidd.bits.mc.sendable.impl.sidebar;
 
 import net.kyori.adventure.text.Component;
 
+import org.jspecify.annotations.Nullable;
+
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 
@@ -30,6 +32,10 @@ public abstract class AbstractSidebar extends Sendable {
 
 
     public abstract List<Component> content(SendableState state);
+
+    public @Nullable Component title(SendableState state) {
+        return null;
+    }
 
 
 }
