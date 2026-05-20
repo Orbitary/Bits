@@ -8,8 +8,7 @@
 package xyz.bitsquidd.bits.mc.sendable.impl.sidebar;
 
 import net.kyori.adventure.text.Component;
-
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
