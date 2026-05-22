@@ -14,13 +14,12 @@ import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 
 import java.util.List;
 
-
 public abstract class AbstractSidebar extends Sendable {
-
 
     @Override
     protected SidebarConfig.Builder createConfig() {
-        return new SidebarConfig.Builder();
+        return new SidebarConfig.Builder()
+          .replaces(s -> s instanceof AbstractSidebar);
     }
 
     @Override
