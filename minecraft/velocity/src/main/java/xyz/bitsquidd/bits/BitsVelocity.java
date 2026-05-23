@@ -105,9 +105,4 @@ public class BitsVelocity extends BitsMinecraft {
         Tasks.builder(runnable).delay(delayMs, TimeUnit.MILLISECONDS).schedule();
     }
 
-    @Override
-    public final void runLaterAsync(Runnable runnable, long delayMs) {
-        runLater(runnable, delayMs); // Velocity runs all tasks asynchronously by default.
-    }
-
 }

@@ -7,26 +7,42 @@
 
 package xyz.bitsquidd.bits;
 
-import org.slf4j.LoggerFactory;
+import net.dv8tion.jda.api.JDA;
 
 import xyz.bitsquidd.bits.log.BasicLogger;
 import xyz.bitsquidd.bits.log.Logger;
 
 
-/**
- * Platform-independent implementation of BitsConfig, used for any platform that doesn't have specific requirements.
- */
-public final class GenericBitsConfig extends Bits {
-    private final String platformName;
+public class BitsDiscord extends Bits{
+    private final JDA jda;
+    private final org.slf4j.Logger slf4j;
 
-    GenericBitsConfig(String platformName) {
-        this.platformName = platformName;
+    public BitsDiscord(JDA jda, org.slf4j.Logger slf4j) {
+        this.jda = jda;
+        this.slf4j = slf4j;
+    }
+
+    public static BitsDiscord get() {
+        return (BitsDiscord)Bits.get();
+    }
+
+
+    public static JDA jda() {
+        return get().jda;
     }
 
     @Override
-    protected Logger createLogger() {
-        return new BasicLogger(LoggerFactory.getLogger(platformName), Logger.LogFlags.defaultFlags());
+    public void shutdown() {
+        super.shutdown();
+        jda.shutdown();
     }
+
+
+    @Override
+    protected Logger createLogger() {
+        return new BasicLogger(slf4j, Logger.LogFlags.defaultFlags());
+    }
+
 
     @Override
     public void runLater(Runnable runnable, long delayMs) {

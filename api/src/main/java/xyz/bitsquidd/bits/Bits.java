@@ -111,6 +111,8 @@ public abstract class Bits extends ManagerContainer {
 
     public abstract void runLater(Runnable runnable, long delayMs);
 
-    public abstract void runLaterAsync(Runnable runnable, long delayMs);
+    public void runLaterAsync(Runnable runnable, long delayMs) {
+        runLater(runnable, delayMs); // By default, all threads are "async"
+    }
 
 }
