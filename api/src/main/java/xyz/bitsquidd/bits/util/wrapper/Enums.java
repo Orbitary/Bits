@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+
 /**
  * Provides static utility methods for searching and resolving {@link Enum} constants.
  *
@@ -62,6 +63,16 @@ public final class Enums {
     }
 
     /**
+     * Converts an enum value to a stable string identifier, the lowercase name of the constant.
+     *
+     * @since 0.0.15
+     */
+    public static <E extends Enum<E>> String toIdentifier(E constant) {
+        return constant.name().toLowerCase(Locale.ROOT);
+    }
+
+
+    /**
      * Searches for an enum constant that matches a specific predicate.
      *
      * @param <E>        the enum type
@@ -104,6 +115,27 @@ public final class Enums {
      */
     public static <E extends Enum<E>> Collection<String> getValuesFromEnum(Class<E> enumClass) {
         return getValuesFromEnum(enumClass, Enum::name);
+    }
+
+    /**
+     * Get the next enum constant in the order they are declared, wrapping around to the first constant after reaching the end.
+     *
+     * @param <E>     the enum type
+     * @param current the current enum constant
+     *
+     * @return the next enum constant, or null if the current constant is not found in the enum
+     *
+     * @since 0.0.15
+     */
+    @SuppressWarnings("unchecked")
+    public static <E extends Enum<E>> Optional<E> getNextConstant(E current) {
+        E[] constants = ((Class<E>)current.getClass()).getEnumConstants();
+        for (int i = 0; i < constants.length; i++) {
+            if (constants[i] == current) {
+                return Optional.of(constants[(i + 1) % constants.length]);
+            }
+        }
+        return Optional.empty();
     }
 
 
