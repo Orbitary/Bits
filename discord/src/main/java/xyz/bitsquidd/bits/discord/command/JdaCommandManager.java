@@ -101,7 +101,7 @@ public class JdaCommandManager implements BitsModule {
                 if (param.getType() == JdaCommandContext.class) continue;
 
                 Parameter annotation = param.getAnnotation(Parameter.class);
-                String paramName = resolveParamName(param, annotation);
+                String paramName = resolveParamName(param, annotation).toLowerCase().replace(" ", "_");
 
                 if (!paramName.equals(focusedName)) continue;
 

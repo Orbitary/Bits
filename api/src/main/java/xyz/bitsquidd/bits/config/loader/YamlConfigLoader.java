@@ -51,9 +51,9 @@ public abstract sealed class YamlConfigLoader implements ConfigLoader permits Ya
 
     static ObjectNode readTree(java.io.InputStream source, String label) throws ConfigException {
         try {
-            ObjectNode node = (ObjectNode)YAML_MAPPER.readTree(source);
-            if (node == null) node = SerializationManager.SERIALIZER.createObjectNode();
-            return node;
+            com.fasterxml.jackson.databind.JsonNode raw = YAML_MAPPER.readTree(source);
+            if (raw == null || !raw.isObject()) return SerializationManager.SERIALIZER.createObjectNode();
+            return (ObjectNode) raw;
         } catch (IOException e) {
             throw ConfigException.loadFailed(label, e);
         }
