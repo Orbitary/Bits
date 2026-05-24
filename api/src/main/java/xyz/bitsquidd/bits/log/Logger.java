@@ -50,12 +50,12 @@ public abstract class Logger {
 
     public Logger(LogFlags flags) {
         this.flags = flags;
-        if (instance != null) throw new IllegalStateException("Logger is already initialized");
+        if (instance != null) throw new IllegalStateException("Logger is already initialized!");
         instance = this;
     }
 
     public static Logger get() {
-        if (instance == null) throw new IllegalStateException("Logger is not initialized");
+        if (instance == null) throw new IllegalStateException("Logger is not initialized! Ensure you instantiate a `new Logger()` implementation during your application's startup.");
         return instance;
     }
 

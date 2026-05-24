@@ -14,7 +14,6 @@ import xyz.bitsquidd.bits.exception.BitsException;
 import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.lifecycle.manager.ManagerContainer;
 import xyz.bitsquidd.bits.lifecycle.manager.ManagerOrchestrator;
-import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.wrapper.collection.AddableList;
 
 import java.util.Optional;
@@ -41,7 +40,6 @@ public abstract class Bits extends ManagerContainer {
         if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(Bits.class);
         instance = this;
 
-        createLogger();
         createManagerOrchestrator();
 
         registerManagers(modules().build());
@@ -101,8 +99,6 @@ public abstract class Bits extends ManagerContainer {
     public boolean isDevelopment() {
         return developmentMode;
     }
-
-    protected abstract Logger createLogger();
 
     protected ManagerOrchestrator createManagerOrchestrator() {
         return new ManagerOrchestrator();
