@@ -20,6 +20,7 @@ import xyz.bitsquidd.bits.paper.lifecycle.manager.PaperManagerOrchestrator;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class BitsPaper extends BitsMinecraft {
@@ -29,7 +30,7 @@ public class BitsPaper extends BitsMinecraft {
 
 
     protected BitsPaper(JavaPlugin plugin) {
-        this.plugin = plugin;
+        this.plugin = Objects.requireNonNull(plugin, "Plugin instance cannot be null!");
     }
 
     public static BitsPaper get() {
