@@ -51,4 +51,33 @@ public interface ConfigLoader {
      */
     String formatName();
 
+
+    //region Static factories
+    static ConfigLoader yaml(java.io.InputStream source) {
+        return new YamlConfigLoader.InputStream(source);
+    }
+
+    static ConfigLoader yaml(java.io.File file) {
+        return new YamlConfigLoader.File(file);
+    }
+
+    static ConfigLoader yaml(java.nio.file.Path path) {
+        return yaml(path.toFile());
+    }
+
+
+    static ConfigLoader json(java.io.InputStream source) {
+        return new JsonConfigLoader.InputStream(source);
+    }
+
+    static ConfigLoader json(java.io.File file) {
+        return new JsonConfigLoader.File(file);
+    }
+
+    static ConfigLoader json(java.nio.file.Path path) {
+        return json(path.toFile());
+    }
+    //endregion
+
+
 }
