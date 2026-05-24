@@ -21,4 +21,13 @@ public interface SendableFilter<S extends Sendable> extends Predicate<SendableHa
         return handle -> clazz.isAssignableFrom(handle.definition().getClass());
     }
 
+    
+    static <S extends Sendable> SendableFilter<S> alwaysTrue() {
+        return h -> true;
+    }
+
+    static <S extends Sendable> SendableFilter<S> alwaysFalse() {
+        return h -> false;
+    }
+
 }
