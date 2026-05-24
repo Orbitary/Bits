@@ -106,7 +106,7 @@ public interface ConfigSection extends ConfigNode {
      *
      * @since 0.0.14
      */
-    default <T> Optional<T> get(String path, Class<T> type) throws ConfigException {
+    default <T> Optional<T> get(String path, Class<T> type) {
         return node(path).get(type);
     }
 
