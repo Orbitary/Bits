@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import org.jetbrains.annotations.NotNull;
 
 import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.BitsDiscord;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class JdaCommandManager implements BitsModule {
     private final Map<RouteKey, CommandRoute> routes = new HashMap<>();
     private final JdaArgumentRegistry argumentRegistry = new JdaArgumentRegistry();
@@ -42,16 +42,16 @@ public class JdaCommandManager implements BitsModule {
         List<SlashCommandData> commandData = new ArrayList<>();
 
         ReflectionUtils.General.createAnnotatedClassesInDir("*", Command.class, JdaCommand.class, ScannerFlags.DEFAULT)
-            .stream()
-            .filter(cmd -> !isNestedCommandClass(cmd.getClass()))
-            .forEach(cmd -> {
-                JdaCommandBuilder builder = new JdaCommandBuilder(cmd.getClass(), argumentRegistry);
-                commandData.add(builder.buildCommandData(routes));
-            });
+          .stream()
+          .filter(cmd -> !isNestedCommandClass(cmd.getClass()))
+          .forEach(cmd -> {
+              JdaCommandBuilder builder = new JdaCommandBuilder(cmd.getClass(), argumentRegistry);
+              commandData.add(builder.buildCommandData(routes));
+          });
 
         BitsDiscord.jda().updateCommands().addCommands(commandData).queue(
-            ok -> Logger.success("Registered " + commandData.size() + " slash commands."),
-            err -> Logger.exception("Failed to register slash commands", err)
+          ok -> Logger.success("Registered " + commandData.size() + " slash commands."),
+          err -> Logger.exception("Failed to register slash commands", err)
         );
 
         BitsDiscord.jda().addEventListener(new CommandListener());
@@ -65,7 +65,7 @@ public class JdaCommandManager implements BitsModule {
     private final class CommandListener extends ListenerAdapter {
 
         @Override
-        public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
             RouteKey key = RouteKey.of(event.getName(), event.getSubcommandGroup(), event.getSubcommandName());
             CommandRoute route = routes.get(key);
             if (route == null) return;
@@ -89,7 +89,7 @@ public class JdaCommandManager implements BitsModule {
         }
 
         @Override
-        public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
+        public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
             RouteKey key = RouteKey.of(event.getName(), event.getSubcommandGroup(), event.getSubcommandName());
             CommandRoute route = routes.get(key);
             if (route == null) return;
@@ -110,7 +110,7 @@ public class JdaCommandManager implements BitsModule {
 
                 // Build a minimal context for autocomplete (no reply methods used)
                 // ctx passed here is for guild/member access in custom parsers - not for replying!
-                event.replyChoices(parser.autocomplete(focusedValue, null)).queue();
+                event.replyChoices(parser.autocomplete(focusedValue)).queue();
                 return;
             }
         }
@@ -139,10 +139,12 @@ public class JdaCommandManager implements BitsModule {
         }
 
         private String resolveParamName(java.lang.reflect.Parameter param, Parameter annotation) {
-            if (annotation != null && !annotation.value().isBlank()) return annotation.value();
+            if (!annotation.value().isBlank()) return annotation.value();
             String name = param.getName();
             if (name.startsWith("arg")) return param.getType().getSimpleName().toLowerCase();
             return name;
         }
+
     }
+
 }

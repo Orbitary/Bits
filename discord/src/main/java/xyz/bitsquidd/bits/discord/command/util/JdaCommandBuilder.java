@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 
 /**
  * Builds {@link SlashCommandData} and populates the dispatch route table
@@ -58,7 +60,7 @@ public final class JdaCommandBuilder {
 
         List<Method> subcommandMethods = getCommandMethods(commandClass);
         List<Class<?>> subcommandGroups = getCommandNestedClasses(commandClass);
-        Method rootMethod = findRootMethod(commandClass);
+        Method rootMethod = findRootMethod(commandClass).orElse(null);
 
         if (rootMethod != null) {
             if (!subcommandMethods.isEmpty() || !subcommandGroups.isEmpty()) {
@@ -90,7 +92,7 @@ public final class JdaCommandBuilder {
                     group.addSubcommands(sub);
 
                     @SuppressWarnings("unchecked")
-                    Class<? extends JdaCommand> groupJdaClass = (Class<? extends JdaCommand>) groupClass;
+                    Class<? extends JdaCommand> groupJdaClass = (Class<? extends JdaCommand>)groupClass;
                     routes.put(RouteKey.of(name, groupMeta.value(), subMeta.value()), route(groupJdaClass, method));
                 }
 
@@ -125,7 +127,7 @@ public final class JdaCommandBuilder {
 
     private void applyPermission(SlashCommandData cmd) {
         Permission perm =
-            commandClass.getAnnotation(Permission.class);
+          commandClass.getAnnotation(Permission.class);
         if (perm != null) {
             cmd.setDefaultPermissions(DefaultMemberPermissions.enabledFor(perm.value()));
         }
@@ -138,29 +140,28 @@ public final class JdaCommandBuilder {
 
     private List<Method> getCommandMethods(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredMethods())
-            .filter(m -> m.isAnnotationPresent(Command.class)
-                && !m.getAnnotation(Command.class).value().isBlank()
-                && Modifier.isPublic(m.getModifiers()))
-            .toList();
+          .filter(m -> m.isAnnotationPresent(Command.class)
+            && !m.getAnnotation(Command.class).value().isBlank()
+            && Modifier.isPublic(m.getModifiers()))
+          .toList();
     }
 
     private List<Class<?>> getCommandNestedClasses(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredClasses())
-            .filter(c -> c.isAnnotationPresent(Command.class)
-                && Modifier.isStatic(c.getModifiers())
-                && JdaCommand.class.isAssignableFrom(c))
-            .toList();
+          .filter(c -> c.isAnnotationPresent(Command.class)
+            && Modifier.isStatic(c.getModifiers())
+            && JdaCommand.class.isAssignableFrom(c))
+          .toList();
     }
 
-    private Method findRootMethod(Class<?> clazz) {
+    private Optional<Method> findRootMethod(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredMethods())
-            .filter(m -> Modifier.isPublic(m.getModifiers()))
-            .filter(m -> {
-                Command a = m.getAnnotation(Command.class);
-                return a != null && a.value().isBlank();
-            })
-            .findFirst()
-            .orElse(null);
+          .filter(m -> Modifier.isPublic(m.getModifiers()))
+          .filter(m -> {
+              Command a = m.getAnnotation(Command.class);
+              return a != null && a.value().isBlank();
+          })
+          .findFirst();
     }
 
     private String resolveParamName(java.lang.reflect.Parameter param, Parameter annotation) {
@@ -173,4 +174,5 @@ public final class JdaCommandBuilder {
     private String descOrDefault(String desc) {
         return desc.isBlank() ? "No description provided." : desc;
     }
+
 }

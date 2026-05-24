@@ -15,6 +15,7 @@ import xyz.bitsquidd.bits.discord.command.JdaCommandContext;
 
 import java.util.List;
 
+
 /**
  * Maps a Java type to a Discord slash command {@link OptionType} and resolves
  * raw {@link OptionMapping} values back into the target type.
@@ -23,16 +24,24 @@ import java.util.List;
  */
 public abstract class JdaArgumentParser<T> {
 
-    /** The Java type this parser handles. */
+    /**
+     * The Java type this parser handles.
+     */
     public abstract Class<T> type();
 
-    /** The Discord option type this parser maps to. */
+    /**
+     * The Discord option type this parser maps to.
+     */
     public abstract OptionType optionType();
 
-    /** Resolves a raw Discord option into the target type. */
+    /**
+     * Resolves a raw Discord option into the target type.
+     */
     public abstract T resolve(OptionMapping mapping, JdaCommandContext ctx);
 
-    /** Whether this parser supports dynamic autocomplete. */
+    /**
+     * Whether this parser supports dynamic autocomplete.
+     */
     public boolean supportsAutocomplete() {
         return false;
     }
@@ -41,7 +50,8 @@ public abstract class JdaArgumentParser<T> {
      * Returns autocomplete suggestions for the current user input.
      * Only called when {@link #supportsAutocomplete()} returns {@code true}.
      */
-    public List<Command.Choice> autocomplete(String input, JdaCommandContext ctx) {
+    public List<Command.Choice> autocomplete(String input) {
         return List.of();
     }
+
 }

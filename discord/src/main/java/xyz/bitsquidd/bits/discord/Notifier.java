@@ -7,8 +7,9 @@
 
 package xyz.bitsquidd.bits.discord;
 
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 
 import xyz.bitsquidd.bits.BitsDiscord;
 import xyz.bitsquidd.bits.log.Logger;
@@ -30,11 +31,11 @@ public final class Notifier {
             send(userId, embeds, List.of());
         }
 
-        public static void send(long userId, MessageEmbed embed, List<LayoutComponent> components) {
+        public static void send(long userId, MessageEmbed embed, List<MessageTopLevelComponent> components) {
             send(userId, List.of(embed), components);
         }
 
-        public static void send(long userId, List<MessageEmbed> embeds, List<LayoutComponent> components) {
+        public static void send(long userId, List<MessageEmbed> embeds, List<MessageTopLevelComponent> components) {
             BitsDiscord.jda().openPrivateChannelById(userId).queue(
                 channel -> channel.sendMessageEmbeds(embeds)
                     .setComponents(components)
