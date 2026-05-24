@@ -58,16 +58,16 @@ public final class JdaCommandBuilder {
 
         List<Method> subcommandMethods = getCommandMethods(commandClass);
         List<Class<?>> subcommandGroups = getCommandNestedClasses(commandClass);
+        Method rootMethod = findRootMethod(commandClass);
 
-        if (subcommandMethods.isEmpty() && subcommandGroups.isEmpty()) {
-            // Root command: route to execute()
-            Method execute = findExecuteMethod(commandClass);
-            if (execute != null) {
-                cmd.addOptions(buildOptions(execute));
-                routes.put(RouteKey.of(name, "", ""), route(commandClass, execute));
-            } else {
-                Logger.warn("Command /" + name + " has no execute() method and no subcommands — skipping.");
+        if (rootMethod != null) {
+            if (!subcommandMethods.isEmpty() || !subcommandGroups.isEmpty()) {
+                Logger.warn("Command /" + name + " has both @Command(\"\") root handler and subcommands - subcommands ignored.");
             }
+            cmd.addOptions(buildOptions(rootMethod));
+            routes.put(RouteKey.of(name, "", ""), route(commandClass, rootMethod));
+        } else if (subcommandMethods.isEmpty() && subcommandGroups.isEmpty()) {
+            Logger.warn("Command /" + name + " has no root handler and no subcommands - skipping.");
         } else {
             // Direct subcommand methods
             for (Method method : subcommandMethods) {
@@ -138,7 +138,9 @@ public final class JdaCommandBuilder {
 
     private List<Method> getCommandMethods(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredMethods())
-            .filter(m -> m.isAnnotationPresent(Command.class) && Modifier.isPublic(m.getModifiers()))
+            .filter(m -> m.isAnnotationPresent(Command.class)
+                && !m.getAnnotation(Command.class).value().isBlank()
+                && Modifier.isPublic(m.getModifiers()))
             .toList();
     }
 
@@ -150,9 +152,13 @@ public final class JdaCommandBuilder {
             .toList();
     }
 
-    private Method findExecuteMethod(Class<?> clazz) {
+    private Method findRootMethod(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredMethods())
-            .filter(m -> m.getName().equals("execute") && Modifier.isPublic(m.getModifiers()))
+            .filter(m -> Modifier.isPublic(m.getModifiers()))
+            .filter(m -> {
+                Command a = m.getAnnotation(Command.class);
+                return a != null && a.value().isBlank();
+            })
             .findFirst()
             .orElse(null);
     }

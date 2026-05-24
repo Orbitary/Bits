@@ -12,7 +12,7 @@ package xyz.bitsquidd.bits.discord.command;
  * <p>
  * Annotate the subclass with {@link xyz.bitsquidd.bits.discord.command.annotation.Command} to register it.
  * <p>
- * Root command: no {@code @Command}-annotated methods: implement {@code execute(JdaCommandContext, ...)}.
- * Group command: annotate methods with {@code  @Command} for subcommands, or use annotated nested static classes for subcommand groups.
+ * Root command: annotate a method with {@code @Command("")} to handle the bare slash command.
+ * Group command: annotate methods with {@code @Command("name")} for subcommands, or use annotated nested static classes for subcommand groups.
  */
 public abstract class JdaCommand {}

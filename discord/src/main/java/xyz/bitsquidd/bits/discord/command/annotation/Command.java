@@ -17,12 +17,13 @@ import java.lang.annotation.Target;
 /**
  * Marks a class or method as a Discord slash command.
  * <p>
- * On a class: defines the root command. The class must extend {@link xyz.bitsquidd.bits.discord.command.JdaCommand}.
- * On a method: defines a subcommand. Nested static classes annotated {@code @Command} define subcommand groups.
+ * On a class: defines the slash command name. The class must extend {@link xyz.bitsquidd.bits.discord.command.JdaCommand}.
+ * On a method with a non-empty value: defines a subcommand.
+ * On a method with {@code @Command("")}: marks the root handler for the command.
+ * Nested static classes annotated {@code @Command} define subcommand groups.
  * <p>
- * A class with no {@code @Command}-annotated methods and no {@code @Command}-annotated nested classes
- * is a root command - the framework routes to its {@code execute()} method.
- * A class with annotated methods or nested classes is a group command.
+ * If a {@code @Command("")} method and subcommands coexist, the root handler wins and subcommands are dropped with a warning.
+ * If no {@code @Command("")} method exists and no subcommands are defined, the command is skipped with a warning.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
