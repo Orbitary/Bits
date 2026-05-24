@@ -78,10 +78,17 @@ public abstract class Logger {
      */
     protected void onLog(LogData logData) {}
 
+
     public static void debug(final String msg) {
         if (!get().flags.logDebug()) return;
         get().debugInternal(msg);
     }
+
+    public static void debug(final String format, Object... args) {
+        if (!get().flags.logDebug()) return;
+        get().debugInternal(formatMessage(format, args));
+    }
+
 
     protected abstract void successInternal(final String msg);
 
@@ -90,12 +97,24 @@ public abstract class Logger {
         get().successInternal(msg);
     }
 
+    public static void success(final String format, Object... args) {
+        if (!get().flags.logSuccess()) return;
+        get().successInternal(formatMessage(format, args));
+    }
+
+
     protected abstract void infoInternal(final String msg);
 
     public static void info(final String msg) {
         if (!get().flags.logInfo()) return;
         get().infoInternal(msg);
     }
+
+    public static void info(final String format, Object... args) {
+        if (!get().flags.logInfo()) return;
+        get().infoInternal(formatMessage(format, args));
+    }
+
 
     protected abstract void warningInternal(final String msg);
 
@@ -104,6 +123,12 @@ public abstract class Logger {
         get().warningInternal(msg);
     }
 
+    public static void warn(final String format, Object... args) {
+        if (!get().flags.logWarn()) return;
+        get().warningInternal(formatMessage(format, args));
+    }
+
+
     protected abstract void errorInternal(final String msg);
 
     public static void error(final String msg) {
@@ -111,11 +136,61 @@ public abstract class Logger {
         get().errorInternal(msg);
     }
 
+    public static void error(final String format, Object... args) {
+        if (!get().flags.logError()) return;
+        get().errorInternal(formatMessage(format, args));
+    }
+
+
     protected abstract void exceptionInternal(final String msg, final Throwable throwable);
 
     public static void exception(final String msg, final Throwable throwable) {
         if (!get().flags.logException()) return;
         get().exceptionInternal(msg, throwable);
     }
+
+    public static void exception(final String format, final Throwable throwable, Object... args) {
+        if (!get().flags.logException()) return;
+        get().exceptionInternal(formatMessage(format, args), throwable);
+    }
+
+    //region Utils
+    private static String formatMessage(String messagePattern, Object[] args) {
+        if (args.length == 0) return messagePattern;
+
+        StringBuilder result = new StringBuilder(messagePattern.length() + 50);
+        int argIndex = 0;
+        int i = 0;
+
+        while (i < messagePattern.length() && argIndex < args.length) {
+            int delimiterPos = messagePattern.indexOf("{}", i);
+
+            // No more placeholders
+            if (delimiterPos == -1) {
+                result.append(messagePattern.substring(i));
+                break;
+            }
+
+            // Check if the delimiter is escaped
+            if (isEscaped(messagePattern, delimiterPos)) {
+                result.append(messagePattern, i, delimiterPos - 1);
+                result.append("{");
+                i = delimiterPos + 1;
+            } else {
+                result.append(messagePattern, i, delimiterPos);
+                result.append(args[argIndex++]);
+                i = delimiterPos + 2;
+            }
+        }
+
+        // Append remaining text
+        result.append(messagePattern.substring(i));
+        return result.toString();
+    }
+
+    private static boolean isEscaped(String message, int position) {
+        return position > 0 && message.charAt(position - 1) == '\\';
+    }
+    //endregion
 
 }
