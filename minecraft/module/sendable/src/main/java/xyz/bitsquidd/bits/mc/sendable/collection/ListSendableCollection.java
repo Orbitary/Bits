@@ -54,6 +54,10 @@ public abstract non-sealed class ListSendableCollection<S extends Sendable> exte
         return Set.copyOf(sendables);
     }
 
+    public final @Unmodifiable List<SendableHandle<? extends S>> getAllOrdered() {
+        return List.copyOf(sendables);
+    }
+
     @Override
     protected final void removeInternal(SendableHandle<? extends S> handle) {
         sendables.remove(handle);

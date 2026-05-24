@@ -22,6 +22,8 @@ import xyz.bitsquidd.bits.mc.sendable.impl.title.AbstractTitle;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
 
+import java.util.List;
+
 
 public class PaperTitleManager extends TitleManager {
 
@@ -29,8 +31,9 @@ public class PaperTitleManager extends TitleManager {
     protected void render(Receiver receiver, TitleCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
-        SendableHandle<? extends AbstractTitle> handle = collection.getAll().stream().findFirst().orElse(null);
-        if (handle == null) return; // Titles do not need cleanup, they time out on their own!
+        List<SendableHandle<? extends AbstractTitle>> titles = collection.getAllOrdered();
+        if (titles.isEmpty()) return;
+        SendableHandle<? extends AbstractTitle> handle = titles.getFirst();
 
         SendableState state = handle.state(receiver);
 

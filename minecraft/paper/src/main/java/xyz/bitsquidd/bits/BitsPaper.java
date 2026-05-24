@@ -30,7 +30,6 @@ public class BitsPaper extends BitsMinecraft {
 
     protected BitsPaper(JavaPlugin plugin) {
         this.plugin = plugin;
-        super(); // J25 - set plugin before, to allow logger to be instantiated.
     }
 
     public static BitsPaper get() {
