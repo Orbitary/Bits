@@ -7,11 +7,6 @@
 
 package xyz.bitsquidd.bits;
 
-import org.slf4j.LoggerFactory;
-
-import xyz.bitsquidd.bits.log.BasicLogger;
-import xyz.bitsquidd.bits.log.Logger;
-
 
 /**
  * Platform-independent implementation of BitsConfig, used for any platform that doesn't have specific requirements.
@@ -21,11 +16,6 @@ public final class GenericBitsConfig extends Bits {
 
     GenericBitsConfig(String platformName) {
         this.platformName = platformName;
-    }
-
-    @Override
-    protected Logger createLogger() {
-        return new BasicLogger(LoggerFactory.getLogger(platformName), Logger.LogFlags.defaultFlags());
     }
 
     @Override

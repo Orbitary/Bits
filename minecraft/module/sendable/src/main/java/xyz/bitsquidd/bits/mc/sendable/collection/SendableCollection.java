@@ -65,8 +65,8 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
         get(filter).forEach(handle -> {
             if (!handle.isExpired()) handle.bits$markForExpire();
             removeInternal(handle);
+            needsForceRender = true; // We mark a final render on remove, only when something is removed.
         });
-        needsForceRender = true; // We mark a final render on remove.
     }
 
     protected abstract void removeInternal(SendableHandle<? extends S> handle);
