@@ -14,14 +14,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import xyz.bitsquidd.bits.log.Logger;
-import xyz.bitsquidd.bits.log.PaperBitsLogger;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 import xyz.bitsquidd.bits.paper.format.CommonPaperFormatters;
 import xyz.bitsquidd.bits.paper.lifecycle.manager.PaperManagerOrchestrator;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class BitsPaper extends BitsMinecraft {
@@ -31,7 +30,7 @@ public class BitsPaper extends BitsMinecraft {
 
 
     protected BitsPaper(JavaPlugin plugin) {
-        this.plugin = plugin;
+        this.plugin = Objects.requireNonNull(plugin, "Plugin instance cannot be null!");
     }
 
     public static BitsPaper get() {
@@ -53,11 +52,6 @@ public class BitsPaper extends BitsMinecraft {
 
     public final JavaPlugin plugin() {
         return plugin;
-    }
-
-    @Override
-    protected PaperBitsLogger createLogger() {
-        return new PaperBitsLogger(plugin, Logger.LogFlags.defaultFlags());
     }
 
     @Override

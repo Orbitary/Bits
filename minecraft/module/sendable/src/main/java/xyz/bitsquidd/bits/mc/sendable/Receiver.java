@@ -69,6 +69,11 @@ public interface Receiver {
         SendableOrchestrator.get().actionbar().remove(this, filter);
     }
 
+    default void setActionbar(AbstractActionbar actionbar) {
+        SendableOrchestrator.get().actionbar().remove(this, SendableFilter.alwaysTrue());
+        SendableOrchestrator.get().actionbar().add(this, actionbar);
+    }
+
     default Collection<SendableHandle<AbstractActionbar>> getActionbars(SendableFilter<? super AbstractActionbar> filter) {
         return SendableOrchestrator.get().actionbar().get(this, filter);
     }
@@ -87,6 +92,11 @@ public interface Receiver {
 
     default void removeBossbar(SendableFilter<? super AbstractBossbar> filter) {
         SendableOrchestrator.get().bossbar().remove(this, filter);
+    }
+
+    default void setBossbar(Integer index, AbstractBossbar bossbar) {
+        SendableOrchestrator.get().bossbar().remove(this, SendableFilter.alwaysTrue());
+        SendableOrchestrator.get().bossbar().add(this, index, bossbar);
     }
 
     default Collection<SendableHandle<AbstractBossbar>> getBossbars(SendableFilter<? super AbstractBossbar> filter) {
@@ -108,6 +118,11 @@ public interface Receiver {
         SendableOrchestrator.get().sidebar().remove(this, filter);
     }
 
+    default void setSidebar(AbstractSidebar sidebar) {
+        SendableOrchestrator.get().sidebar().remove(this, SendableFilter.alwaysTrue());
+        SendableOrchestrator.get().sidebar().add(this, sidebar);
+    }
+
     default Collection<SendableHandle<AbstractSidebar>> getSidebars(SendableFilter<? super AbstractSidebar> filter) {
         return SendableOrchestrator.get().sidebar().get(this, filter);
     }
@@ -125,6 +140,11 @@ public interface Receiver {
 
     default void removeTablist(SendableFilter<? super AbstractTablist> filter) {
         SendableOrchestrator.get().tablist().remove(this, filter);
+    }
+
+    default void setTablist(TablistPosition position, AbstractTablist tablist) {
+        SendableOrchestrator.get().tablist().remove(this, SendableFilter.alwaysTrue());
+        SendableOrchestrator.get().tablist().add(this, position, tablist);
     }
 
     default Collection<SendableHandle<AbstractTablist>> getTablists(SendableFilter<? super AbstractTablist> filter) {
@@ -146,6 +166,11 @@ public interface Receiver {
         SendableOrchestrator.get().title().remove(this, filter);
     }
 
+    default void setTitle(AbstractTitle title) {
+        SendableOrchestrator.get().title().remove(this, SendableFilter.alwaysTrue());
+        SendableOrchestrator.get().title().add(this, title);
+    }
+
     default Collection<SendableHandle<AbstractTitle>> getTitles(SendableFilter<? super AbstractTitle> filter) {
         return SendableOrchestrator.get().title().get(this, filter);
     }
@@ -163,6 +188,11 @@ public interface Receiver {
 
     default void removeWaypoint(SendableFilter<? super AbstractWaypoint> filter) {
         SendableOrchestrator.get().waypoint().remove(this, filter);
+    }
+
+    default void setWaypoint(AbstractWaypoint waypoint) {
+        SendableOrchestrator.get().waypoint().remove(this, SendableFilter.alwaysTrue());
+        SendableOrchestrator.get().waypoint().add(this, waypoint);
     }
 
     default Collection<SendableHandle<AbstractWaypoint>> getWaypoints(SendableFilter<? super AbstractWaypoint> filter) {

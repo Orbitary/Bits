@@ -9,6 +9,7 @@ package xyz.bitsquidd.bits.mc.sendable.title;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.title.Title;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
@@ -22,6 +23,8 @@ import xyz.bitsquidd.bits.mc.sendable.impl.title.AbstractTitle;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
 
+import java.util.List;
+
 
 public class PaperTitleManager extends TitleManager {
 
@@ -29,8 +32,9 @@ public class PaperTitleManager extends TitleManager {
     protected void render(Receiver receiver, TitleCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
-        SendableHandle<? extends AbstractTitle> handle = collection.getAll().stream().findFirst().orElse(null);
-        if (handle == null) return; // Titles do not need cleanup, they time out on their own!
+        List<SendableHandle<? extends AbstractTitle>> titles = collection.getAllOrdered();
+        if (titles.isEmpty()) return;
+        SendableHandle<? extends AbstractTitle> handle = titles.getFirst();
 
         SendableState state = handle.state(receiver);
 
@@ -48,6 +52,16 @@ public class PaperTitleManager extends TitleManager {
         paperReceiver.sendPacket(new ClientboundSetTitleTextPacket(
           PaperAdventure.asVanillaNullToEmpty(handle.definition().title(state))
         ));
+    }
+
+    @Override
+    protected void forceCleanupUser(Receiver receiver) {
+        super.forceCleanupUser(receiver);
+        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
+
+        paperReceiver.sendPacket(new ClientboundSetTitlesAnimationPacket(0, 0, 0));
+        paperReceiver.sendPacket(new ClientboundSetSubtitleTextPacket(Component.empty()));
+        paperReceiver.sendPacket(new ClientboundSetTitleTextPacket(Component.empty()));
     }
 
 }

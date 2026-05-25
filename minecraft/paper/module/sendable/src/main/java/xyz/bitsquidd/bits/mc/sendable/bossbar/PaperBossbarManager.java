@@ -167,4 +167,26 @@ public class PaperBossbarManager extends BossbarManager {
         bossbarIds.remove(receiver.getUniqueId());
     }
 
+    @Override
+    protected void forceCleanupUser(Receiver receiver) {
+        super.forceCleanupUser(receiver);
+        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
+
+        for (int i = 0; i < MAX_BOSSBARS; i++) {
+            BossEvent bossEvent = getBossEvent(paperReceiver.getUniqueId(), i).orElse(null);
+            if (bossEvent == null) continue;
+            bossEvent.setColor(BossEvent.BossBarColor.WHITE);
+            bossEvent.setName(net.minecraft.network.chat.Component.empty());
+            bossEvent.setProgress(0);
+
+            List<Packet<?>> packets = List.of(
+              ClientboundBossEventPacket.createUpdateNamePacket(bossEvent),
+              ClientboundBossEventPacket.createUpdateStylePacket(bossEvent),
+              ClientboundBossEventPacket.createUpdateProgressPacket(bossEvent)
+            );
+
+            paperReceiver.sendPackets(packets);
+        }
+    }
+
 }

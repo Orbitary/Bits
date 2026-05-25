@@ -7,32 +7,20 @@
 
 package xyz.bitsquidd.bits;
 
-import xyz.bitsquidd.bits.log.FabricBitsLogger;
-import xyz.bitsquidd.bits.log.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
 public abstract class BitsFabric extends BitsMinecraft {
-    private final org.slf4j.Logger slf4j;
-
     private final List<ScheduledTask> pendingTasks = new ArrayList<>();
 
 
-    protected BitsFabric(org.slf4j.Logger slf4j) {
-        this.slf4j = slf4j;
-    }
+    protected BitsFabric() {}
 
     public static BitsFabric get() {
         return (BitsFabric)Bits.get();
     }
 
-
-    @Override
-    protected Logger createLogger() {
-        return new FabricBitsLogger(slf4j, Logger.LogFlags.defaultFlags());
-    }
 
     @Override
     public void runLater(Runnable runnable, long delayMs) {

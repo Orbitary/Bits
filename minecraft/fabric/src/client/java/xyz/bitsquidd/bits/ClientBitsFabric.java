@@ -14,6 +14,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
 import net.minecraft.client.Minecraft;
 
+import xyz.bitsquidd.bits.log.FabricBitsLogger;
+import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 
 import java.util.Locale;
@@ -22,16 +24,15 @@ import java.util.Locale;
 @Environment(EnvType.CLIENT)
 public class ClientBitsFabric extends BitsFabric {
 
-    protected ClientBitsFabric(org.slf4j.Logger slf4j) {
-        super(slf4j);
-    }
+    protected ClientBitsFabric() {}
 
     public static ClientBitsFabric get() {
         return (ClientBitsFabric)Bits.get();
     }
 
     public static ClientBitsFabric generic() {
-        return new ClientBitsFabric(org.slf4j.LoggerFactory.getLogger("BitsClient"));
+        new FabricBitsLogger(org.slf4j.LoggerFactory.getLogger("BitsClient"), Logger.LogFlags.defaultFlags());
+        return new ClientBitsFabric();
     }
 
 

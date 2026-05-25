@@ -17,7 +17,6 @@ import net.kyori.adventure.audience.Audience;
 import org.bstats.velocity.Metrics;
 
 import xyz.bitsquidd.bits.log.Logger;
-import xyz.bitsquidd.bits.log.VelocityBitsLogger;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
 import xyz.bitsquidd.bits.velocity.util.velocity.runnable.Tasks;
@@ -32,14 +31,12 @@ public class BitsVelocity extends BitsMinecraft {
 
     private final Object plugin;
     private final ProxyServer server;
-    private final org.slf4j.Logger slf4j;
     private final Path dataDir;
 
 
     protected BitsVelocity(Object plugin, Injector injector) {
         this.plugin = plugin;
         this.server = injector.getInstance(ProxyServer.class);
-        this.slf4j = injector.getInstance(org.slf4j.Logger.class);
         this.dataDir = injector.getInstance(Key.get(Path.class, DataDirectory.class));
     }
 
@@ -65,11 +62,6 @@ public class BitsVelocity extends BitsMinecraft {
 
     public final ProxyServer getServer() {
         return server;
-    }
-
-    @Override
-    protected Logger createLogger() {
-        return new VelocityBitsLogger(slf4j, Logger.LogFlags.defaultFlags());
     }
 
     @Override

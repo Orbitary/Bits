@@ -33,5 +33,5 @@ public abstract class ActionbarManager extends SendableManager<AbstractActionbar
         SendableOrchestrator.get().getAllReceivers().forEach(r -> add(r, actionbar));
     }
     //endregion
-
+    
 }

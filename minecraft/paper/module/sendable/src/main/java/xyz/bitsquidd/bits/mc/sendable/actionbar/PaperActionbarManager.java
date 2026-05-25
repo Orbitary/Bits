@@ -39,4 +39,14 @@ public class PaperActionbarManager extends ActionbarManager {
         builder.append(component);
     }
 
+    @Override
+    protected void forceCleanupUser(Receiver receiver) {
+        super.forceCleanupUser(receiver);
+        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
+
+        paperReceiver.sendPacket(new ClientboundSetActionBarTextPacket(
+          net.minecraft.network.chat.Component.empty()
+        ));
+    }
+
 }
