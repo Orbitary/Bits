@@ -16,7 +16,11 @@ import xyz.bitsquidd.bits.config.node.ConfigNode;
 import xyz.bitsquidd.bits.config.node.ConfigSection;
 import xyz.bitsquidd.bits.util.serializer.SerializationManager;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -31,7 +35,6 @@ import java.util.*;
  * @since 0.0.14
  */
 public final class JacksonConfigSection implements ConfigSection {
-
     static final String VERSION_KEY = "config-version";
 
     private final ObjectNode node;
@@ -141,116 +144,13 @@ public final class JacksonConfigSection implements ConfigSection {
         return Collections.unmodifiableSet(keys);
     }
 
-    @Override
-    public boolean contains(String dotPath) {
-        return !node(dotPath).isNull();
-    }
-
 
     @Override
-    public <T> T get(String dotPath, Class<T> type, T defaultValue) {
-        return node(dotPath).get(type, defaultValue);
-    }
-
-    @Override
-    public int get(String dotPath, int defaultValue) {
-        return node(dotPath).getInt(defaultValue);
-    }
-
-    @Override
-    public long get(String dotPath, long defaultValue) {
-        return node(dotPath).getLong(defaultValue);
-    }
-
-    @Override
-    public double get(String dotPath, double defaultValue) {
-        return node(dotPath).getDouble(defaultValue);
-    }
-
-    @Override
-    public boolean get(String dotPath, boolean defaultValue) {
-        return node(dotPath).getBoolean(defaultValue);
-    }
-
-    @Override
-    public String get(String dotPath, String defaultValue) {
-        return node(dotPath).getString(defaultValue);
-    }
-
-    @Override
-    public <T> T require(String dotPath, Class<T> type) throws ConfigException {
-        return node(dotPath).require(type);
-    }
-
-    @Override
-    public <T> Optional<T> optional(String dotPath, Class<T> type) {
-        return node(dotPath).optional(type);
-    }
-
-    @Override
-    public <T> List<T> getList(String dotPath, Class<T> elementType) {
-        return node(dotPath).getList(elementType);
-    }
-
-
-    @Override
-    public <T> T get(Class<T> type, T defaultValue) {
+    public <T> Optional<T> get(Class<T> type) {
         try {
-            return SerializationManager.SERIALIZER.treeToValue(node, type);
+            return Optional.of(SerializationManager.SERIALIZER.treeToValue(node, type));
         } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    @Override
-    public String getString(String defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public int getInt(int defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public long getLong(long defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public double getDouble(double defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public boolean getBoolean(boolean defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public <T> T require(Class<T> type) throws ConfigException {
-        try {
-            T value = SerializationManager.SERIALIZER.treeToValue(node, type);
-            if (value == null) throw ConfigException.missingValue(path);
-            return value;
-        } catch (ConfigException e) {
-            throw e;
-        } catch (Exception e) {
-            throw ConfigException.typeMismatch(path, type, e);
-        }
-    }
-
-    @Override
-    public String requireString() throws ConfigException {
-        throw ConfigException.notASection(path + " (is a section, not a string)");
-    }
-
-    @Override
-    public <T> Optional<T> optional(Class<T> type) {
-        try {
-            return Optional.ofNullable(SerializationManager.SERIALIZER.treeToValue(node, type));
-        } catch (Exception e) {
-            return Optional.empty();
+            return Optional.empty(); // We could consider throwing a ConfigException for type mismatch, we are lenient as its optional.
         }
     }
 
@@ -297,7 +197,7 @@ public final class JacksonConfigSection implements ConfigSection {
                 throw ConfigException.serializationFailed(dotPath, e);
             }
         } else {
-            // Recurse- auto-create intermediate sections
+            // Recurse - auto-create intermediate sections
             getOrCreateSection(parts[0]).set(parts[1], value);
         }
     }

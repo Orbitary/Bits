@@ -82,7 +82,9 @@ public interface ConfigSection extends ConfigNode {
      *
      * @since 0.0.14
      */
-    boolean contains(String path);
+    default boolean contains(String path) {
+        return !node(path).isNull();
+    }
 
 
     /**
@@ -95,42 +97,18 @@ public interface ConfigSection extends ConfigNode {
      *
      * @since 0.0.14
      */
-    <T> T get(String path, Class<T> type, T defaultValue);
+    default <T> T getOrDefault(String path, Class<T> type, T defaultValue) {
+        return node(path).getOrDefault(type, defaultValue);
+    }
 
     /**
-     * Reads the value at {@code path} as {@code int}, or returns {@code defaultValue}.
+     * Reads the value at {@code path} as the given type, wrapped in an {@link Optional}.
      *
      * @since 0.0.14
      */
-    int get(String path, int defaultValue);
-
-    /**
-     * Reads the value at {@code path} as {@code long}, or returns {@code defaultValue}.
-     *
-     * @since 0.0.14
-     */
-    long get(String path, long defaultValue);
-
-    /**
-     * Reads the value at {@code path} as {@code double}, or returns {@code defaultValue}.
-     *
-     * @since 0.0.14
-     */
-    double get(String path, double defaultValue);
-
-    /**
-     * Reads the value at {@code path} as {@code boolean}, or returns {@code defaultValue}.
-     *
-     * @since 0.0.14
-     */
-    boolean get(String path, boolean defaultValue);
-
-    /**
-     * Reads the value at {@code path} as {@code String}, or returns {@code defaultValue}.
-     *
-     * @since 0.0.14
-     */
-    String get(String path, String defaultValue);
+    default <T> Optional<T> get(String path, Class<T> type) {
+        return node(path).get(type);
+    }
 
     /**
      * Reads the value at {@code path} as the given type.
@@ -138,21 +116,18 @@ public interface ConfigSection extends ConfigNode {
      * @throws ConfigException if absent or conversion fails
      * @since 0.0.14
      */
-    <T> T require(String path, Class<T> type) throws ConfigException;
-
-    /**
-     * Reads the value at {@code path} as the given type, wrapped in an {@link Optional}.
-     *
-     * @since 0.0.14
-     */
-    <T> Optional<T> optional(String path, Class<T> type);
+    default <T> T require(String path, Class<T> type) throws ConfigException {
+        return node(path).require(type);
+    }
 
     /**
      * Reads the value at {@code path} as a {@code List} of the given element type.
      *
      * @since 0.0.14
      */
-    <T> List<T> getList(String path, Class<T> elementType);
+    default <T> List<T> getList(String path, Class<T> elementType) {
+        return node(path).getList(elementType);
+    }
 
 
     /**

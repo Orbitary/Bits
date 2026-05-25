@@ -63,40 +63,6 @@ final class JacksonLeafNode implements ConfigNode {
     }
 
     @Override
-    public <T> T get(Class<T> type, T defaultValue) {
-        try {
-            return SerializationManager.SERIALIZER.treeToValue(node, type);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    @Override
-    public String getString(String defaultValue) {
-        return node.isTextual() ? node.asText() : defaultValue;
-    }
-
-    @Override
-    public int getInt(int defaultValue) {
-        return node.isNumber() ? node.asInt() : defaultValue;
-    }
-
-    @Override
-    public long getLong(long defaultValue) {
-        return node.isNumber() ? node.asLong() : defaultValue;
-    }
-
-    @Override
-    public double getDouble(double defaultValue) {
-        return node.isNumber() ? node.asDouble() : defaultValue;
-    }
-
-    @Override
-    public boolean getBoolean(boolean defaultValue) {
-        return node.isBoolean() ? node.asBoolean() : defaultValue;
-    }
-
-    @Override
     public <T> T require(Class<T> type) throws ConfigException {
         try {
             T value = SerializationManager.SERIALIZER.treeToValue(node, type);
@@ -110,18 +76,7 @@ final class JacksonLeafNode implements ConfigNode {
     }
 
     @Override
-    public String requireString() throws ConfigException {
-        if (!node.isTextual()) {
-            throw ConfigException.typeMismatch(
-              path, String.class,
-              new IllegalArgumentException("node is " + node.getNodeType())
-            );
-        }
-        return node.asText();
-    }
-
-    @Override
-    public <T> Optional<T> optional(Class<T> type) {
+    public <T> Optional<T> get(Class<T> type) {
         try {
             return Optional.ofNullable(SerializationManager.SERIALIZER.treeToValue(node, type));
         } catch (Exception e) {
@@ -202,53 +157,13 @@ final class AbsentConfigNode implements ConfigNode {
     }
 
     @Override
-    public <T> T get(Class<T> type, T defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public String getString(String defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public int getInt(int defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public long getLong(long defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public double getDouble(double defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
-    public boolean getBoolean(boolean defaultValue) {
-        return defaultValue;
-    }
-
-    @Override
     public <T> List<T> getList(Class<T> elementType) {
         return Collections.emptyList();
     }
 
     @Override
-    public <T> Optional<T> optional(Class<T> type) {
+    public <T> Optional<T> get(Class<T> type) {
         return Optional.empty();
-    }
-
-    @Override
-    public <T> T require(Class<T> type) throws ConfigException {
-        throw ConfigException.missingValue(path);
-    }
-
-    @Override
-    public String requireString() throws ConfigException {
-        throw ConfigException.missingValue(path);
     }
 
     @Override

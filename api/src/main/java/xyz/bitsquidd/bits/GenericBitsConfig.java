@@ -30,9 +30,4 @@ public final class GenericBitsConfig extends Bits {
         }).start();
     }
 
-    @Override
-    public void runLaterAsync(Runnable runnable, long delayMs) {
-        runLater(runnable, delayMs); // All threads are "async"
-    }
-
 }

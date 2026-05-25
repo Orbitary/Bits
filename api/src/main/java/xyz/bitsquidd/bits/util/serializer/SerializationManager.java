@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import xyz.bitsquidd.bits.util.reflection.ReflectionException;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
@@ -38,6 +39,7 @@ public final class SerializationManager {
 
         getSerializers().forEach(serializer -> registerSerializer(serializer, builder));
         builder.addModule(new GuavaModule());
+        builder.addModule(new JavaTimeModule());
         return builder.build();
     }
 

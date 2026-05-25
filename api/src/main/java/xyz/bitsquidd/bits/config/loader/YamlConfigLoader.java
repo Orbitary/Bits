@@ -17,7 +17,8 @@ import xyz.bitsquidd.bits.config.node.ConfigSection;
 import xyz.bitsquidd.bits.config.node.impl.JacksonConfigSection;
 import xyz.bitsquidd.bits.util.serializer.SerializationManager;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
@@ -37,7 +38,7 @@ import java.io.IOException;
  *
  * @since 0.0.14
  */
-public final class YamlConfigLoader implements ConfigLoader {
+public abstract sealed class YamlConfigLoader implements ConfigLoader permits YamlConfigLoader.File, YamlConfigLoader.InputStream {
 
     private static final YAMLMapper YAML_MAPPER = YAMLMapper.builder(
       YAMLFactory.builder()
@@ -46,55 +47,15 @@ public final class YamlConfigLoader implements ConfigLoader {
         .build()
     ).build();
 
-    private final File file;
+    private YamlConfigLoader() {}
 
-    /**
-     * Creates a YAML loader backed by the given file.
-     * The file does not need to exist yetL {@link #load()} returns an empty section
-     * if it is missing, and {@link #save(ConfigSection)} creates it on first write.
-     *
-     * @param file the YAML file to read/write
-     *
-     * @since 0.0.14
-     */
-    public YamlConfigLoader(File file) {
-        this.file = file;
-    }
-
-    @Override
-    public ConfigSection load() throws ConfigException {
-        if (!file.exists()) {
-            // First runL return empty section so defaults can be applied
-            return JacksonConfigSection.root(SerializationManager.SERIALIZER.createObjectNode());
-        }
-
+    static ObjectNode readTree(java.io.InputStream source, String label) throws ConfigException {
         try {
-            ObjectNode node = (ObjectNode)YAML_MAPPER.readTree(file);
-            // readTree returns null for an empty file
-            if (node == null) node = SerializationManager.SERIALIZER.createObjectNode();
-            return JacksonConfigSection.root(node);
+            com.fasterxml.jackson.databind.JsonNode raw = YAML_MAPPER.readTree(source);
+            if (raw == null || !raw.isObject()) return SerializationManager.SERIALIZER.createObjectNode();
+            return (ObjectNode) raw;
         } catch (IOException e) {
-            throw ConfigException.loadFailed(file.getPath(), e);
-        }
-    }
-
-    @Override
-    public void save(ConfigSection section) throws ConfigException {
-        if (!(section instanceof JacksonConfigSection jacksonSection)) {
-            throw ConfigException.saveFailed(
-              file.getPath(),
-              new IllegalArgumentException("YamlConfigLoader can only save JacksonConfigSection instances")
-            );
-        }
-
-        try {
-            // Create parent directories if missing
-            File parent = file.getParentFile();
-            if (parent != null && !parent.exists()) parent.mkdirs();
-
-            YAML_MAPPER.writeValue(file, jacksonSection.objectNode());
-        } catch (IOException e) {
-            throw ConfigException.saveFailed(file.getPath(), e);
+            throw ConfigException.loadFailed(label, e);
         }
     }
 
@@ -103,11 +64,87 @@ public final class YamlConfigLoader implements ConfigLoader {
         return "YAML";
     }
 
+
     /**
-     * Returns the backing file this loader reads from and writes to.
+     * A {@link YamlConfigLoader} backed by a file on disk.
+     * <p>
+     * If the file does not exist, {@link #load()} returns an empty section so
+     * defaults can be applied. {@link #save(ConfigSection)} creates the file
+     * (and any missing parent directories) on first write.
+     *
+     * @since 0.0.14
      */
-    public File file() {
-        return file;
+    public static final class File extends YamlConfigLoader {
+        private final java.io.File file;
+
+        File(java.io.File file) {
+            this.file = file;
+        }
+
+        @Override
+        public ConfigSection load() throws ConfigException {
+            java.io.InputStream source;
+            try {
+                source = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                return JacksonConfigSection.root(SerializationManager.SERIALIZER.createObjectNode());
+            }
+            return JacksonConfigSection.root(readTree(source, file.getPath()));
+        }
+
+        @Override
+        public void save(ConfigSection section) throws ConfigException {
+            if (!(section instanceof JacksonConfigSection jacksonSection)) {
+                throw ConfigException.saveFailed(
+                  file.getPath(),
+                  new IllegalArgumentException("YamlConfigLoader can only save JacksonConfigSection instances")
+                );
+            }
+
+            try {
+                java.io.File parent = file.getParentFile();
+                if (parent != null && !parent.exists()) parent.mkdirs();
+                YAML_MAPPER.writeValue(file, jacksonSection.objectNode());
+            } catch (IOException e) {
+                throw ConfigException.saveFailed(file.getPath(), e);
+            }
+        }
+
+        /**
+         * Returns the backing file.
+         */
+        public java.io.File file() {
+            return file;
+        }
+
+    }
+
+
+    /**
+     * A read-only {@link YamlConfigLoader} backed by an {@link java.io.InputStream}.
+     * Intended for classpath/bundled resources (e.g. fat-JAR defaults).
+     * <p>
+     * {@link #save(ConfigSection)} throws {@link UnsupportedOperationException}.
+     *
+     * @since 0.0.14
+     */
+    public static final class InputStream extends YamlConfigLoader {
+        private final java.io.InputStream stream;
+
+        InputStream(java.io.InputStream stream) {
+            this.stream = stream;
+        }
+
+        @Override
+        public ConfigSection load() throws ConfigException {
+            return JacksonConfigSection.root(readTree(stream, "<stream>"));
+        }
+
+        @Override
+        public void save(ConfigSection section) {
+            throw new UnsupportedOperationException("YamlConfigLoader.InputStream is read-only");
+        }
+
     }
 
 }
