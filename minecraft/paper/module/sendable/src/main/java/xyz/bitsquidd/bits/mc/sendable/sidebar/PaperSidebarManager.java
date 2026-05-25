@@ -154,5 +154,21 @@ public class PaperSidebarManager extends SidebarManager {
         playerTitle.remove(receiver.getUniqueId());
     }
 
+    @Override
+    protected void forceCleanupUser(Receiver receiver) {
+        super.forceCleanupUser(receiver);
+        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
+
+        List<Packet<?>> packets = new ArrayList<>();
+        for (int i = 0; i < MAX_LINES; i++) {
+            packets.add(new ClientboundResetScorePacket(
+              entryNames[i],
+              id
+            ));
+        }
+
+        paperReceiver.sendPackets(packets);
+    }
+
 
 }

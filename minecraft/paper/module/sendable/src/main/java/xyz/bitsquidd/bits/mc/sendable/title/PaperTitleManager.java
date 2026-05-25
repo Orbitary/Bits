@@ -9,6 +9,7 @@ package xyz.bitsquidd.bits.mc.sendable.title;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.title.Title;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
@@ -51,6 +52,16 @@ public class PaperTitleManager extends TitleManager {
         paperReceiver.sendPacket(new ClientboundSetTitleTextPacket(
           PaperAdventure.asVanillaNullToEmpty(handle.definition().title(state))
         ));
+    }
+
+    @Override
+    protected void forceCleanupUser(Receiver receiver) {
+        super.forceCleanupUser(receiver);
+        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
+
+        paperReceiver.sendPacket(new ClientboundSetTitlesAnimationPacket(0, 0, 0));
+        paperReceiver.sendPacket(new ClientboundSetSubtitleTextPacket(Component.empty()));
+        paperReceiver.sendPacket(new ClientboundSetTitleTextPacket(Component.empty()));
     }
 
 }

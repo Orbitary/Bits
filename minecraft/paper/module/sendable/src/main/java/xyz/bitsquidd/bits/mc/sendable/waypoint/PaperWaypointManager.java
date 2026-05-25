@@ -216,4 +216,12 @@ public class PaperWaypointManager extends WaypointManager {
         tracked.remove(uuid);
     }
 
+
+    @Override
+    protected void forceCleanupUser(Receiver receiver) {
+        super.forceCleanupUser(receiver);
+
+        // TODO Consider if we need a force cleanup here?
+    }
+
 }

@@ -45,14 +45,25 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
     protected abstract C createCollection();
 
+    /**
+     * Initialises the receiver's collection. Should only be called ONCE on join.
+     */
     protected void initialiseReceiver(Receiver receiver) {
         cleanupReceiver(receiver);
         getOrCreateCollection(receiver);
     }
 
+    /**
+     * Cleans up the receiver's collection. Should only be called ONCE on quit.
+     */
     protected void cleanupReceiver(Receiver receiver) {
         playerSendables.remove(receiver);
     }
+
+    /**
+     * Sent when we clear all player sendables. Mainly for safety when they no longer have a collection to tick.
+     */
+    protected void forceCleanupUser(Receiver receiver) {}
 
 
     @ApiStatus.Internal
@@ -125,8 +136,9 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
 
     @Override
     public void cleanup() {
-        globalSendables.clear();
-        playerSendables.values().forEach(c -> c.getAll().forEach(SendableHandle::bits$markForExpire));
+        removeAll(SendableFilter.alwaysTrue());
+
+        playerSendables.keySet().forEach(this::forceCleanupUser);
         playerSendables.clear();
     }
 

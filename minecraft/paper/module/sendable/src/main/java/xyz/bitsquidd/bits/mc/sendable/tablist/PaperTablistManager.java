@@ -50,4 +50,15 @@ public class PaperTablistManager extends TablistManager {
         ));
     }
 
+    @Override
+    protected void forceCleanupUser(Receiver receiver) {
+        super.forceCleanupUser(receiver);
+        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
+
+        paperReceiver.sendPacket(new ClientboundTabListPacket(
+          net.minecraft.network.chat.Component.empty(),
+          net.minecraft.network.chat.Component.empty()
+        ));
+    }
+
 }
