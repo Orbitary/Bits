@@ -16,8 +16,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import xyz.bitsquidd.bits.discord.command.JdaCommand;
 import xyz.bitsquidd.bits.discord.command.JdaCommandContext;
+import xyz.bitsquidd.bits.discord.command.JdaCommandGuard;
 import xyz.bitsquidd.bits.discord.command.annotation.Async;
 import xyz.bitsquidd.bits.discord.command.annotation.Command;
+import xyz.bitsquidd.bits.discord.command.annotation.Guard;
 import xyz.bitsquidd.bits.discord.command.annotation.Parameter;
 import xyz.bitsquidd.bits.discord.command.annotation.Permission;
 import xyz.bitsquidd.bits.discord.command.argument.JdaArgumentParser;
@@ -53,7 +55,8 @@ public final class JdaCommandBuilder {
         String desc = rootAnnotation.description().isBlank() ? "No description provided." : rootAnnotation.description();
 
         SlashCommandData cmd = Commands.slash(name, desc)
-          .setIntegrationTypes(rootAnnotation.integrationType())
+          .setIntegrationTypes(rootAnnotation.integrationTypes())
+          .setContexts(rootAnnotation.contexts())
           .setNSFW(rootAnnotation.nsfw());
 
         applyPermission(cmd);
@@ -135,7 +138,9 @@ public final class JdaCommandBuilder {
 
     private CommandRoute route(Class<? extends JdaCommand> clazz, Method method) {
         boolean async = clazz.isAnnotationPresent(Async.class) || method.isAnnotationPresent(Async.class);
-        return new CommandRoute(clazz, method, async);
+        Guard guard = commandClass.getAnnotation(Guard.class);
+        Class<? extends JdaCommandGuard> guardClass = guard != null ? guard.value() : null;
+        return new CommandRoute(clazz, method, async, guardClass);
     }
 
     private List<Method> getCommandMethods(Class<?> clazz) {

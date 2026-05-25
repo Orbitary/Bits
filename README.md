@@ -1,15 +1,19 @@
 <img width="4320" height="1080" alt="bits_logo" src="https://github.com/user-attachments/assets/fb7e3cc4-1533-40a9-b240-d2be153ea551" />
-<p align="center"><b> 💾 A Utility library for Minecraft development.</b></p>
+<p align="center"><b> 💾 A Utility library for Orbitary development.</b></p>
 
 
 [![License](https://img.shields.io/github/license/Orbitary/Bits)](LICENSE)
 [![Java CI](https://github.com/Orbitary/Bits/actions/workflows/publish.yml/badge.svg)](https://github.com/Orbitary/Bits/actions/workflows/publish.yml)
 [![Modrinth Downloads](https://img.shields.io/badge/dynamic/json?color=1bd96a&label=Modrinth&query=downloads&suffix=%20downloads&url=https%3A%2F%2Fapi.modrinth.com%2Fv2%2Fproject%2F8ZZ61TMj)](https://modrinth.com/mod/orbits)
 
-
 ## About
 
-Bits is a multi-platform Minecraft utility library designed to streamline plugin development across Paper and Velocity platforms. It provides common utilities, abstractions, and helper classes to reduce boilerplate code and accelerate your development workflow.
+Bits is a multi-platform utility library designed to streamline:
+
+- Minecraft plugin development across Paper and Velocity platforms.
+- Minecraft mod development using Fabric (both client and server).
+- Discord Bot Development
+- And more!
 
 ### Features:
 
@@ -39,7 +43,7 @@ dependencies {
     implementation("xyz.bitsquidd.bits.paper:paper:0.0.15")
     implementation("xyz.bitsquidd.bits.velocity:velocity:0.0.15")
     implementation("xyz.bitsquidd.bits.fabric:fabric:0.0.15")
-    
+
     // Optional: Platform-specific modules
     implementation("xyz.bitsquidd.bits.paper:sendable:0.0.15")
     implementation("xyz.bitsquidd.bits.paper:command:0.0.15")

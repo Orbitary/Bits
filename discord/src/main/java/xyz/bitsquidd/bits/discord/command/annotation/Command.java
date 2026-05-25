@@ -8,6 +8,7 @@
 package xyz.bitsquidd.bits.discord.command.annotation;
 
 import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,6 +32,7 @@ public @interface Command {
     String value();
     String description() default "";
 
-    IntegrationType integrationType() default IntegrationType.GUILD_INSTALL;
+    IntegrationType[] integrationTypes() default {IntegrationType.GUILD_INSTALL};
+    InteractionContextType[] contexts() default {InteractionContextType.GUILD};
     boolean nsfw() default false;
 }

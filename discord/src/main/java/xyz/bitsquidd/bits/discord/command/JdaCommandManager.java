@@ -7,6 +7,7 @@
 
 package xyz.bitsquidd.bits.discord.command;
 
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -73,6 +74,18 @@ public class JdaCommandManager implements BitsModule {
             JdaCommandContext ctx = new JdaCommandContext(event);
             Runnable execution = () -> {
                 try {
+                    if (route.guardClass() != null) {
+                        JdaCommandGuard guard = route.guardClass().getDeclaredConstructor().newInstance();
+                        if (!guard.check(event)) {
+                            MessageEmbed denied = guard.denied();
+                            if (denied != null) {
+                                event.replyEmbeds(denied).setEphemeral(true).queue();
+                            } else {
+                                event.reply("You do not have permission to use this command.").setEphemeral(true).queue();
+                            }
+                            return;
+                        }
+                    }
                     Object instance = route.commandClass().getDeclaredConstructor().newInstance();
                     Object[] args = resolveArgs(route.method(), event, ctx);
                     route.method().invoke(instance, args);
