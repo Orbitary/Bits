@@ -147,7 +147,7 @@ public class PaperWaypointManager extends WaypointManager {
      * Resolves a {@link WaypointTransmitter.Connection} from a transmitter UUID.
      * Returns a connection that uses the waypoint's custom icon, delegating {@code isBroken()} to
      * the entity's native connection. Override to support packet entity systems.
-     * Returns empty if the entity cannot be found — the waypoint will be expired.
+     * Returns empty if the entity cannot be found - the waypoint will be expired.
      */
     protected Optional<WaypointTransmitter.Connection> resolveConnection(UUID transmitterUUID, Waypoint.Icon icon, UUID handleUUID, ServerPlayer player) {
         Entity entity = Bukkit.getEntity(transmitterUUID);

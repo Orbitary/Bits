@@ -79,32 +79,19 @@ public interface ConfigNode {
      *
      * @since 0.0.14
      */
-    <T> T get(Class<T> type, T defaultValue);
+    default <T> T getOrDefault(Class<T> type, T defaultValue) {
+        return get(type).orElse(defaultValue);
+    }
 
     /**
-     * Reads the node as a {@code String}, or returns {@code defaultValue}.
+     * Reads the node value as the given type, wrapped in an {@link Optional}.
+     *
+     * @param type the target type
+     * @param <T>  the value type
+     *
+     * @since 0.0.14
      */
-    String getString(String defaultValue);
-
-    /**
-     * Reads the node as an {@code int}, or returns {@code defaultValue}.
-     */
-    int getInt(int defaultValue);
-
-    /**
-     * Reads the node as a {@code long}, or returns {@code defaultValue}.
-     */
-    long getLong(long defaultValue);
-
-    /**
-     * Reads the node as a {@code double}, or returns {@code defaultValue}.
-     */
-    double getDouble(double defaultValue);
-
-    /**
-     * Reads the node as a {@code boolean}, or returns {@code defaultValue}.
-     */
-    boolean getBoolean(boolean defaultValue);
+    <T> Optional<T> get(Class<T> type);
 
 
     /**
@@ -116,26 +103,9 @@ public interface ConfigNode {
      * @throws ConfigException if the node is absent or conversion fails
      * @since 0.0.14
      */
-    <T> T require(Class<T> type) throws ConfigException;
-
-    /**
-     * Reads the node as a {@code String}.
-     *
-     * @throws ConfigException if absent
-     * @since 0.0.14
-     */
-    String requireString() throws ConfigException;
-
-
-    /**
-     * Reads the node value as the given type, wrapped in an {@link Optional}.
-     *
-     * @param type the target type
-     * @param <T>  the value type
-     *
-     * @since 0.0.14
-     */
-    <T> Optional<T> optional(Class<T> type);
+    default <T> T require(Class<T> type) throws ConfigException {
+        return get(type).orElseThrow(() -> ConfigException.missingValue(path()));
+    }
 
 
     /**

@@ -27,6 +27,10 @@ dependencyResolutionManagement {
         create("velocityLibs") {
             from(files("minecraft/velocity/gradle/libs.versions.toml"))
         }
+
+        create("discordLibs") {
+            from(files("discord/gradle/libs.versions.toml"))
+        }
     }
 }
 
@@ -52,3 +56,5 @@ include("minecraft:fabric")
 
 
 
+
+include("discord")

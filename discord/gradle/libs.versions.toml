@@ -1,0 +1,2 @@
+[libraries]
+jda = { group = "net.dv8tion", name = "JDA", version = "6.4.1" }

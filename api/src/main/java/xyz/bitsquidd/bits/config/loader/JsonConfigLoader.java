@@ -14,7 +14,8 @@ import xyz.bitsquidd.bits.config.node.ConfigSection;
 import xyz.bitsquidd.bits.config.node.impl.JacksonConfigSection;
 import xyz.bitsquidd.bits.util.serializer.SerializationManager;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
@@ -25,57 +26,21 @@ import java.io.IOException;
  * wrapper that reads the file directly into an {@link ObjectNode}.
  * <p>
  * Pretty-printing is enabled by default for human readability.
+ * <p>
  *
  * @since 0.0.14
  */
-public final class JsonConfigLoader implements ConfigLoader {
+public abstract sealed class JsonConfigLoader implements ConfigLoader permits JsonConfigLoader.File, JsonConfigLoader.InputStream {
 
-    private final File file;
+    private JsonConfigLoader() {}
 
-    /**
-     * Creates a JSON loader backed by the given file.
-     *
-     * @param file the JSON file to read/write
-     *
-     * @since 0.0.14
-     */
-    public JsonConfigLoader(File file) {
-        this.file = file;
-    }
-
-    @Override
-    public ConfigSection load() throws ConfigException {
-        if (!file.exists()) {
-            return JacksonConfigSection.root(SerializationManager.SERIALIZER.createObjectNode());
-        }
-
+    static ObjectNode readTree(java.io.InputStream source, String label) throws ConfigException {
         try {
-            ObjectNode node = (ObjectNode)SerializationManager.SERIALIZER.readTree(file);
+            ObjectNode node = (ObjectNode)SerializationManager.SERIALIZER.readTree(source);
             if (node == null) node = SerializationManager.SERIALIZER.createObjectNode();
-            return JacksonConfigSection.root(node);
+            return node;
         } catch (IOException e) {
-            throw ConfigException.loadFailed(file.getPath(), e);
-        }
-    }
-
-    @Override
-    public void save(ConfigSection section) throws ConfigException {
-        if (!(section instanceof JacksonConfigSection jacksonSection)) {
-            throw ConfigException.saveFailed(
-              file.getPath(),
-              new IllegalArgumentException("JsonConfigLoader can only save JacksonConfigSection instances")
-            );
-        }
-
-        try {
-            File parent = file.getParentFile();
-            if (parent != null && !parent.exists()) parent.mkdirs();
-
-            SerializationManager.SERIALIZER
-              .writerWithDefaultPrettyPrinter()
-              .writeValue(file, jacksonSection.objectNode());
-        } catch (IOException e) {
-            throw ConfigException.saveFailed(file.getPath(), e);
+            throw ConfigException.loadFailed(label, e);
         }
     }
 
@@ -84,11 +49,89 @@ public final class JsonConfigLoader implements ConfigLoader {
         return "JSON";
     }
 
+
     /**
-     * Returns the backing file this loader reads from and writes to.
+     * A {@link JsonConfigLoader} backed by a file on disk.
+     * <p>
+     * If the file does not exist, {@link #load()} returns an empty section so
+     * defaults can be applied. {@link #save(ConfigSection)} creates the file
+     * (and any missing parent directories) on first write.
+     *
+     * @since 0.0.14
      */
-    public File file() {
-        return file;
+    public static final class File extends JsonConfigLoader {
+        private final java.io.File file;
+
+        File(java.io.File file) {
+            this.file = file;
+        }
+
+        @Override
+        public ConfigSection load() throws ConfigException {
+            java.io.InputStream source;
+            try {
+                source = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                return JacksonConfigSection.root(SerializationManager.SERIALIZER.createObjectNode());
+            }
+            return JacksonConfigSection.root(readTree(source, file.getPath()));
+        }
+
+        @Override
+        public void save(ConfigSection section) throws ConfigException {
+            if (!(section instanceof JacksonConfigSection jacksonSection)) {
+                throw ConfigException.saveFailed(
+                  file.getPath(),
+                  new IllegalArgumentException("JsonConfigLoader can only save JacksonConfigSection instances")
+                );
+            }
+
+            try {
+                java.io.File parent = file.getParentFile();
+                if (parent != null && !parent.exists()) parent.mkdirs();
+                SerializationManager.SERIALIZER
+                  .writerWithDefaultPrettyPrinter()
+                  .writeValue(file, jacksonSection.objectNode());
+            } catch (IOException e) {
+                throw ConfigException.saveFailed(file.getPath(), e);
+            }
+        }
+
+        /**
+         * Returns the backing file.
+         */
+        public java.io.File file() {
+            return file;
+        }
+
+    }
+
+    /**
+     * A read-only {@link JsonConfigLoader} backed by an {@link java.io.InputStream}.
+     * Intended for classpath/bundled resources (e.g. fat-JAR defaults).
+     * <p>
+     * {@link #save(ConfigSection)} throws {@link UnsupportedOperationException}.
+     *
+     * @since 0.0.14
+     */
+    public static final class InputStream extends JsonConfigLoader {
+
+        private final java.io.InputStream stream;
+
+        InputStream(java.io.InputStream stream) {
+            this.stream = stream;
+        }
+
+        @Override
+        public ConfigSection load() throws ConfigException {
+            return JacksonConfigSection.root(readTree(stream, "<stream>"));
+        }
+
+        @Override
+        public void save(ConfigSection section) {
+            throw new UnsupportedOperationException("JsonConfigLoader.InputStream is read-only");
+        }
+
     }
 
 }
