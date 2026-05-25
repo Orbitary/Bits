@@ -8,10 +8,8 @@
 package xyz.bitsquidd.bits.config;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import xyz.bitsquidd.bits.config.loader.ConfigLoader;
-import xyz.bitsquidd.bits.config.loader.YamlConfigLoader;
 import xyz.bitsquidd.bits.config.node.ConfigSection;
 
 import java.io.File;
@@ -50,10 +48,10 @@ public final class PaperConfigLoader implements ConfigLoader {
     private final File resolvedFile;
 
     private PaperConfigLoader(
-      @NotNull ConfigLoader delegate,
-      @NotNull JavaPlugin plugin,
-      @NotNull String resourcePath,
-      @NotNull File resolvedFile
+      ConfigLoader delegate,
+      JavaPlugin plugin,
+      String resourcePath,
+      File resolvedFile
     ) {
         this.delegate = delegate;
         this.plugin = plugin;
@@ -74,9 +72,9 @@ public final class PaperConfigLoader implements ConfigLoader {
      *
      * @since 0.1.0
      */
-    public static @NotNull PaperConfigLoader yaml(@NotNull JavaPlugin plugin, @NotNull String resourcePath) {
+    public static PaperConfigLoader yaml(JavaPlugin plugin, String resourcePath) {
         File file = new File(plugin.getDataFolder(), resourcePath);
-        return new PaperConfigLoader(new YamlConfigLoader(file), plugin, resourcePath, file);
+        return new PaperConfigLoader(ConfigLoader.yaml(file), plugin, resourcePath, file);
     }
 
     /**
@@ -90,29 +88,29 @@ public final class PaperConfigLoader implements ConfigLoader {
      *
      * @since 0.1.0
      */
-    public static @NotNull PaperConfigLoader wrapping(
-      @NotNull ConfigLoader delegate,
-      @NotNull JavaPlugin plugin,
-      @NotNull String resourcePath,
-      @NotNull File targetFile
+    public static PaperConfigLoader wrapping(
+      ConfigLoader delegate,
+      JavaPlugin plugin,
+      String resourcePath,
+      File targetFile
     ) {
         return new PaperConfigLoader(delegate, plugin, resourcePath, targetFile);
     }
 
 
     @Override
-    public @NotNull ConfigSection load() throws ConfigException {
+    public ConfigSection load() throws ConfigException {
         extractDefaultIfAbsent();
         return delegate.load();
     }
 
     @Override
-    public void save(@NotNull ConfigSection section) throws ConfigException {
+    public void save(ConfigSection section) throws ConfigException {
         delegate.save(section);
     }
 
     @Override
-    public @NotNull String formatName() {
+    public String formatName() {
         return delegate.formatName() + " (Paper)";
     }
 
@@ -139,7 +137,7 @@ public final class PaperConfigLoader implements ConfigLoader {
     /**
      * Returns the resolved file this loader targets.
      */
-    public @NotNull File file() {
+    public File file() {
         return resolvedFile;
     }
 

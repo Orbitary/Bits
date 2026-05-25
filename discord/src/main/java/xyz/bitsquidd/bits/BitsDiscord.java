@@ -42,12 +42,6 @@ public class BitsDiscord extends Bits {
 
 
     @Override
-    protected Logger createLogger() {
-        return new BasicLogger(slf4j, Logger.LogFlags.defaultFlags());
-    }
-
-
-    @Override
     public void runLater(Runnable runnable, long delayMs) {
         new Thread(() -> {
             try {
