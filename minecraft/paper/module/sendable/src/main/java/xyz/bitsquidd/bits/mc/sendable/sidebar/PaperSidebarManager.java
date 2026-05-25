@@ -51,13 +51,13 @@ public class PaperSidebarManager extends SidebarManager {
     protected void render(Receiver receiver, SidebarCollection collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
-        Component title = collection.getAll().stream()
+        Component title = collection.getAllOrdered().stream()
           .map(s -> s.definition().title(s.state(receiver)))
           .filter(Objects::nonNull)
           .findFirst()
           .orElse(Component.empty());
 
-        List<Component> lineComponents = collection.getAll().stream()
+        List<Component> lineComponents = collection.getAllOrdered().stream()
           .map(s -> s.definition().content(s.state(receiver)))
           .flatMap(Collection::stream)
           .limit(MAX_LINES) // This does mean lower priority sidebars may be cut off
