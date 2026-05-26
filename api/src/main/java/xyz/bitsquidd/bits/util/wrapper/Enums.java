@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
@@ -88,6 +89,10 @@ public final class Enums {
             if (identifier.test(constant)) return Optional.of(constant);
         }
         return Optional.empty();
+    }
+
+    public static <E extends Enum<E>> Comparator<E> comparingId() {
+        return Comparator.comparing(Enums::toIdentifier);
     }
 
     /**
