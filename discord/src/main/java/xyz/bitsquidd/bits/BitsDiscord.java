@@ -18,11 +18,9 @@ import xyz.bitsquidd.bits.wrapper.collection.AddableList;
 
 public class BitsDiscord extends Bits {
     private final JDA jda;
-    private final org.slf4j.Logger slf4j;
 
-    public BitsDiscord(JDA jda, org.slf4j.Logger slf4j) {
+    public BitsDiscord(JDA jda) {
         this.jda = jda;
-        this.slf4j = slf4j;
     }
 
     public static BitsDiscord get() {
