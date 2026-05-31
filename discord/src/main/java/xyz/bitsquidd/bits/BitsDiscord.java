@@ -10,9 +10,8 @@ package xyz.bitsquidd.bits;
 import net.dv8tion.jda.api.JDA;
 
 import xyz.bitsquidd.bits.discord.command.JdaCommandManager;
+import xyz.bitsquidd.bits.discord.lifecycle.manager.DiscordManagerOrchestrator;
 import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
-import xyz.bitsquidd.bits.log.BasicLogger;
-import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.wrapper.collection.AddableList;
 
 
@@ -55,6 +54,11 @@ public class BitsDiscord extends Bits {
     protected AddableList<BitsModule> modules() {
         return super.modules()
           .add(new JdaCommandManager());
+    }
+
+    @Override
+    protected DiscordManagerOrchestrator createManagerOrchestrator() {
+        return new DiscordManagerOrchestrator();
     }
 
 }
