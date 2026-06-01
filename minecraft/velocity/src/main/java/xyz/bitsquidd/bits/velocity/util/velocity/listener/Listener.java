@@ -9,7 +9,7 @@
 package xyz.bitsquidd.bits.velocity.util.velocity.listener;
 
 /**
- * Empty interface to act as a flag for automatic listener registration in a {@link xyz.bitsquidd.bits.velocity.lifecycle.manager.VelocityManagerContainer VelocityManagerContainer}.
+ * Empty interface to act as a flag for automatic listener registration in a {@link xyz.bitsquidd.bits.velocity.lifecycle.manager.VelocityManagerOrchestrator VelocityManagerOrchestrator}.
  */
 public interface Listener {
 }

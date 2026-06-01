@@ -35,16 +35,20 @@ public class ManagerOrchestrator implements CoreManager {
 
     public void postStartup(CoreManager manager) {}
 
-    public void preInitialise(CoreManager manager) {}
-
-    public void postInitialise(CoreManager manager) {}
-
-    public void preCleanup(CoreManager manager) {}
-
-    public void postCleanup(CoreManager manager) {}
-
     public void preShutdown(CoreManager manager) {}
 
     public void postShutdown(CoreManager manager) {}
+
+    @Deprecated(forRemoval = true, since = "0.0.18")
+    public void preInitialise(CoreManager manager) {}
+
+    @Deprecated(forRemoval = true, since = "0.0.18")
+    public void postInitialise(CoreManager manager) {}
+
+    @Deprecated(forRemoval = true, since = "0.0.18")
+    public void preCleanup(CoreManager manager) {}
+
+    @Deprecated(forRemoval = true, since = "0.0.18")
+    public void postCleanup(CoreManager manager) {}
 
 }

@@ -19,6 +19,7 @@ import org.bstats.velocity.Metrics;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.permission.Permission;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
+import xyz.bitsquidd.bits.velocity.lifecycle.manager.VelocityManagerOrchestrator;
 import xyz.bitsquidd.bits.velocity.util.velocity.runnable.Tasks;
 
 import java.nio.file.Path;
@@ -95,6 +96,11 @@ public class BitsVelocity extends BitsMinecraft {
     @Override
     public final void runLater(Runnable runnable, long delayMs) {
         Tasks.builder(runnable).delay(delayMs, TimeUnit.MILLISECONDS).schedule();
+    }
+
+    @Override
+    protected VelocityManagerOrchestrator createManagerOrchestrator() {
+        return new VelocityManagerOrchestrator();
     }
 
 }

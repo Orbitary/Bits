@@ -28,21 +28,6 @@ public interface CoreManager {
      */
     default void startup() {}
 
-
-    /**
-     * Invoked at the beginning of a game round or significant lifecycle event.
-     *
-     * @since 0.0.10
-     */
-    default void initialise() {}
-
-    /**
-     * Invoked at the conclusion of a game round or significant lifecycle event.
-     *
-     * @since 0.0.10
-     */
-    default void cleanup() {}
-
     /**
      * Invoked during the global server shutdown phase.
      * <p>
@@ -52,5 +37,22 @@ public interface CoreManager {
      * @since 0.0.10
      */
     default void shutdown() {}
+
+    /**
+     * Invoked at the beginning of a game round or significant lifecycle event.
+     *
+     * @since 0.0.10
+     */
+    @Deprecated(forRemoval = true, since = "0.0.18")
+    default void initialise() {}
+
+    /**
+     * Invoked at the conclusion of a game round or significant lifecycle event.
+     *
+     * @since 0.0.10
+     */
+    @Deprecated(forRemoval = true, since = "0.0.18")
+    default void cleanup() {}
+
 
 }
