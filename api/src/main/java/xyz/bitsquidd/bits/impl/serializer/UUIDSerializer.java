@@ -7,8 +7,12 @@
 
 package xyz.bitsquidd.bits.impl.serializer;
 
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
 
 import xyz.bitsquidd.bits.util.serializer.MultiSerializer;
 import xyz.bitsquidd.bits.util.serializer.Serializer;
@@ -30,6 +34,22 @@ public final class UUIDSerializer extends MultiSerializer<UUID> {
     @Override
     protected UUID deserialize(JsonNode node) {
         return UUID.fromString(node.asText());
+    }
+
+
+    @Override
+    public JsonSerializer<? super UUID> jacksonKeySerializer() {
+        return new StdKeySerializers.StringKeySerializer();
+    }
+
+    @Override
+    public KeyDeserializer jacksonKeyDeserializer() {
+        return new KeyDeserializer() {
+            @Override
+            public Object deserializeKey(String key, DeserializationContext ctxt) {
+                return UUID.fromString(key);
+            }
+        };
     }
 
 }
