@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * Attaches a {@link JdaCommandGuard} to a command class. The guard's {@link JdaCommandGuard#check}
  * runs before argument resolution; returning {@code false} aborts execution.
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Guard {
     Class<? extends JdaCommandGuard> value();

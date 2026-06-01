@@ -138,7 +138,7 @@ public final class JdaCommandBuilder {
 
     private CommandRoute route(Class<? extends JdaCommand> clazz, Method method) {
         boolean async = clazz.isAnnotationPresent(Async.class) || method.isAnnotationPresent(Async.class);
-        Guard guard = commandClass.getAnnotation(Guard.class);
+        Guard guard = method.isAnnotationPresent(Guard.class) ? method.getAnnotation(Guard.class) : commandClass.getAnnotation(Guard.class);
         Class<? extends JdaCommandGuard> guardClass = guard != null ? guard.value() : null;
         return new CommandRoute(clazz, method, async, guardClass);
     }
