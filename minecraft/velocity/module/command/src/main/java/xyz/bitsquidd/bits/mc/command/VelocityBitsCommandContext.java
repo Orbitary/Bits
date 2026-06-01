@@ -10,6 +10,8 @@ package xyz.bitsquidd.bits.mc.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.velocitypowered.api.command.CommandSource;
 
+import com.velocitypowered.api.proxy.Player;
+
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
 
@@ -30,5 +32,10 @@ public class VelocityBitsCommandContext extends BitsCommandContext<CommandSource
         return source.getSender();
     }
 
+
+    public Player requirePlayer() {
+        if (!(getSender() instanceof Player player)) throw new IllegalStateException("Command sender must be a player");
+        return player;
+    }
 
 }
