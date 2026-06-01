@@ -13,6 +13,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
+import java.util.Collection;
+
+
 /**
  * Wraps a {@link SlashCommandInteractionEvent} with convenience reply helpers.
  */
@@ -23,16 +26,24 @@ public final class JdaCommandContext {
         this.event = event;
     }
 
-    public void reply(MessageEmbed embed) {
-        event.replyEmbeds(embed).queue();
+    public void reply(Collection<? extends MessageEmbed> embeds) {
+        event.replyEmbeds(embeds).queue();
+    }
+
+    public void reply(MessageEmbed embed, MessageEmbed... embeds) {
+        event.replyEmbeds(embed, embeds).queue();
     }
 
     public void reply(String message) {
         event.reply(message).queue();
     }
 
-    public void replyEphemeral(MessageEmbed embed) {
-        event.replyEmbeds(embed).setEphemeral(true).queue();
+    public void replyEphemeral(Collection<? extends MessageEmbed> embeds) {
+        event.replyEmbeds(embeds).setEphemeral(true).queue();
+    }
+
+    public void replyEphemeral(MessageEmbed embed, MessageEmbed... embeds) {
+        event.replyEmbeds(embed, embeds).setEphemeral(true).queue();
     }
 
     public void replyEphemeral(String message) {
@@ -58,4 +69,5 @@ public final class JdaCommandContext {
     public SlashCommandInteractionEvent raw() {
         return event;
     }
+
 }
