@@ -9,6 +9,8 @@ package xyz.bitsquidd.bits.mc.sendable.impl.title.impl;
 
 import net.kyori.adventure.text.Component;
 
+import org.jetbrains.annotations.Range;
+
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 
@@ -69,7 +71,7 @@ public class TitlePhase {
     }
 
     public static final class Builder implements Buildable<TitlePhase> {
-        private int durationTicks = 0;
+        private int durationTicks = 1;
         private Function<SendableState, Component> title = s -> Component.empty();
         private Function<SendableState, Component> subtitle = s -> Component.empty();
         private Consumer<SendableState> onStart = s -> {};
@@ -78,7 +80,8 @@ public class TitlePhase {
 
         private Builder() {}
 
-        public Builder duration(int durationTicks) {
+        public Builder duration(@Range(from = 1, to = Integer.MAX_VALUE) int durationTicks) {
+            if (durationTicks <= 0) throw new IllegalStateException("durationTicks must be > 0");
             this.durationTicks = durationTicks;
             return this;
         }
@@ -120,7 +123,6 @@ public class TitlePhase {
 
         @Override
         public TitlePhase build() {
-            if (durationTicks <= 0) throw new IllegalStateException("TitlePhase duration must be > 0");
             return new TitlePhase(this);
         }
 
