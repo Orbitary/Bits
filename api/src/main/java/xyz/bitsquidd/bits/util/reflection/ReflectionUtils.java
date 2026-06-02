@@ -21,11 +21,20 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 
 /**
  * Utility class for common reflection operations and classpath scanning.
@@ -75,22 +84,35 @@ public final class ReflectionUtils {
         ));
         public static final BiMap<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = WRAPPER_TO_PRIMITIVE.inverse();
 
+        /**
+         * Converts a wrapper class to its primitive type, throws if not a wrapper.
+         */
         public static Class<?> to(Class<?> wrapper) {
             Class<?> primitive = WRAPPER_TO_PRIMITIVE.get(wrapper);
             if (primitive == null) throw new IllegalArgumentException("Not a wrapper class: " + wrapper);
             return primitive;
         }
 
+        /**
+         * Converts a potential wrapper class to its primitive type, or returns the original class if it's not a wrapper.
+         */
         public static Class<?> toOrSelf(Class<?> clazz) {
             return WRAPPER_TO_PRIMITIVE.getOrDefault(clazz, clazz);
         }
 
+        /**
+         * Converts a primitive type to its wrapper class, throws if not a primitive.
+         */
         public static Class<?> from(Class<?> primitive) {
             Class<?> wrapper = PRIMITIVE_TO_WRAPPER.get(primitive);
             if (wrapper == null) throw new IllegalArgumentException("No wrapper for primitive: " + primitive);
             return wrapper;
         }
 
+
+        /**
+         * Converts a potential primitive type to its wrapper class, or returns the original class if it's not a primitive.
+         */
         public static Class<?> fromOrSelf(Class<?> clazz) {
             return PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz);
         }
