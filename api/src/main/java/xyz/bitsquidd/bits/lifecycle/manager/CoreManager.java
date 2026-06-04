@@ -43,6 +43,7 @@ public interface CoreManager {
      *
      * @since 0.0.10
      */
+    // Initialise lifecycle isnt great: consider calling your own events.
     @Deprecated(forRemoval = true, since = "0.0.18")
     default void initialise() {}
 
@@ -51,6 +52,7 @@ public interface CoreManager {
      *
      * @since 0.0.10
      */
+    // Cleanup lifecycle isnt great: consider calling your own events.
     @Deprecated(forRemoval = true, since = "0.0.18")
     default void cleanup() {}
 

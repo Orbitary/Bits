@@ -26,6 +26,11 @@ allprojects {
 
     plugins.apply(paperweightPlugin)
 
+    // Paperweight errors in javadoc creation quite often. We suppress these
+    tasks.withType<Javadoc>().configureEach {
+        enabled = false
+    }
+
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(25))
     }

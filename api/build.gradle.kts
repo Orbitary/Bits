@@ -13,17 +13,20 @@ dependencies {
     shade(rootProject.libs.classgraph)
 
     compileOnly(rootProject.libs.adventure.text.serializer.plain)
+    api(rootProject.libs.adventure.text.minimessage)
+    api(rootProject.libs.adventure)
 
     api(rootProject.libs.joml)
-    api(rootProject.libs.adventure.text.minimessage)
+
     api(rootProject.libs.logger)
+
     api(rootProject.libs.jackson.core)
     api(rootProject.libs.jackson.databind)
     api(rootProject.libs.jackson.collections.guava)
     api(rootProject.libs.jackson.datatype.jsr310)
     api(rootProject.libs.jackson.dataformat.yaml)
+
     api(rootProject.libs.guava)
-    api(rootProject.libs.adventure)
 }
 
 tasks.shadowJar {

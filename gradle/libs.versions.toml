@@ -1,17 +1,14 @@
 [versions]
-adventure = "4.26.1"
-jackson = "2.21.2"
-auto-service = "1.1.1"
+adventure = "5.1.1"
+jackson = "2.21.4"
 
 [libraries]
 joml = { group = "org.joml", name = "joml", version = "1.10.8" }
-logger = { group = "org.slf4j", name = "slf4j-api", version = "2.0.17" }
-classgraph = { group = "io.github.classgraph", name = "classgraph", version = "4.8.179" }
-guava = { group = "com.google.guava", name = "guava", version = "33.5.0-jre" }
+logger = { group = "org.slf4j", name = "slf4j-api", version = "2.0.18" }
+classgraph = { group = "io.github.classgraph", name = "classgraph", version = "4.8.184" }
+guava = { group = "com.google.guava", name = "guava", version = "33.6.0-jre" }
 
 brigadier = { group = "com.mojang", name = "brigadier", version = "1.0.18" }
-
-auto-service = { group = "com.google.auto.service", name = "auto-service", version.ref = "auto-service" }
 
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
