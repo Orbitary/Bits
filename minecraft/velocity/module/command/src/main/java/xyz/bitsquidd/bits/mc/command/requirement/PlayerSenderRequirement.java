@@ -12,7 +12,7 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
-import xyz.bitsquidd.bits.mc.sendable.text.Text;
+
 
 public class PlayerSenderRequirement extends BitsCommandRequirement {
     public static final PlayerSenderRequirement INSTANCE = new PlayerSenderRequirement();
@@ -25,8 +25,8 @@ public class PlayerSenderRequirement extends BitsCommandRequirement {
     }
 
     @Override
-    public @Nullable Text getFailureMessage(BitsCommandSourceContext<?> ctx) {
-        return Text.of(Component.translatable("command.requirement.player_only.fail"));
+    public @Nullable Component getFailureMessage(BitsCommandSourceContext<?> ctx) {
+        return Component.translatable("command.requirement.player_only.fail");
     }
 
 }

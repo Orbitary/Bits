@@ -12,7 +12,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
-import xyz.bitsquidd.bits.mc.sendable.text.Text;
+
 
 public class ConsoleSenderRequirement extends BitsCommandRequirement {
     public static final ConsoleSenderRequirement INSTANCE = new ConsoleSenderRequirement();
@@ -25,8 +25,8 @@ public class ConsoleSenderRequirement extends BitsCommandRequirement {
     }
 
     @Override
-    public @Nullable Text getFailureMessage(BitsCommandSourceContext<?> ctx) {
-        return Text.of(Component.translatable("command.requirement.console_only.fail"));
+    public @Nullable Component getFailureMessage(BitsCommandSourceContext<?> ctx) {
+        return Component.translatable("command.requirement.console_only.fail");
     }
 
 }

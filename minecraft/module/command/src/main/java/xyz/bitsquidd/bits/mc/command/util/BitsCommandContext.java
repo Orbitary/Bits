@@ -9,9 +9,10 @@ package xyz.bitsquidd.bits.mc.command.util;
 
 import com.mojang.brigadier.context.CommandContext;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 
 import xyz.bitsquidd.bits.mc.command.annotation.Command;
-import xyz.bitsquidd.bits.mc.sendable.text.Text;
+
 
 /**
  * Utility class to encapsulate the command context during execution.
@@ -102,8 +103,8 @@ public abstract class BitsCommandContext<T> {
      *
      * @since 0.0.10
      */
-    public final void respond(Text message) {
-        message.send(getSender());
+    public final void respond(Component message) {
+        getSender().sendMessage(message);
     }
 
     /**

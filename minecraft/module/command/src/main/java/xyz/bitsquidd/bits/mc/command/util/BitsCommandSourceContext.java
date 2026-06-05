@@ -8,9 +8,9 @@
 package xyz.bitsquidd.bits.mc.command.util;
 
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.ApiStatus;
 
-import xyz.bitsquidd.bits.mc.sendable.text.Text;
 
 /**
  * Utility class to encapsulate the underlying platform's command source stack.
@@ -72,8 +72,8 @@ public abstract class BitsCommandSourceContext<T> {
      * @since 0.0.10
      */
     @ApiStatus.Experimental
-    public void respond(Text message) {
-        message.send(getSender());
+    public void respond(Component message) {
+        getSender().sendMessage(message);
     }
 
 }

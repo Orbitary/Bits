@@ -13,11 +13,11 @@ import org.jetbrains.annotations.Nullable;
 import xyz.bitsquidd.bits.mc.command.requirement.BitsCommandRequirement;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
 import xyz.bitsquidd.bits.mc.permission.Permission;
-import xyz.bitsquidd.bits.mc.sendable.text.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 
 /**
  * A command requirement that checks if the command sender has the specified permissions.
@@ -72,8 +72,8 @@ public class PermissionRequirement extends BitsCommandRequirement {
     }
 
     @Override
-    public @Nullable Text getFailureMessage(BitsCommandSourceContext<?> ctx) {
-        return Text.of(Component.translatable("command.requirement.permission.fail"));
+    public @Nullable Component getFailureMessage(BitsCommandSourceContext<?> ctx) {
+        return Component.translatable("command.requirement.permission.fail");
     }
 
 }

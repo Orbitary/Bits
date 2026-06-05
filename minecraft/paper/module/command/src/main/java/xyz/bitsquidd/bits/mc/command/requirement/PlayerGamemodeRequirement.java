@@ -7,14 +7,14 @@
 
 package xyz.bitsquidd.bits.mc.command.requirement;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 
 import xyz.bitsquidd.bits.mc.command.PaperBitsCommandSourceContext;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
 
 
-@Deprecated(forRemoval = true) // Not working!
-public class PlayerGamemodeRequirement extends PlayerSenderRequirement {
+public final class PlayerGamemodeRequirement extends PlayerSenderRequirement {
     public static final PlayerGamemodeRequirement CREATIVE = new PlayerGamemodeRequirement(GameMode.CREATIVE);
     public static final PlayerGamemodeRequirement SURVIVAL = new PlayerGamemodeRequirement(GameMode.SURVIVAL);
     public static final PlayerGamemodeRequirement ADVENTURE = new PlayerGamemodeRequirement(GameMode.ADVENTURE);
@@ -29,7 +29,12 @@ public class PlayerGamemodeRequirement extends PlayerSenderRequirement {
 
     @Override
     public boolean test(BitsCommandSourceContext<?> ctx) {
-        return super.test(ctx) && ((PaperBitsCommandSourceContext)(ctx)).requirePlayer().getGameMode().equals(requiredGamemode);
+        return super.test(ctx) && ((PaperBitsCommandSourceContext)(ctx)).requirePlayer().getGameMode() == requiredGamemode;
+    }
+
+    @Override
+    public Component getFailureMessage(BitsCommandSourceContext<?> ctx) {
+        return Component.translatable("command.requirement.gamemode_only.fail", Component.translatable(requiredGamemode.translationKey()));
     }
 
 }

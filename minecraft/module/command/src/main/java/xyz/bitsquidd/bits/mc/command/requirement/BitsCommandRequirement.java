@@ -7,12 +7,13 @@
 
 package xyz.bitsquidd.bits.mc.command.requirement;
 
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.command.BitsCommand;
-import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
 import xyz.bitsquidd.bits.mc.command.annotation.Requirement;
-import xyz.bitsquidd.bits.mc.sendable.text.Text;
+import xyz.bitsquidd.bits.mc.command.util.BitsCommandSourceContext;
+
 
 /**
  * A requirement that is checked before a command is executed, ensuring the sender has the specified permissions or state.
@@ -54,7 +55,7 @@ public abstract class BitsCommandRequirement {
      *
      * @since 0.0.10
      */
-    public @Nullable Text getFailureMessage(BitsCommandSourceContext<?> ctx) {
+    public @Nullable Component getFailureMessage(BitsCommandSourceContext<?> ctx) {
         return null;
     }
 
