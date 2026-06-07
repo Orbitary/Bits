@@ -30,7 +30,7 @@ public final class Time {
     /**
      * Converts ticks (1/20th of a second) to a Duration.
      */
-    public static Duration FROM_TICKS(int ticks) {
+    public static Duration FROM_TICKS(long ticks) {
         return Duration.ofMillis(ticks * 50L);
     }
 

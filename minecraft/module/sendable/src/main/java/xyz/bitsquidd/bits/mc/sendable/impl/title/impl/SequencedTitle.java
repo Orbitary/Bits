@@ -46,7 +46,7 @@ public abstract class SequencedTitle extends AbstractTitle {
         return resolvedPhases.get(currentPhaseIndex(state));
     }
 
-    private int phaseIndexAtTick(int tick) {
+    private int phaseIndexAtTick(long tick) {
         for (int i = 0; i < cumulativeTicks.size(); i++) {
             if (tick < cumulativeTicks.get(i)) return i;
         }

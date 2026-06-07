@@ -16,7 +16,7 @@ import xyz.bitsquidd.bits.wrapper.Percentage;
  */
 public record SendableState(
   Receiver receiver,
-  int tick,
+  long tick,
   Percentage progress,
   boolean reversing,
   SendableHandle<?> handle

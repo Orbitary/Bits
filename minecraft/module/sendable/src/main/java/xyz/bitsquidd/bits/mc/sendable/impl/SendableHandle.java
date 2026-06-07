@@ -28,7 +28,7 @@ public final class SendableHandle<S extends Sendable> {
     private final SendableConfig config;
     private final UUID uuid = UUID.randomUUID();
 
-    private int tick = -1; // Start at -1 so that the first tick (tick 0) happens immediately on add.
+    private long tick = -1; // Start at -1 so that the first tick (tick 0) happens immediately on add.
     private boolean hasAdded = false;
     private boolean reversing = false;
     private boolean needsRender = true;
@@ -59,9 +59,9 @@ public final class SendableHandle<S extends Sendable> {
             tick++;
         }
 
-        int maxTicks = config.maxTicks();
+        long maxTicks = config.maxTicks();
 
-        if (maxTicks > 0 && (tick >= maxTicks || tick < 0)) {
+        if (tick >= maxTicks || tick < 0) {
             if (config.reverseOnExpire() && !reversing) {
                 reversing = true;
                 tick = maxTicks;
@@ -85,7 +85,7 @@ public final class SendableHandle<S extends Sendable> {
      * Manually set the tick of this sendable. Use with caution.
      */
     @ApiStatus.Experimental
-    public void setTick(int tick) {
+    public void setTick(long tick) {
         this.tick = tick;
     }
 
@@ -154,7 +154,7 @@ public final class SendableHandle<S extends Sendable> {
         return config;
     }
 
-    public int getTick() {
+    public long getTick() {
         return tick;
     }
 
@@ -187,6 +187,7 @@ public final class SendableHandle<S extends Sendable> {
     //endregion
 
 
+    //region Java Object Overrides
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -198,5 +199,6 @@ public final class SendableHandle<S extends Sendable> {
     public int hashCode() {
         return uuid.hashCode();
     }
+    //endregion
 
 }

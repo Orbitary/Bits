@@ -81,8 +81,7 @@ public class TitlePhase {
         private Builder() {}
 
         public Builder duration(@Range(from = 1, to = Integer.MAX_VALUE) int durationTicks) {
-            if (durationTicks <= 0) throw new IllegalStateException("durationTicks must be > 0");
-            this.durationTicks = durationTicks;
+            this.durationTicks = Math.clamp(durationTicks, 1, Integer.MAX_VALUE);
             return this;
         }
 

@@ -55,7 +55,7 @@ public abstract class AbstractTitle extends Sendable {
 
     @Override
     public final boolean needsRender(SendableState state) {
-        int currentTick = state.tick();
+        long currentTick = state.tick();
         if (currentTick == config().fadeInEndTick || currentTick == config().fadeOutStartTick) {
             // Ensure we render at the exact ticks where fade-in ends and fade-out starts to update the title's visibility correctly.
             return true;

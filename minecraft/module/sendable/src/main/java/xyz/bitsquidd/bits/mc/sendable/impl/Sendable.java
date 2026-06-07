@@ -44,8 +44,12 @@ public abstract class Sendable {
 
 
     public boolean needsRender(SendableState state) {
-        int tickRate = config.tickRate();
+        long tickRate = config.tickRate();
         return tickRate > 0 && state.tick() % tickRate == 0;
     }
+
+
+    public static final long TICK_RATE_DEFAULT = 20L; // Default tick rate for sendables: Updates once per second (if the server runs at 20TPS).
+    public static final long MAX_TICKS = Long.MAX_VALUE / 2; // A very large number of ticks, used to represent "infinite" duration for sendables that do not expire. Should be less than Long.MAX_VALUE to avoid overflow when adding fade in/out durations of titles.
 
 }

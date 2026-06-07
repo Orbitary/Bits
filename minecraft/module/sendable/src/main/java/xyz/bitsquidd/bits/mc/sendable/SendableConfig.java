@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import org.jetbrains.annotations.Range;
+
 import xyz.bitsquidd.bits.lifecycle.builder.ExtendableBuildable;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 
@@ -14,8 +16,8 @@ import java.util.function.Predicate;
 
 
 public abstract class SendableConfig {
-    protected final int tickRate;               // How often the tick is incremented. <=0 for never.
-    protected final int maxTicks;               // How many (global) ticks until the sendable is removed. -1 for infinite.
+    protected final long tickRate;              // How often the tick is incremented. <=0 for never.
+    protected final long maxTicks;              // How many (global) ticks until the sendable is removed.
 
     private final int priority;                 // The priority of the sendable. Higher priority = replace / overlap lower priority ones.
     private final Predicate<Sendable> replaces; // A predicate to determine whether this sendable should replace another sendable.
@@ -33,11 +35,11 @@ public abstract class SendableConfig {
     }
 
 
-    public int tickRate() {
+    public long tickRate() {
         return tickRate;
     }
 
-    public int maxTicks() {
+    public long maxTicks() {
         return maxTicks;
     }
 
@@ -59,8 +61,8 @@ public abstract class SendableConfig {
 
 
     public abstract static class Builder<B extends Builder<B>> extends ExtendableBuildable<SendableConfig, B> {
-        private int tickRate = 20;
-        private int maxTicks = -1;
+        private long tickRate = Sendable.TICK_RATE_DEFAULT;
+        private long maxTicks = Sendable.MAX_TICKS;
 
         private int priority = 0;
         private Predicate<Sendable> replaces = s -> false;
@@ -71,13 +73,13 @@ public abstract class SendableConfig {
 
         protected Builder() {}
 
-        public B tickRate(int tickRate) {
-            this.tickRate = tickRate;
+        public B tickRate(@Range(from = 0, to = Sendable.MAX_TICKS) int tickRate) {
+            this.tickRate = Math.clamp(tickRate, 0, Sendable.MAX_TICKS);
             return self();
         }
 
-        public B maxTicks(int maxTicks) {
-            this.maxTicks = maxTicks;
+        public B maxTicks(@Range(from = 0, to = Sendable.MAX_TICKS) int maxTicks) {
+            this.maxTicks = Math.clamp(maxTicks, 0, Sendable.MAX_TICKS);
             return self();
         }
 
