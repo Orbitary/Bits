@@ -47,15 +47,21 @@ public record ChunkCoordinate(
         if (!(chunkAccess instanceof LevelChunk levelChunk)) throw new IllegalArgumentException("ChunkAccess must be an instance of LevelChunk");
 
         return new ChunkCoordinate(
-          levelChunk.locX,
-          levelChunk.locZ,
-          levelChunk.level.getWorld()
+          levelChunk.getPos().x(),
+          levelChunk.getPos().z(),
+          levelChunk.getLevel().getWorld()
         );
     }
+
 
     public int manhattanDistance(ChunkCoordinate other) {
         if (!Objects.equals(this.world, other.world)) throw new IllegalArgumentException("Cannot calculate distance between chunks in different worlds");
         return Math.abs(this.x - other.x) + Math.abs(this.z - other.z);
+    }
+
+    public int euclideanDistance(ChunkCoordinate other) {
+        if (!Objects.equals(this.world, other.world)) throw new IllegalArgumentException("Cannot calculate distance between chunks in different worlds");
+        return (int)Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.z - other.z, 2));
     }
 
 
