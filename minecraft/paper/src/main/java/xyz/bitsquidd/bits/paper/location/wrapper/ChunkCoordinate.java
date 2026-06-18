@@ -7,11 +7,14 @@
 
 package xyz.bitsquidd.bits.paper.location.wrapper;
 
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Objects;
+
 
 /**
  * Immutable record representing the coordinates of a chunk in a specific world.
@@ -37,6 +40,16 @@ public record ChunkCoordinate(
           chunk.getX(),
           chunk.getZ(),
           chunk.getWorld()
+        );
+    }
+
+    public static ChunkCoordinate fromChunk(ChunkAccess chunkAccess) {
+        if (!(chunkAccess instanceof LevelChunk levelChunk)) throw new IllegalArgumentException("ChunkAccess must be an instance of LevelChunk");
+
+        return new ChunkCoordinate(
+          levelChunk.locX,
+          levelChunk.locZ,
+          levelChunk.level.getWorld()
         );
     }
 

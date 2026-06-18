@@ -59,8 +59,7 @@ public final class BasicAnimation extends Animation {
             float localProgress = Math.min((progress - kf.progress()) / intervalLength, 1f);
             float easedProgress = kf.easing().progress(localProgress);
 
-            AnimationPose delta = AnimationPose.lerp(AnimationPose.identity(), kf.pose(), easedProgress);
-            result = AnimationPose.add(result, delta);
+            result = AnimationPose.lerp(kf.pose(), next.pose(), easedProgress);
         }
         return result;
     }

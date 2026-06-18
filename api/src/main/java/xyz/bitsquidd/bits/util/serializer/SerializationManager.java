@@ -8,7 +8,12 @@
 package xyz.bitsquidd.bits.util.serializer;
 
 
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.KeyDeserializer;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -23,6 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 public final class SerializationManager {
     private SerializationManager() {}
 
@@ -35,6 +41,7 @@ public final class SerializationManager {
           .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
           .disable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
           .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
+          .defaultPropertyInclusion(JsonInclude.Value.ALL_NON_NULL)
           .annotationIntrospector(new NullableAwareIntrospector());
 
         getSerializers().forEach(serializer -> registerSerializer(serializer, builder));
