@@ -9,6 +9,7 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 
 import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
@@ -18,6 +19,7 @@ import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
 import java.util.List;
 import java.util.function.Supplier;
+
 
 public final class WorldArgumentParser extends AbstractArgumentParser<World> {
 
@@ -29,14 +31,22 @@ public final class WorldArgumentParser extends AbstractArgumentParser<World> {
     public World parse(List<Object> inputObjects, BitsCommandContext<?> ctx) throws CommandSyntaxException {
         String inputString = singletonInputValidation(inputObjects, String.class);
 
-        World world = Bukkit.getWorld(inputString);
+        NamespacedKey key;
+        try {
+            key = NamespacedKey.fromString(inputString);
+            if (key == null) throw new IllegalArgumentException();
+        } catch (IllegalArgumentException e) {
+            throw ExceptionBuilder.createCommandException("Invalid world key: " + inputString + ".");
+        }
+
+        World world = Bukkit.getWorld(key);
         if (world == null) throw ExceptionBuilder.createCommandException("World not found: " + inputString + ".");
         return world;
     }
 
     @Override
     public Supplier<List<String>> getSuggestions() {
-        return () -> Bukkit.getWorlds().stream().map(World::getName).toList();
+        return () -> Bukkit.getWorlds().stream().map(w -> "\"" + w.key() + "\"").toList();
     }
 
 }
