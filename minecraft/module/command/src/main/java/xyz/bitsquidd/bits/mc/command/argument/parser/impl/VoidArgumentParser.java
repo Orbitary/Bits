@@ -7,12 +7,10 @@
 
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.DefaultArgumentParser;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
-import java.util.List;
 
 /**
  * A fallback argument parser that explicitly consumes and returns {@code null} for {@link Void} types.
@@ -21,15 +19,16 @@ import java.util.List;
  *
  * @since 0.0.10
  */
-@ArgumentParser
-public final class VoidArgumentParser extends AbstractArgumentParser<Void> {
 
-    public VoidArgumentParser() {
+public final class VoidArgumentParser extends DefaultArgumentParser<Void> {
+    public static final VoidArgumentParser INSTANCE = new VoidArgumentParser();
+
+    private VoidArgumentParser() {
         super(TypeSignature.of(Void.class), "Void");
     }
 
     @Override
-    public Void parse(List<Object> inputObjects, BitsCommandContext<?> ctx) {
+    public Void parse(String inputObjects, BitsCommandContext<?> ctx) {
         return null;
     }
 
