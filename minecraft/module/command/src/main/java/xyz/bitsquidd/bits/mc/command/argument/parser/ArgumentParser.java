@@ -176,7 +176,7 @@ public abstract class ArgumentParser<O, D> {
             String remaining = builder.getRemaining();
 
             for (String suggestion : suggestions) {
-                if (suggestion.equalsIgnoreCase(remaining)) {
+                if (suggestion.toLowerCase().startsWith(remaining.toLowerCase())) {
                     builder.suggest(suggestion);
                 }
             }
