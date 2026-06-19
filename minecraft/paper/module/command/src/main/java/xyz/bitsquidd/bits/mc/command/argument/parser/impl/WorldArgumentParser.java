@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.exception.ExceptionBuilder;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
@@ -33,7 +34,7 @@ public final class WorldArgumentParser extends ArgumentParser<World, Key> {
 
     @Override
     public <T> SuggestionSupplier<T> getSuggestions() {
-        return () -> Bukkit.getWorlds().stream().map(w -> "\"" + w.key() + "\"").toList();
+        return _ -> Bukkit.getWorlds().stream().map(w -> "\"" + w.key() + "\"").toList();
     }
 
 }

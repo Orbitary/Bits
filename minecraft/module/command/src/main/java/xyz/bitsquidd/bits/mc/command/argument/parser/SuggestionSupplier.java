@@ -17,4 +17,9 @@ public interface SuggestionSupplier<T> {
 
     List<String> getSuggestions(BitsCommandContext<T> ctx);
 
+
+    static <T> SuggestionSupplier<T> empty() {
+        return ctx -> List.of();
+    }
+
 }

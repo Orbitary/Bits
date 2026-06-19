@@ -12,6 +12,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 
 import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.paper.wrapper.WorldDefinition;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
@@ -21,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -58,10 +58,10 @@ public final class WorldDefinitionArgumentParser extends ArgumentParser<WorldDef
             });
         } catch (IOException e) {
             // If we can't read the dimensions directory, we just return an empty list of suggestions.
-            return List::of;
+            return SuggestionSupplier.empty();
         }
 
-        return () -> worldKeys.stream().map(k -> "\"" + k + "\"").toList();
+        return _ -> worldKeys.stream().map(k -> "\"" + k + "\"").toList();
     }
 
 }

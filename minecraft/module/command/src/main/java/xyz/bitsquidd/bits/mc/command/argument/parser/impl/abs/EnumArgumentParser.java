@@ -35,12 +35,12 @@ import java.util.stream.Stream;
  * }
  * }</pre>
  *
- * @param <T> the specific enum type
+ * @param <E> the specific enum type
  *
  * @since 0.0.10
  */
-public abstract class EnumArgumentParser<T extends Enum<T>> extends BasicArgumentParser<T> {
-    private final Class<T> enumClass;
+public abstract class EnumArgumentParser<E extends Enum<E>> extends BasicArgumentParser<E> {
+    private final Class<E> enumClass;
 
     /**
      * @param enumClass the class object representing the enum to parse
@@ -48,15 +48,15 @@ public abstract class EnumArgumentParser<T extends Enum<T>> extends BasicArgumen
      * @throws IllegalArgumentException if the provided class is not an enum
      * @since 0.0.10
      */
-    public EnumArgumentParser(Class<T> enumClass) {
+    public EnumArgumentParser(Class<E> enumClass) {
         super(TypeSignature.of(Enum.class), enumClass.getName());
         this.enumClass = enumClass;
         if (!enumClass.isEnum()) throw new IllegalArgumentException("Provided class " + enumClass.getName() + " is not an enum!");
     }
 
     @Override
-    public T parse(String data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
-        T enumValue;
+    public E parse(String data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+        E enumValue;
         try {
             enumValue = Enum.valueOf(enumClass, data);
         } catch (IllegalArgumentException e) {
@@ -68,7 +68,7 @@ public abstract class EnumArgumentParser<T extends Enum<T>> extends BasicArgumen
 
     @Override
     public @Nullable <T> SuggestionSupplier<T> getSuggestions() {
-        return () -> enumClass.isEnum() ? Stream.of(enumClass.getEnumConstants()).map(Enum::name).toList() : List.of();
+        return ctx -> enumClass.isEnum() ? Stream.of(enumClass.getEnumConstants()).map(Enum::name).toList() : List.of();
     }
 
 }

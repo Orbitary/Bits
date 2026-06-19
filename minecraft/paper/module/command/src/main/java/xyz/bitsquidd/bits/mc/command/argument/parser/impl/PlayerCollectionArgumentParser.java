@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.command.PaperBitsCommandContext;
 import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
@@ -76,7 +77,7 @@ public final class PlayerCollectionArgumentParser extends ArgumentParser<Collect
         suggestions.add(SelectorType.SELF.selector);
 
         suggestions.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
-        return () -> suggestions;
+        return _ -> suggestions;
     }
 
 }

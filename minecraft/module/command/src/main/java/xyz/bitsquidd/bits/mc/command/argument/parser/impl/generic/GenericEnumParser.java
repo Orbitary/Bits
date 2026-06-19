@@ -49,7 +49,7 @@ public final class GenericEnumParser<E extends Enum<E>> extends BasicArgumentPar
 
     @Override
     public <T> SuggestionSupplier<T> getSuggestions() {
-        return () -> Stream.of(enumClass.getEnumConstants()).map(Enum::name).toList();
+        return ctx -> Stream.of(enumClass.getEnumConstants()).map(Enum::name).toList();
     }
 
 }

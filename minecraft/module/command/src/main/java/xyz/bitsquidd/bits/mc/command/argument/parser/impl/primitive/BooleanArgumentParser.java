@@ -26,7 +26,7 @@ public final class BooleanArgumentParser extends PrimitiveArgumentParser<Boolean
 
     @Override
     public <T> SuggestionSupplier<T> getSuggestions() {
-        return () -> List.of("true", "false");
+        return ctx -> List.of("true", "false");
     }
 
 }

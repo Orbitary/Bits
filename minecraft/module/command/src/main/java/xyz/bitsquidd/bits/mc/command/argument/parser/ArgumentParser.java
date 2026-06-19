@@ -24,6 +24,7 @@ import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -53,7 +54,7 @@ public abstract class ArgumentParser<O, D> {
     private final TypeSignature<?> typeSignature;  // The type signature this parser handles
     private final String argumentName;             // The name of the argument, used while displaying suggestions
     private final Class<D> dataClass;              // The class of the input data type
-    private final Constructor<D> recordConstructor;
+    private final @Nullable Constructor<D> recordConstructor;
 
     /**
      * @param typeSignature the expected type this parser handles
@@ -147,7 +148,7 @@ public abstract class ArgumentParser<O, D> {
         if (!dataClass.isRecord()) return dataClass.cast(validated[0]);
 
         try {
-            return recordConstructor.newInstance(validated);
+            return Objects.requireNonNull(this.recordConstructor).newInstance(validated);
         } catch (ReflectiveOperationException e) {
             throw ExceptionBuilder.createCommandException("Failed to construct " + dataClass.getSimpleName() + ": " + e.getMessage());
         }

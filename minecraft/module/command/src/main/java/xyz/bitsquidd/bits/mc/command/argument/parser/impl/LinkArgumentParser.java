@@ -15,7 +15,7 @@ import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.Link;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 
 //TODO add better validation for this, enum for a type? WWW. HTTPS:// etc.?
@@ -40,7 +40,7 @@ public final class LinkArgumentParser extends BasicArgumentParser<Link> {
 
     @Override
     public <T> SuggestionSupplier<T> getSuggestions() {
-        return () -> Stream.of("https://", "http://", "www.").toList();
+        return ctx -> List.of("https://", "http://", "www.");
     }
 
 }
