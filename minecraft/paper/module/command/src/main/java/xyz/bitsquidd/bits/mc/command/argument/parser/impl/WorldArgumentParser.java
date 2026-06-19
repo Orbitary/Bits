@@ -8,35 +8,33 @@
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.exception.ExceptionBuilder;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
-import java.util.List;
-import java.util.function.Supplier;
 
-public final class WorldArgumentParser extends AbstractArgumentParser<World> {
+public final class WorldArgumentParser extends ArgumentParser<World, Key> {
 
     public WorldArgumentParser() {
-        super(TypeSignature.of(World.class), "World");
+        super(TypeSignature.of(World.class), "World", Key.class);
     }
 
     @Override
-    public World parse(List<Object> inputObjects, BitsCommandContext<?> ctx) throws CommandSyntaxException {
-        String inputString = singletonInputValidation(inputObjects, String.class);
-
-        World world = Bukkit.getWorld(inputString);
-        if (world == null) throw ExceptionBuilder.createCommandException("World not found: " + inputString + ".");
+    public World parse(Key data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+        World world = Bukkit.getWorld(data);
+        if (world == null) throw ExceptionBuilder.createCommandException("World not found: " + data + ".");
         return world;
     }
 
     @Override
-    public Supplier<List<String>> getSuggestions() {
-        return () -> Bukkit.getWorlds().stream().map(World::getName).toList();
+    public <T> SuggestionSupplier<T> getSuggestions() {
+        return _ -> Bukkit.getWorlds().stream().map(w -> "\"" + w.key() + "\"").toList();
     }
 
 }

@@ -15,8 +15,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.command.PaperBitsCommandContext;
-import xyz.bitsquidd.bits.mc.command.argument.InputTypeContainer;
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
@@ -25,9 +25,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-public final class PlayerCollectionArgumentParser extends AbstractArgumentParser<Collection<Player>> {
+
+public final class PlayerCollectionArgumentParser extends ArgumentParser<Collection<Player>, EntitySelector> {
 
     // TODO: Just pull from vanilla EntitySelector. Also pull the completion.
     private enum SelectorType {
@@ -58,14 +58,12 @@ public final class PlayerCollectionArgumentParser extends AbstractArgumentParser
     }
 
     public PlayerCollectionArgumentParser() {
-        super(TypeSignature.of(Collection.class, Player.class), "Players");
+        super(TypeSignature.of(Collection.class, Player.class), "Players", EntitySelector.class);
     }
 
     @Override
-    public Collection<Player> parse(List<Object> inputObjects, BitsCommandContext<?> ctx) throws CommandSyntaxException {
-        EntitySelector entitySelctor = singletonInputValidation(inputObjects, EntitySelector.class);
-
-        return entitySelctor.findPlayers((CommandSourceStack)ctx.getBrigadierContext().getSource())
+    public Collection<Player> parse(EntitySelector data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+        return data.findPlayers((CommandSourceStack)ctx.getBrigadierContext().getSource())
           .stream()
           .map(playerEntity -> playerEntity.getBukkitEntity().getPlayer())
           .map(Objects::requireNonNull)
@@ -73,18 +71,13 @@ public final class PlayerCollectionArgumentParser extends AbstractArgumentParser
     }
 
     @Override
-    public List<InputTypeContainer> getInputTypes() {
-        return List.of(new InputTypeContainer(TypeSignature.of(EntitySelector.class), getArgumentName()));
-    }
-
-    @Override
-    public Supplier<List<String>> getSuggestions() {
+    public <T> SuggestionSupplier<T> getSuggestions() {
         List<String> suggestions = new ArrayList<>();
         suggestions.add(SelectorType.ALL.selector);
         suggestions.add(SelectorType.SELF.selector);
 
         suggestions.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
-        return () -> suggestions;
+        return _ -> suggestions;
     }
 
 }

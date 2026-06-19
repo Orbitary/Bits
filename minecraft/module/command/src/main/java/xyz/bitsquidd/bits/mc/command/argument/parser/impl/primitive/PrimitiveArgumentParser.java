@@ -9,12 +9,10 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import xyz.bitsquidd.bits.mc.command.argument.InputTypeContainer;
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
-import java.util.List;
 
 /**
  * A foundation parser designed specifically for types that correspond to underlying Brigadier primitives.
@@ -26,21 +24,15 @@ import java.util.List;
  *
  * @since 0.0.10
  */
-public abstract class PrimitiveArgumentParser<O> extends AbstractArgumentParser<O> {
+public abstract class PrimitiveArgumentParser<O> extends ArgumentParser<O, O> {
 
     protected PrimitiveArgumentParser(Class<O> outputClass, String argumentName) {
-        super(TypeSignature.of(outputClass), argumentName);
+        super(TypeSignature.of(outputClass), argumentName, outputClass);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public final O parse(List<Object> inputObjects, BitsCommandContext<?> ctx) throws CommandSyntaxException {
-        return (O)singletonInputValidation(inputObjects, getTypeSignature().toRawType());
-    }
-
-    @Override
-    public final List<InputTypeContainer> getInputTypes() {
-        return List.of(new InputTypeContainer(getTypeSignature(), getArgumentName()));
+    public final O parse(O data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+        return data;
     }
 
 }

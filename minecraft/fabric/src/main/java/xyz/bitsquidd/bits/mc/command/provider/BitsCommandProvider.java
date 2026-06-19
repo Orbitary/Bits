@@ -8,15 +8,16 @@
 package xyz.bitsquidd.bits.mc.command.provider;
 
 import xyz.bitsquidd.bits.mc.command.BitsCommand;
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.wrapper.collection.AddableSet;
+
 
 public interface BitsCommandProvider {
     default AddableSet<BitsCommand> getCommands() {
         return AddableSet.empty();
     }
 
-    default AddableSet<AbstractArgumentParser<?>> getArguments() {
+    default AddableSet<ArgumentParser<?, ?>> getArguments() {
         return AddableSet.empty();
     }
 

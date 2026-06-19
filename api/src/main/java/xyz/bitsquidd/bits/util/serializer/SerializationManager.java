@@ -8,8 +8,12 @@
 package xyz.bitsquidd.bits.util.serializer;
 
 
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.KeyDeserializer;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -23,27 +27,30 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 public final class SerializationManager {
     private SerializationManager() {}
 
     public static final ObjectMapper SERIALIZER = createMapper();
 
     private static ObjectMapper createMapper() {
-        JsonMapper.Builder builder = JsonMapper.builder()
-          .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
-          .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
-          .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-          .disable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
-          .disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
-          .annotationIntrospector(new NullableAwareIntrospector());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+        mapper.enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.disable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES);
+        mapper.disable(MapperFeature.AUTO_DETECT_IS_GETTERS);
+        mapper.setDefaultPropertyInclusion(JsonInclude.Value.ALL_NON_NULL);
+        mapper.setAnnotationIntrospector(new NullableAwareIntrospector());
 
-        getSerializers().forEach(serializer -> registerSerializer(serializer, builder));
-        builder.addModule(new GuavaModule());
-        builder.addModule(new JavaTimeModule());
-        return builder.build();
+        getSerializers().forEach(serializer -> registerSerializer(serializer, mapper));
+        
+        mapper.registerModule(new GuavaModule());
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
 
-    private static <T> void registerSerializer(MultiSerializer<T> serializer, JsonMapper.Builder builder) {
+    private static <T> void registerSerializer(MultiSerializer<T> serializer, ObjectMapper mapper) {
         SimpleModule module = new SimpleModule();
         Class<T> targetClass = serializer.getTargetClass();
         module.addSerializer(targetClass, serializer.jacksonSerializer());
@@ -54,7 +61,7 @@ public final class SerializationManager {
         KeyDeserializer keyDeserializer = serializer.jacksonKeyDeserializer();
         if (keyDeserializer != null) module.addKeyDeserializer(targetClass, keyDeserializer);
 
-        builder.addModule(module);
+        mapper.registerModule(module);
     }
 
     @SuppressWarnings("unchecked")

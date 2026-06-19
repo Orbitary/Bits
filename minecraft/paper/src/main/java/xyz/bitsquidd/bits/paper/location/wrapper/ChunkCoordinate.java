@@ -7,11 +7,14 @@
 
 package xyz.bitsquidd.bits.paper.location.wrapper;
 
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Objects;
+
 
 /**
  * Immutable record representing the coordinates of a chunk in a specific world.
@@ -40,9 +43,25 @@ public record ChunkCoordinate(
         );
     }
 
+    public static ChunkCoordinate fromChunk(ChunkAccess chunkAccess) {
+        if (!(chunkAccess instanceof LevelChunk levelChunk)) throw new IllegalArgumentException("ChunkAccess must be an instance of LevelChunk");
+
+        return new ChunkCoordinate(
+          levelChunk.getPos().x(),
+          levelChunk.getPos().z(),
+          levelChunk.getLevel().getWorld()
+        );
+    }
+
+
     public int manhattanDistance(ChunkCoordinate other) {
         if (!Objects.equals(this.world, other.world)) throw new IllegalArgumentException("Cannot calculate distance between chunks in different worlds");
         return Math.abs(this.x - other.x) + Math.abs(this.z - other.z);
+    }
+
+    public int euclideanDistance(ChunkCoordinate other) {
+        if (!Objects.equals(this.world, other.world)) throw new IllegalArgumentException("Cannot calculate distance between chunks in different worlds");
+        return (int)Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.z - other.z, 2));
     }
 
 

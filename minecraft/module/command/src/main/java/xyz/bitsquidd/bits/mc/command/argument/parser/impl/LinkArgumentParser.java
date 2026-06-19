@@ -9,15 +9,13 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.BasicArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.Link;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 
 //TODO add better validation for this, enum for a type? WWW. HTTPS:// etc.?
@@ -29,21 +27,20 @@ import java.util.stream.Stream;
  *
  * @since 0.0.10
  */
-@ArgumentParser
-public final class LinkArgumentParser extends AbstractArgumentParser<Link> {
+
+public final class LinkArgumentParser extends BasicArgumentParser<Link> {
     public LinkArgumentParser() {
         super(TypeSignature.of(Link.class), "URL");
     }
 
     @Override
-    public Link parse(List<Object> inputObjects, BitsCommandContext<?> ctx) throws CommandSyntaxException {
-        String inputString = singletonInputValidation(inputObjects, String.class);
-        return Link.of(inputString);
+    public Link parse(String data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+        return Link.of(data);
     }
 
     @Override
-    public Supplier<List<String>> getSuggestions() {
-        return () -> Stream.of("https://", "http://", "www.").toList();
+    public <T> SuggestionSupplier<T> getSuggestions() {
+        return ctx -> List.of("https://", "http://", "www.");
     }
 
 }

@@ -10,14 +10,15 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl.abs;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.BasicArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.exception.ExceptionBuilder;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 
 /**
  * Base abstract parser providing common parsing and suggestion logic for enum types.
@@ -34,12 +35,12 @@ import java.util.stream.Stream;
  * }
  * }</pre>
  *
- * @param <T> the specific enum type
+ * @param <E> the specific enum type
  *
  * @since 0.0.10
  */
-public abstract class AbstractEnumArgumentParser<T extends Enum<T>> extends AbstractArgumentParser<T> {
-    private final Class<T> enumClass;
+public abstract class EnumArgumentParser<E extends Enum<E>> extends BasicArgumentParser<E> {
+    private final Class<E> enumClass;
 
     /**
      * @param enumClass the class object representing the enum to parse
@@ -47,29 +48,27 @@ public abstract class AbstractEnumArgumentParser<T extends Enum<T>> extends Abst
      * @throws IllegalArgumentException if the provided class is not an enum
      * @since 0.0.10
      */
-    public AbstractEnumArgumentParser(Class<T> enumClass) {
+    public EnumArgumentParser(Class<E> enumClass) {
         super(TypeSignature.of(Enum.class), enumClass.getName());
         this.enumClass = enumClass;
         if (!enumClass.isEnum()) throw new IllegalArgumentException("Provided class " + enumClass.getName() + " is not an enum!");
     }
 
     @Override
-    public T parse(List<Object> inputObjects, BitsCommandContext<?> ctx) throws CommandSyntaxException {
-        String inputString = singletonInputValidation(inputObjects, String.class);
-
-        T enumValue;
+    public E parse(String data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+        E enumValue;
         try {
-            enumValue = Enum.valueOf(enumClass, inputString);
+            enumValue = Enum.valueOf(enumClass, data);
         } catch (IllegalArgumentException e) {
-            throw ExceptionBuilder.createCommandException(inputString + " is not a valid " + enumClass.getSimpleName() + ".");
+            throw ExceptionBuilder.createCommandException(data + " is not a valid " + enumClass.getSimpleName() + ".");
         }
 
         return enumValue;
     }
 
     @Override
-    public @Nullable Supplier<List<String>> getSuggestions() {
-        return () -> enumClass.isEnum() ? Stream.of(enumClass.getEnumConstants()).map(Enum::name).toList() : List.of();
+    public @Nullable <T> SuggestionSupplier<T> getSuggestions() {
+        return ctx -> enumClass.isEnum() ? Stream.of(enumClass.getEnumConstants()).map(Enum::name).toList() : List.of();
     }
 
 }
