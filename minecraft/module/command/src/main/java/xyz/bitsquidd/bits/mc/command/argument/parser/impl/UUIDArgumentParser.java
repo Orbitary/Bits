@@ -9,7 +9,7 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.DefaultArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.BasicArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.exception.ExceptionBuilder;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
@@ -34,7 +34,7 @@ import java.util.UUID;
  * @since 0.0.10
  */
 
-public final class UUIDArgumentParser extends DefaultArgumentParser<UUID> {
+public final class UUIDArgumentParser extends BasicArgumentParser<UUID> {
     private static final List<Integer> DASH_POSITIONS = List.of(8, 12, 16, 20);
     private static final char DASH_CHAR = '-';
     private static final int HEX_CHAR_COUNT = 32;

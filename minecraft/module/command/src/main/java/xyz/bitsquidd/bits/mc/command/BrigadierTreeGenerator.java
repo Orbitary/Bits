@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.log.Logger;
 import xyz.bitsquidd.bits.mc.command.argument.BrigadierArgumentMapping;
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.mc.command.debugging.TreeDebugger;
 import xyz.bitsquidd.bits.mc.command.exception.CommandBuildException;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandBuilder;
@@ -221,7 +221,7 @@ public final class BrigadierTreeGenerator<T> {
             ArrayList<@Nullable Object> parsedArguments = new ArrayList<>();
 
             for (CommandParameterInfo parameter : methodInfo.getAllParameters()) {
-                AbstractArgumentParser<?> parser = parameter.getParser();
+                ArgumentParser<?, ?> parser = parameter.getParser();
 
                 // Collect primitive objects for the parameter
                 ArrayList<@Nullable Object> primitiveObjects = new ArrayList<>();

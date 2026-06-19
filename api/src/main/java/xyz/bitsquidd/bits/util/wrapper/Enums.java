@@ -74,6 +74,15 @@ public final class Enums {
 
 
     /**
+     * Resolves an enum constant by a string identifier derived from the constant, ignoring case sensitivity.
+     *
+     * @since 0.0.20
+     */
+    public static <E extends Enum<E>> Optional<E> getFromIdentifier(Class<E> enumClass, String identifier) {
+        return getFromIdentifier(enumClass, constant -> toIdentifier(constant).equals(identifier));
+    }
+
+    /**
      * Searches for an enum constant that matches a specific predicate.
      *
      * @param <E>        the enum type

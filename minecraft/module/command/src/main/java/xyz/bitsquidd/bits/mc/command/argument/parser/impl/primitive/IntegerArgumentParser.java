@@ -7,14 +7,13 @@
 
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 
 /**
  * Argument parser for Integer values.
  *
  * @since 0.0.10
  */
-@ArgumentParser
+
 public final class IntegerArgumentParser extends PrimitiveArgumentParser<Integer> {
 
     public IntegerArgumentParser() {

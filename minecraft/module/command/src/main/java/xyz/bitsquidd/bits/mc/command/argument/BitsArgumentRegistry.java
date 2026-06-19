@@ -18,9 +18,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.log.Logger;
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.impl.VoidArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.impl.generic.GenericEnumParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive.PrimitiveArgumentParser;
 import xyz.bitsquidd.bits.mc.command.exception.CommandBuildException;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
@@ -46,7 +47,7 @@ import java.util.Set;
  * Example internal usage:
  * <pre>{@code
  * BitsArgumentRegistry<?> registry = manager.getArgumentRegistry();
- * AbstractArgumentParser<?> parser = registry.getParser(TypeSignature.of(Player.class));
+ * AbstractArgumentParser<?, ?> parser = registry.getParser(TypeSignature.of(Player.class));
  * }</pre>
  *
  * @param <T> the type of the platform's original source object
@@ -54,10 +55,10 @@ import java.util.Set;
  * @since 0.0.10
  */
 public abstract class BitsArgumentRegistry<T> {
-    private final Map<TypeSignature<?>, AbstractArgumentParser<?>> parsers = new HashMap<>();
+    private final Map<TypeSignature<?>, ArgumentParser<?, ?>> parsers = new HashMap<>();
 
     public BitsArgumentRegistry() {
-        List<AbstractArgumentParser<?>> initialParsers = new ArrayList<>(initialiseParsers().build());
+        List<ArgumentParser<?, ?>> initialParsers = new ArrayList<>(initialiseParsers().build());
         initialParsers.forEach(parser -> parsers.put(parser.getTypeSignature(), parser));
     }
 
@@ -100,8 +101,8 @@ public abstract class BitsArgumentRegistry<T> {
      * @since 0.0.10
      */
     @SuppressWarnings("unchecked")
-    protected AddableSet<AbstractArgumentParser<?>> initialiseParsers() {
-        return AddableSet.of((Set<AbstractArgumentParser<?>>)(Set<?>)ReflectionUtils.General.createClassesInDir("*", AbstractArgumentParser.class, ScannerFlags.DEFAULT));
+    protected AddableSet<ArgumentParser<?, ?>> initialiseParsers() {
+        return AddableSet.of((Set<ArgumentParser<?, ?>>)(Set<?>)ReflectionUtils.General.createClassesInDir("*", ArgumentParser.class, ScannerFlags.DEFAULT));
     }
 
     /**
@@ -114,11 +115,11 @@ public abstract class BitsArgumentRegistry<T> {
      * @since 0.0.10
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public AbstractArgumentParser<?> getParser(TypeSignature<?> typeSignature) {
+    public ArgumentParser<?, ?> getParser(TypeSignature<?> typeSignature) {
         // We could consider implementing some form of search for inherited types.
         // This probably shouldn't be implemented as it'll cause type inconsistencies with functions.
         // Developers should design their command functions accordingly to use the lowest available type.
-        AbstractArgumentParser<?> parser = parsers.get(typeSignature);
+        ArgumentParser<?, ?> parser = parsers.get(typeSignature);
 
         // If no parser found, we allow generic enums to be parsed.
         if (parser == null) {
@@ -129,7 +130,7 @@ public abstract class BitsArgumentRegistry<T> {
             }
 
             Logger.error("No parser registered for type: " + typeSignature);
-            return new VoidArgumentParser();
+            return VoidArgumentParser.INSTANCE;
         }
 
         return parser;
@@ -145,18 +146,20 @@ public abstract class BitsArgumentRegistry<T> {
      *
      * @since 0.0.10
      */
-    public List<BrigadierArgumentMapping> getArgumentTypeContainer(AbstractArgumentParser<?> parser, String baseName) {
+    public List<BrigadierArgumentMapping> getArgumentTypeContainer(ArgumentParser<?, ?> parser, String baseName) {
         List<BrigadierArgumentMapping> holders = new ArrayList<>();
         List<InputTypeContainer> inputTypes = parser.getInputTypes();
 
         // Break down the type signature into its primitives.
         for (int i = 0; i < inputTypes.size(); i++) {
             InputTypeContainer nestedTypeSigature = inputTypes.get(i);
+
             // Get the command parser required for this input type
-            AbstractArgumentParser<?> nestedParser = getParser(nestedTypeSigature.typeSignature());
+            ArgumentParser<?, ?> nestedParser = getParser(nestedTypeSigature.typeSignature());
 
             boolean handled = false;
-            // If its a primitive, we can directly add it
+
+            // If it's a primitive, we can directly add it
             if (nestedParser.getInputTypes().size() == 1) {
                 InputTypeContainer inputType = nestedParser.getInputTypes().getFirst();
                 ArgumentType<?> brigadierType = toArgumentType(inputType.typeSignature());
@@ -196,30 +199,32 @@ public abstract class BitsArgumentRegistry<T> {
      * @throws CommandSyntaxException if there's an error in parsing validation
      * @since 0.0.10
      */
-    public Object parseArguments(AbstractArgumentParser<?> parser, List<Object> primitiveList, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+    public <O, D> O parseArguments(ArgumentParser<O, D> parser, List<Object> primitiveList, BitsCommandContext<?> ctx) throws CommandSyntaxException {
         List<InputTypeContainer> inputTypes = parser.getInputTypes();
-
-        // If the input size is 1, we can directly parse it
-        if (inputTypes.size() == 1) return parser.parse(primitiveList, ctx);
-
         List<Object> parsedObjects = new ArrayList<>();
 
         for (InputTypeContainer inputType : inputTypes) {
-            AbstractArgumentParser<?> nestedParser = getParser(inputType.typeSignature());
+            ArgumentParser<?, ?> nestedParser = getParser(inputType.typeSignature());
+
+            if (nestedParser instanceof PrimitiveArgumentParser<?>) {
+                // it's a vanilla/terminal type (String, Double, etc.) take the primitive as-is.
+                if (primitiveList.isEmpty()) throw new CommandBuildException("Not enough arguments for " + inputType.typeName());
+                parsedObjects.add(primitiveList.removeFirst());
+                continue;
+            }
 
             int requiredSize = nestedParser.getInputTypes().size();
             if (primitiveList.size() < requiredSize) throw new CommandBuildException("Not enough arguments for " + inputType.typeName());
 
-            ArrayList<Object> inputObjects = new ArrayList<>(primitiveList.subList(0, requiredSize));
+            List<Object> inputObjects = new ArrayList<>(primitiveList.subList(0, requiredSize));
             primitiveList = new ArrayList<>(primitiveList.subList(requiredSize, primitiveList.size()));
 
-            // Recursively parse the primitives with the appropriate parser
             Object parsedObject = parseArguments(nestedParser, inputObjects, ctx);
             parsedObjects.add(parsedObject);
         }
 
-        // Now that we have all our parsed objects, we can pass them to the main parser
-        return parser.parse(parsedObjects, ctx);
+        D data = parser.toData(parsedObjects);
+        return parser.parse(data, ctx);
     }
 
 }

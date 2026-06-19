@@ -10,7 +10,7 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.key.Key;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.DefaultArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.BasicArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
@@ -25,7 +25,7 @@ import java.util.List;
  * @since 0.0.20
  */
 
-public final class KeyArgumentParser extends DefaultArgumentParser<Key> {
+public final class KeyArgumentParser extends BasicArgumentParser<Key> {
     public KeyArgumentParser() {
         super(TypeSignature.of(Key.class), "Key");
     }

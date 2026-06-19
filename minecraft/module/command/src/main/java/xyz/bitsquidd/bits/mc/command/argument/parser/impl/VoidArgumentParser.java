@@ -7,7 +7,7 @@
 
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.DefaultArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.BasicArgumentParser;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
@@ -20,7 +20,7 @@ import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
  * @since 0.0.10
  */
 
-public final class VoidArgumentParser extends DefaultArgumentParser<Void> {
+public final class VoidArgumentParser extends BasicArgumentParser<Void> {
     public static final VoidArgumentParser INSTANCE = new VoidArgumentParser();
 
     private VoidArgumentParser() {

@@ -11,14 +11,14 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import xyz.bitsquidd.bits.mc.command.BitsCommandManager;
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
 
 /**
  * A data container linking an expected return type with a built Brigadier argument type.
  * <p>
- * This record is primarily used when compiling custom {@link AbstractArgumentParser}
+ * This record is primarily used when compiling custom {@link ArgumentParser}
  * instances into their base Brigadier representations for tree registration.
  *
  * @param argumentType  the underlying Brigadier argument type implementation

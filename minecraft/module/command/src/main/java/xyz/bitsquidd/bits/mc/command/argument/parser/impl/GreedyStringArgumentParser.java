@@ -8,14 +8,11 @@
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 
 import xyz.bitsquidd.bits.mc.command.BrigadierTreeGenerator;
-import xyz.bitsquidd.bits.mc.command.argument.InputTypeContainer;
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
 import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.wrapper.GreedyString;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
-import java.util.List;
 
 /**
  * Argument parser for {@link GreedyString} values.
@@ -24,20 +21,15 @@ import java.util.List;
  *
  * @since 0.0.10
  */
-@ArgumentParser
-public final class GreedyStringArgumentParser extends AbstractArgumentParser<GreedyString> {
+
+public final class GreedyStringArgumentParser extends ArgumentParser<GreedyString, String> {
     public GreedyStringArgumentParser() {
-        super(TypeSignature.of(GreedyString.class), "String...");
+        super(TypeSignature.of(GreedyString.class), "String...", String.class);
     }
 
     @Override
-    public GreedyString parse(List<Object> inputObjects, BitsCommandContext<?> ctx) {
-        return GreedyString.of((String)inputObjects.getFirst()); // Note: can't use singletonInputValidation as GreedyString is special...
-    }
-
-    @Override
-    public List<InputTypeContainer> getInputTypes() {
-        return List.of(new InputTypeContainer(TypeSignature.of(GreedyString.class), getArgumentName()));
+    public GreedyString parse(String data, BitsCommandContext<?> ctx) {
+        return GreedyString.of(data);
     }
 
 }

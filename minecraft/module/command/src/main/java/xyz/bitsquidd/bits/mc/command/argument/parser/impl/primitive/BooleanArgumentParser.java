@@ -7,17 +7,17 @@
 
 package xyz.bitsquidd.bits.mc.command.argument.parser.impl.primitive;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
 
 import java.util.List;
-import java.util.function.Supplier;
+
 
 /**
  * Argument parser for Boolean values.
  *
  * @since 0.0.10
  */
-@ArgumentParser
+
 public final class BooleanArgumentParser extends PrimitiveArgumentParser<Boolean> {
 
     public BooleanArgumentParser() {
@@ -25,7 +25,7 @@ public final class BooleanArgumentParser extends PrimitiveArgumentParser<Boolean
     }
 
     @Override
-    public Supplier<List<String>> getSuggestions() {
+    public <T> SuggestionSupplier<T> getSuggestions() {
         return () -> List.of("true", "false");
     }
 

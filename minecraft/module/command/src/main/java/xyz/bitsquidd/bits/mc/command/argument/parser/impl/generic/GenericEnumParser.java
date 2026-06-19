@@ -9,21 +9,21 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl.generic;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
-import xyz.bitsquidd.bits.mc.command.argument.parser.impl.abs.AbstractEnumArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.BasicArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.SuggestionSupplier;
+import xyz.bitsquidd.bits.mc.command.argument.parser.impl.abs.EnumArgumentParser;
 import xyz.bitsquidd.bits.mc.command.exception.ExceptionBuilder;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
+import xyz.bitsquidd.bits.util.wrapper.Enums;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
-import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 
 /**
  * A fallback, generically instantiated parser that handles unmapped enum types automatically.
  * <p>
- * <b>Developer Note:</b> Custom enum parsers should override {@link AbstractEnumArgumentParser}
+ * <b>Developer Note:</b> Custom enum parsers should override {@link EnumArgumentParser}
  * if you want more fine-grained control over enum arguments and tab completion.
  * <p>
  * This implementation serves as a basic parser that is fallen back upon when no specific enum parser is available.
@@ -32,9 +32,8 @@ import java.util.stream.Stream;
  *
  * @since 0.0.10
  */
-@ArgumentParser
-public final class GenericEnumParser<E extends Enum<E>> extends AbstractArgumentParser<E> {
 
+public final class GenericEnumParser<E extends Enum<E>> extends BasicArgumentParser<E> {
     private final Class<E> enumClass;
 
     public GenericEnumParser(Class<E> enumClass) {
@@ -43,18 +42,13 @@ public final class GenericEnumParser<E extends Enum<E>> extends AbstractArgument
     }
 
     @Override
-    public E parse(List<Object> inputObjects, BitsCommandContext<?> ctx) throws CommandSyntaxException {
-        String inputString = singletonInputValidation(inputObjects, String.class);
-
-        for (E constant : enumClass.getEnumConstants()) {
-            if (constant.name().equalsIgnoreCase(inputString)) return constant;
-        }
-
-        throw ExceptionBuilder.createCommandException("Enum constant not found: " + inputString + " for enum " + enumClass.getSimpleName() + ".");
+    public E parse(String data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+        return Enums.getFromIdentifier(enumClass, data)
+          .orElseThrow(() -> ExceptionBuilder.createCommandException("Enum constant not found: " + data + " for enum " + enumClass.getSimpleName() + "."));
     }
 
     @Override
-    public Supplier<List<String>> getSuggestions() {
+    public <T> SuggestionSupplier<T> getSuggestions() {
         return () -> Stream.of(enumClass.getEnumConstants()).map(Enum::name).toList();
     }
 

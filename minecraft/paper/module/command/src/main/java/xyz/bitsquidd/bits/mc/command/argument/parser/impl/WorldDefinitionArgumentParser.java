@@ -10,10 +10,8 @@ package xyz.bitsquidd.bits.mc.command.argument.parser.impl;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
-import xyz.bitsquidd.bits.mc.command.exception.ExceptionBuilder;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.mc.command.util.BitsCommandContext;
 import xyz.bitsquidd.bits.paper.wrapper.WorldDefinition;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
@@ -25,35 +23,25 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static xyz.bitsquidd.bits.paper.util.Keys.NSK;
 
-public final class WorldDefinitionArgumentParser extends AbstractArgumentParser<WorldDefinition> {
+
+public final class WorldDefinitionArgumentParser extends ArgumentParser<WorldDefinition, Key> {
     private static final Path DIMENSIONS_PATH = Bukkit.getWorldContainer().toPath().resolve("world/dimensions");
 
     public WorldDefinitionArgumentParser() {
-        super(TypeSignature.of(WorldDefinition.class), "WorldDefinition");
+        super(TypeSignature.of(WorldDefinition.class), "WorldDefinition", Key.class);
     }
 
     @Override
-    public WorldDefinition parse(List<Object> inputObjects, BitsCommandContext<?> ctx) throws CommandSyntaxException {
-        String inputString = singletonInputValidation(inputObjects, String.class);
-
-        NamespacedKey key;
-        try {
-            key = NamespacedKey.fromString(inputString);
-            if (key == null) throw new IllegalArgumentException();
-        } catch (IllegalArgumentException e) {
-            throw ExceptionBuilder.createCommandException("Invalid world key: " + inputString + ".");
-        }
-
-        WorldDefinition worldDefinition = WorldDefinition.of(key);
-        return worldDefinition;
+    public WorldDefinition parse(Key data, BitsCommandContext<?> ctx) throws CommandSyntaxException {
+        return WorldDefinition.of(NSK(data));
     }
 
     @Override
-    public Supplier<List<String>> getSuggestions() {
+    public <T> SuggestionSupplier<T> getSuggestions() {
         Set<Key> worldKeys = new HashSet<>();
         try (Stream<Path> namespaces = Files.list(DIMENSIONS_PATH)) {
             namespaces.forEach(namespacePath -> {

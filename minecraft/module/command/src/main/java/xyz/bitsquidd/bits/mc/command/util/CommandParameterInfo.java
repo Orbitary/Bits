@@ -12,7 +12,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import xyz.bitsquidd.bits.mc.command.BitsCommandManager;
 import xyz.bitsquidd.bits.mc.command.argument.BrigadierArgumentMapping;
-import xyz.bitsquidd.bits.mc.command.argument.parser.AbstractArgumentParser;
+import xyz.bitsquidd.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.bitsquidd.bits.wrapper.type.TypeSignature;
 
 import java.lang.reflect.Parameter;
@@ -39,7 +39,7 @@ public class CommandParameterInfo {
 
     private final TypeSignature<?> typeSignature; // TypeSignature of the parameter
 
-    private final AbstractArgumentParser<?> parser;
+    private final ArgumentParser<?, ?> parser;
 
     private final List<BrigadierArgumentMapping> heldArguments = new ArrayList<>(); // Direct mapping from the custom args to brigadier ArgumentTypes
 
@@ -81,13 +81,13 @@ public class CommandParameterInfo {
 
             if (useArgSuggestions) {
                 TypeSignature<?> inputType = parser.getInputTypes().get(i).typeSignature();
-                AbstractArgumentParser<?> inputParser = BitsCommandManager.get().getArgumentRegistry().getParser(inputType);
+                ArgumentParser<?, ?> inputParser = BitsCommandManager.get().getArgumentRegistry().getParser(inputType);
 
                 // Use the input-specific parser's suggestions
-                if (hasSuggestions(inputParser)) argumentBuilder.suggests(inputParser.getSuggestionProvider());
+                if (hasSuggestions(inputParser)) argumentBuilder.suggests(inputParser.createSuggestionProvider());
             } else {
                 // Use the main parser's suggestions
-                if (hasSuggestions(parser)) argumentBuilder.suggests(parser.getSuggestionProvider());
+                if (hasSuggestions(parser)) argumentBuilder.suggests(parser.createSuggestionProvider());
             }
 
             brigadierArguments.add(argumentBuilder);
@@ -95,7 +95,7 @@ public class CommandParameterInfo {
         return brigadierArguments;
     }
 
-    private boolean hasSuggestions(AbstractArgumentParser<?> parser) {
+    private boolean hasSuggestions(ArgumentParser<?, ?> parser) {
         return parser.getSuggestions() != null;
     }
 
@@ -106,7 +106,7 @@ public class CommandParameterInfo {
      *
      * @since 0.0.10
      */
-    public AbstractArgumentParser<?> getParser() {
+    public ArgumentParser<?, ?> getParser() {
         return parser;
     }
 
