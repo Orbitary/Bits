@@ -18,7 +18,12 @@ import xyz.bitsquidd.bits.mc.permission.Permission;
 import xyz.bitsquidd.bits.paper.format.CommonPaperFormatters;
 import xyz.bitsquidd.bits.paper.lifecycle.manager.PaperManagerOrchestrator;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.bitsquidd.bits.util.reflection.ReflectionException;
+import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
 
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -30,8 +35,25 @@ public class BitsPaper extends BitsMinecraft {
 
 
     protected BitsPaper(JavaPlugin plugin) {
+        ReflectionUtils.setClassloader(paperClassLoaders(plugin.getClass().getClassLoader()));
+        super(); // Before all super()
+
         this.plugin = Objects.requireNonNull(plugin, "Plugin instance cannot be null!");
     }
+
+
+    public static ClassLoader[] paperClassLoaders(ClassLoader pluginClassLoader) {
+        List<ClassLoader> loaders = new ArrayList<>();
+        loaders.add(pluginClassLoader);
+
+        try {
+            // PaperPluginClassLoader
+            loaders.add(ReflectionUtils.Value.get(pluginClassLoader, "libraryLoader", URLClassLoader.class));
+        } catch (ReflectionException ignored) {}
+
+        return loaders.toArray(new ClassLoader[0]);
+    }
+
 
     public static BitsPaper get() {
         return (BitsPaper)Bits.get();
