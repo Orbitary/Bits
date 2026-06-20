@@ -79,7 +79,8 @@ public final class Enums {
      * @since 0.0.20
      */
     public static <E extends Enum<E>> Optional<E> getFromIdentifier(Class<E> enumClass, String identifier) {
-        return getFromIdentifier(enumClass, constant -> toIdentifier(constant).equals(identifier));
+        String normalizedIdentifier = identifier.toLowerCase(Locale.ROOT);
+        return getFromIdentifier(enumClass, constant -> toIdentifier(constant).equals(normalizedIdentifier));
     }
 
     /**
