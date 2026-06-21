@@ -16,6 +16,7 @@ import xyz.bitsquidd.bits.mc.command.requirement.BitsCommandRequirement;
 import xyz.bitsquidd.bits.mc.command.requirement.impl.PermissionRequirement;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,12 +58,14 @@ public class CommandMethodInfo<T> {
         this.requiresContext = method.getParameterCount() > 0 && BitsCommandContext.class.isAssignableFrom(method.getParameters()[0].getType());
 
         // If the first parameter is a BitsCommandContext, we filter it, technically means we cant "parse" any BitsCommandContext args, this shouldn't be an issue...
-        this.methodParameters = new ArrayList<>(
-          Arrays.stream(method.getParameters())
-            .filter(param -> !BitsCommandContext.class.isAssignableFrom(param.getType()))
-            .map(CommandParameterInfo::new)
-            .toList()
-        );
+        Parameter[] filteredParams = Arrays.stream(method.getParameters())
+          .filter(param -> !BitsCommandContext.class.isAssignableFrom(param.getType()))
+          .toArray(Parameter[]::new);
+        List<CommandParameterInfo> methodParamInfos = new ArrayList<>();
+        for (int i = 0; i < filteredParams.length; i++) {
+            methodParamInfos.add(new CommandParameterInfo(filteredParams[i], i));
+        }
+        this.methodParameters = methodParamInfos;
 
         this.classParameters = new ArrayList<>(classParameters);
     }

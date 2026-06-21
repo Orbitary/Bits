@@ -45,6 +45,10 @@ public class CommandParameterInfo {
 
 
     public CommandParameterInfo(Parameter parameter) {
+        this(parameter, -1);
+    }
+
+    public CommandParameterInfo(Parameter parameter, int index) {
         this.parameter = parameter;
         this.typeSignature = TypeSignature.of(parameter.getParameterizedType());
 
@@ -54,7 +58,12 @@ public class CommandParameterInfo {
             name = parameterAnnotation.value();
         } else {
             String parameterName = parameter.getName();
-            name = parameterName.contains("arg") ? typeSignature.toRawType().getSimpleName().toLowerCase() : parameterName;
+            if (parameterName.contains("arg")) {
+                String typeName = typeSignature.toRawType().getSimpleName().toLowerCase();
+                name = index >= 0 ? typeName + index : typeName;
+            } else {
+                name = parameterName;
+            }
         }
 
         this.parser = BitsCommandManager.get().getArgumentRegistry().getParser(typeSignature);
