@@ -62,6 +62,11 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
         getSendableManagers().forEach(SendableManager::tickAll);
     }
 
+    public final void reinitialiseAll() {
+        Collection<? extends Receiver> receivers = getAllReceivers();
+        getSendableManagers().forEach(m -> receivers.forEach(m::getOrCreateCollection));
+    }
+
 
     protected abstract ActionbarManager createActionbarManager();
 

@@ -15,15 +15,19 @@ import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.util.Safety;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
 public abstract class SendableManager<S extends Sendable, C extends SendableCollection<S>> implements CoreManager {
     protected final Map<Receiver, C> playerSendables = new ConcurrentHashMap<>();
     protected final C globalSendables = createCollection(); // Non-rendering collection: used to tick ghost sendables, ready to merge on initialisation.
+
+    private final Object lock = new Object();
 
 
     public final void tickAll() {
@@ -82,17 +86,25 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
     }
 
     @ApiStatus.Internal
-    protected C getOrCreateCollection(Receiver receiver) {
-        // Atomic: ensures adding a global at the same time as init does not break.
-        return playerSendables.computeIfAbsent(
-          receiver,
-          k -> {
-              C personalCollection = createCollection();
-              personalCollection.setReceiver(receiver);
-              globalSendables.mergeInto(personalCollection, receiver);
-              return personalCollection;
-          }
-        );
+    public C getOrCreateCollection(Receiver receiver) {
+        synchronized (lock) {
+            return playerSendables.computeIfAbsent(
+              receiver,
+              k -> {
+                  C personalCollection = createCollection();
+                  personalCollection.setReceiver(receiver);
+                  globalSendables.mergeInto(personalCollection, receiver);
+                  return personalCollection;
+              }
+            );
+        }
+    }
+
+    protected final void performGlobalAdd(Runnable addToGlobal, Consumer<Receiver> addToReceiver) {
+        synchronized (lock) {
+            addToGlobal.run();
+            List.copyOf(playerSendables.keySet()).forEach(addToReceiver);
+        }
     }
 
 
@@ -128,18 +140,21 @@ public abstract class SendableManager<S extends Sendable, C extends SendableColl
     }
 
     public final void removeAll(SendableFilter<? super S> filter) {
-        globalSendables.remove(filter);
-        playerSendables.forEach((r, c) -> c.remove(filter));
+        synchronized (lock) {
+            globalSendables.remove(filter);
+            playerSendables.forEach((r, c) -> c.remove(filter));
+        }
     }
     //endregion
 
 
     @Override
     public void cleanup() {
-        removeAll(SendableFilter.alwaysTrue());
-
-        playerSendables.keySet().forEach(this::forceCleanupUser);
-        playerSendables.clear();
+        synchronized (lock) {
+            removeAll(SendableFilter.alwaysTrue());
+            playerSendables.keySet().forEach(this::forceCleanupUser);
+            playerSendables.clear();
+        }
     }
 
 }

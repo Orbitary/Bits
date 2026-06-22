@@ -63,6 +63,15 @@ public final class SendableGroup {
         waypoints.forEach(w -> SendableOrchestrator.get().waypoint().addGlobal(w));
     }
 
+    public void removeGlobal() {
+        actionbars.forEach(a -> SendableOrchestrator.get().actionbar().removeAll(h -> h.definition() == a));
+        bossbars.forEach((i, b) -> SendableOrchestrator.get().bossbar().removeAll(h -> h.definition() == b));
+        sidebars.forEach(s -> SendableOrchestrator.get().sidebar().removeAll(h -> h.definition() == s));
+        tablists.forEach((p, t) -> SendableOrchestrator.get().tablist().removeAll(h -> h.definition() == t));
+        titles.forEach(t -> SendableOrchestrator.get().title().removeAll(h -> h.definition() == t));
+        waypoints.forEach(w -> SendableOrchestrator.get().waypoint().removeAll(h -> h.definition() == w));
+    }
+
 
     public static Builder builder() {
         return new Builder();

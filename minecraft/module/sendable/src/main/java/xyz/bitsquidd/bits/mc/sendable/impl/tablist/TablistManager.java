@@ -9,7 +9,6 @@ package xyz.bitsquidd.bits.mc.sendable.impl.tablist;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
 
@@ -30,8 +29,7 @@ public abstract class TablistManager extends SendableManager<AbstractTablist, Ta
     }
 
     public final <S extends AbstractTablist> void addGlobal(TablistPosition position, S tablist) {
-        globalSendables.add(position, tablist);
-        SendableOrchestrator.get().getAllReceivers().forEach(r -> add(r, position, tablist));
+        performGlobalAdd(() -> globalSendables.add(position, tablist), r -> add(r, position, tablist));
     }
     //endregion
 }

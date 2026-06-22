@@ -9,7 +9,6 @@ package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.SendableOrchestrator;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
 import java.util.Optional;
@@ -29,8 +28,7 @@ public abstract class WaypointManager extends SendableManager<AbstractWaypoint, 
     }
 
     public final <S extends AbstractWaypoint> void addGlobal(S waypoint) {
-        globalSendables.add(waypoint);
-        SendableOrchestrator.get().getAllReceivers().forEach(r -> add(r, waypoint));
+        performGlobalAdd(() -> globalSendables.add(waypoint), r -> add(r, waypoint));
     }
     //endregion
 }
