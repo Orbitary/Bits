@@ -85,31 +85,33 @@ public class PaperWaypointManager extends WaypointManager {
                 tracked.computeIfAbsent(receiver.getUniqueId(), _ -> ConcurrentHashMap.newKeySet()).add(handleUUID);
             } else if (waypointDefinition instanceof AbstractTransmittingWaypoint transmittingWaypoint) {
                 UUID receiverUUID = receiver.getUniqueId();
-                Map<UUID, WaypointTransmitter.Connection> receiverConnections =
-                  transmittors.computeIfAbsent(receiverUUID, _ -> new ConcurrentHashMap<>());
+                Map<UUID, WaypointTransmitter.Connection> receiverConnections = transmittors.computeIfAbsent(receiverUUID, _ -> new ConcurrentHashMap<>());
 
                 WaypointTransmitter.Connection existing = receiverConnections.get(handleUUID);
 
-                if (existing == null) {
-                    Player player = Bukkit.getPlayer(receiverUUID);
-                    if (player == null) return;
-                    ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
+                Runnables.basic(() -> {
+                    if (existing == null) {
+                        Player player = Bukkit.getPlayer(receiverUUID);
+                        if (player == null) return;
+                        ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
 
-                    Runnables.basic(() -> resolveConnection(transmittingWaypoint.getTransmitterUUID(), icon, handleUUID, serverPlayer)
-                      .ifPresentOrElse(
-                        connection -> {
-                            receiverConnections.put(handleUUID, connection);
-                            connection.connect();
-                        },
-                        waypointHandle::bits$markForExpire
-                      ));
-                } else if (existing.isBroken()) {
-                    existing.disconnect();
-                    receiverConnections.remove(handleUUID);
-                    waypointHandle.bits$markForExpire();
-                } else {
-                    Runnables.basic(existing::update);
-                }
+                        resolveConnection(transmittingWaypoint.getTransmitterUUID(), icon, handleUUID, serverPlayer)
+                          .ifPresentOrElse(
+                            connection -> {
+                                receiverConnections.put(handleUUID, connection);
+                                connection.connect();
+                            },
+                            waypointHandle::bits$markForExpire
+                          );
+                    } else if (existing.isBroken()) {
+                        existing.disconnect();
+                        receiverConnections.remove(handleUUID);
+                        waypointHandle.bits$markForExpire();
+                    } else {
+                        existing.update();
+                    }
+                });
+
             } else {
                 throw new IllegalStateException("Unknown waypoint type: " + waypointDefinition.getClass());
             }

@@ -53,6 +53,7 @@ public abstract class SequencedTitle extends AbstractTitle {
     public void onTick(SendableState state) {
         if (state.tick() >= cumulativeTicks.getLast()) {
             state.handle().setTick(config().fadeOutStartTick);
+            state.handle().bits$markForRender();
             return;
         }
         int phaseIndex = phaseIndexAtTick(state.tick());
@@ -69,8 +70,7 @@ public abstract class SequencedTitle extends AbstractTitle {
 
     @Override
     public void onExpire(SendableState state) {
-        Object lastStarted = state.handle().getData(LAST_STARTED_PHASE);
-        int phaseIndex = lastStarted instanceof Integer i ? i : phaseIndexAtTick(state.tick());
+        if (!(state.handle().getData(LAST_STARTED_PHASE) instanceof Integer phaseIndex)) return;
         resolvedPhases.get(phaseIndex).onEnd.accept(state);
     }
 

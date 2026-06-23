@@ -144,11 +144,15 @@ public abstract class SendableManager<S extends Sendable> implements CoreManager
 
     @ApiStatus.Internal
     public final void putAll(Function<? super Receiver, SendableHandle<? extends S>> sendableSupplier) {
-        playerSendables.forEach((r, c) -> c.put(sendableSupplier.apply(r)));
+        playerSendables.forEach((r, c) -> {
+            if (r.equals(GlobalReceiver.INSTANCE)) return; // Skip globals specifically for a putAll(). Expected functionality.
+            c.put(sendableSupplier.apply(r));
+        });
     }
 
     @ApiStatus.Internal
     public final void removeAll(SendableFilter<? super S> filter) {
+        // Do not skip globals here, as we likely want to remove all sendables that match the filter, including global ones.
         playerSendables.values().forEach(c -> c.remove(filter));
     }
     //endregion
