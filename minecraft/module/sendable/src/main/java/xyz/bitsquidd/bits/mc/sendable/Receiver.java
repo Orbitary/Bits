@@ -68,12 +68,16 @@ public interface Receiver {
         return handle;
     }
 
-    default void removeActionbar(SendableFilter<? super AbstractActionbar> filter) {
+    default void removeActionbars(SendableFilter<? super AbstractActionbar> filter) {
         SendableOrchestrator.get().actionbar().remove(this, filter);
     }
 
+    default void removeActionbars(Class<? extends AbstractActionbar> clazz) {
+        removeActionbars(SendableFilter.ofClass(clazz));
+    }
+
     default void setActionbar(AbstractActionbar actionbar) {
-        removeActionbar(SendableFilter.alwaysTrue());
+        removeActionbars(SendableFilter.alwaysTrue());
         addActionbar(actionbar);
     }
 
@@ -95,12 +99,16 @@ public interface Receiver {
         return handle;
     }
 
-    default void removeBossbar(SendableFilter<? super AbstractBossbar> filter) {
+    default void removeBossbars(SendableFilter<? super AbstractBossbar> filter) {
         SendableOrchestrator.get().bossbar().remove(this, filter);
     }
 
+    default void removeBossbars(Class<? extends AbstractBossbar> clazz) {
+        removeBossbars(SendableFilter.ofClass(clazz));
+    }
+
     default void setBossbar(Integer index, AbstractBossbar bossbar) {
-        removeBossbar(SendableFilter.alwaysTrue());
+        removeBossbars(SendableFilter.alwaysTrue());
         addBossbar(index, bossbar);
     }
 
@@ -122,12 +130,16 @@ public interface Receiver {
         return handle;
     }
 
-    default void removeSidebar(SendableFilter<? super AbstractSidebar> filter) {
+    default void removeSidebars(SendableFilter<? super AbstractSidebar> filter) {
         SendableOrchestrator.get().sidebar().remove(this, filter);
     }
 
+    default void removeSidebars(Class<? extends AbstractSidebar> clazz) {
+        removeSidebars(SendableFilter.ofClass(clazz));
+    }
+
     default void setSidebar(AbstractSidebar sidebar) {
-        removeSidebar(SendableFilter.alwaysTrue());
+        removeSidebars(SendableFilter.alwaysTrue());
         addSidebar(sidebar);
     }
 
@@ -148,12 +160,16 @@ public interface Receiver {
         return handle;
     }
 
-    default void removeTablist(SendableFilter<? super AbstractTablist> filter) {
+    default void removeTablists(SendableFilter<? super AbstractTablist> filter) {
         SendableOrchestrator.get().tablist().remove(this, filter);
     }
 
+    default void removeTablists(Class<? extends AbstractTablist> clazz) {
+        removeTablists(SendableFilter.ofClass(clazz));
+    }
+
     default void setTablist(TablistPosition position, AbstractTablist tablist) {
-        removeTablist(SendableFilter.alwaysTrue());
+        removeTablists(SendableFilter.alwaysTrue());
         addTablist(position, tablist);
     }
 
@@ -174,12 +190,16 @@ public interface Receiver {
         return handle;
     }
 
-    default void removeTitle(SendableFilter<? super AbstractTitle> filter) {
+    default void removeTitles(SendableFilter<? super AbstractTitle> filter) {
         SendableOrchestrator.get().title().remove(this, filter);
     }
 
+    default void removeTitles(Class<? extends AbstractTitle> clazz) {
+        removeTitles(SendableFilter.ofClass(clazz));
+    }
+
     default void setTitle(AbstractTitle title) {
-        removeTitle(SendableFilter.alwaysTrue());
+        removeTitles(SendableFilter.alwaysTrue());
         addTitle(title);
     }
 
@@ -200,12 +220,16 @@ public interface Receiver {
         return handle;
     }
 
-    default void removeWaypoint(SendableFilter<? super AbstractWaypoint> filter) {
+    default void removeWaypoints(SendableFilter<? super AbstractWaypoint> filter) {
         SendableOrchestrator.get().waypoint().remove(this, filter);
     }
 
+    default void removeWaypoints(Class<? extends AbstractWaypoint> clazz) {
+        removeWaypoints(SendableFilter.ofClass(clazz));
+    }
+
     default void setWaypoint(AbstractWaypoint waypoint) {
-        removeWaypoint(SendableFilter.alwaysTrue());
+        removeWaypoints(SendableFilter.alwaysTrue());
         addWaypoint(waypoint);
     }
 

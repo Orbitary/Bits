@@ -19,6 +19,7 @@ import xyz.bitsquidd.bits.util.Safety;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -92,6 +93,7 @@ public abstract class SendableManager<S extends Sendable> implements CoreManager
 
 
     //region Operations
+    // Internal: Use Receiver's methods.
     @ApiStatus.Internal
     public final void put(Receiver receiver, SendableHandle<? extends S> handle) {
         getOrCreateCollection(receiver).put(handle);
@@ -119,16 +121,26 @@ public abstract class SendableManager<S extends Sendable> implements CoreManager
         if (collection != null) collection.remove(filter);
     }
 
-
-    // Note: Syntactically different from GlobalReceiver.INSTANCE.put() as this will not trigger for non-initialized receivers at the time of call.
-    public final void putAll(Receiver receiver, List<? extends SendableHandle<S>> sendables) {
-        sendables.forEach(sendable -> put(receiver, sendable));
-    }
-
+    @ApiStatus.Internal
     public final List<SendableHandle<? extends S>> getAll(SendableFilter<? super S> filter) {
         return playerSendables.values().stream().flatMap(c -> c.get(filter).stream()).collect(Collectors.toList());
     }
 
+    @ApiStatus.Internal
+    @SuppressWarnings("unchecked")
+    public final <SE extends S> List<SendableHandle<SE>> getAll(Class<? extends SE> clazz) {
+        return getAll(SendableFilter.ofClass(clazz))
+          .stream()
+          .map(handle -> (SendableHandle<SE>)handle)
+          .collect(Collectors.toList());
+    }
+
+    @ApiStatus.Internal
+    public final void putAll(Function<? super Receiver, SendableHandle<? extends S>> sendableSupplier) {
+        playerSendables.forEach((r, c) -> c.put(sendableSupplier.apply(r)));
+    }
+
+    @ApiStatus.Internal
     public final void removeAll(SendableFilter<? super S> filter) {
         playerSendables.values().forEach(c -> c.remove(filter));
     }
