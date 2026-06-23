@@ -7,29 +7,16 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.tablist;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
+import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
 
-import java.util.Optional;
 
+public abstract class TablistManager extends SendableManager<AbstractTablist, OperationSuite.Keyed<TablistPosition, AbstractTablist>, SendableCollection.Keyed<TablistPosition, AbstractTablist>> {
 
-public abstract class TablistManager extends SendableManager<AbstractTablist, TablistCollection> {
-
-    @Override
-    protected TablistCollection createCollection() {
-        return new TablistCollection();
+    protected TablistManager() {
+        super(SendableCollection.Keyed::new);
     }
 
-
-    //region Operations
-    public final <S extends AbstractTablist> Optional<SendableHandle<S>> add(Receiver receiver, TablistPosition position, S tablist) {
-        return getOrCreateCollection(receiver).add(position, tablist);
-    }
-
-    public final <S extends AbstractTablist> void addGlobal(TablistPosition position, S tablist) {
-        performGlobalAdd(() -> globalSendables.add(position, tablist), r -> add(r, position, tablist));
-    }
-    //endregion
 }

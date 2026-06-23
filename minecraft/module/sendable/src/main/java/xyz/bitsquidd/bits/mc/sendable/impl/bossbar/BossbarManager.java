@@ -7,30 +7,16 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.bossbar;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
+import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 
-import java.util.Optional;
 
+public abstract class BossbarManager extends SendableManager<AbstractBossbar, OperationSuite.Keyed<Integer, AbstractBossbar>, SendableCollection.Keyed<Integer, AbstractBossbar>> {
 
-public abstract class BossbarManager extends SendableManager<AbstractBossbar, BossbarCollection> {
-
-    @Override
-    protected BossbarCollection createCollection() {
-        return new BossbarCollection();
+    protected BossbarManager() {
+        super(SendableCollection.Keyed::new);
     }
-
-
-    //region Operations
-    public final <S extends AbstractBossbar> Optional<SendableHandle<S>> add(Receiver receiver, int index, S bossbar) {
-        return getOrCreateCollection(receiver).add(index, bossbar);
-    }
-
-    public final <S extends AbstractBossbar> void addGlobal(int index, S bossbar) {
-        performGlobalAdd(() -> globalSendables.add(index, bossbar), r -> add(r, index, bossbar));
-    }
-    //endregion
 
 }
 

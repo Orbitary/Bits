@@ -19,10 +19,10 @@ import net.minecraft.world.BossEvent;
 import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.AbstractBossbar;
-import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.BossbarManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.data.BossBarColor;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.data.BossBarOverlay;
@@ -43,7 +43,7 @@ public class PaperBossbarManager extends BossbarManager {
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, BossEvent>> bossbarIds = new ConcurrentHashMap<>();
 
     @Override
-    protected void render(Receiver receiver, BossbarCollection collection) {
+    protected void render(Receiver receiver, SendableCollection.Keyed<Integer, AbstractBossbar> collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         for (int i = 0; i < MAX_BOSSBARS; i++) {
@@ -145,8 +145,8 @@ public class PaperBossbarManager extends BossbarManager {
 
 
     @Override
-    protected void initialiseReceiver(Receiver receiver) {
-        super.initialiseReceiver(receiver);
+    protected void startupReceiver(Receiver receiver) {
+        super.startupReceiver(receiver);
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         Map<Integer, BossEvent> bossEvents = new ConcurrentHashMap<>();
@@ -162,31 +162,9 @@ public class PaperBossbarManager extends BossbarManager {
     }
 
     @Override
-    protected void cleanupReceiver(Receiver receiver) {
-        super.cleanupReceiver(receiver);
+    protected void shutdownReceiver(Receiver receiver) {
+        super.shutdownReceiver(receiver);
         bossbarIds.remove(receiver.getUniqueId());
-    }
-
-    @Override
-    protected void forceCleanupUser(Receiver receiver) {
-        super.forceCleanupUser(receiver);
-        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
-
-        for (int i = 0; i < MAX_BOSSBARS; i++) {
-            BossEvent bossEvent = getBossEvent(paperReceiver.getUniqueId(), i).orElse(null);
-            if (bossEvent == null) continue;
-            bossEvent.setColor(BossEvent.BossBarColor.WHITE);
-            bossEvent.setName(net.minecraft.network.chat.Component.empty());
-            bossEvent.setProgress(0);
-
-            List<Packet<?>> packets = List.of(
-              ClientboundBossEventPacket.createUpdateNamePacket(bossEvent),
-              ClientboundBossEventPacket.createUpdateStylePacket(bossEvent),
-              ClientboundBossEventPacket.createUpdateProgressPacket(bossEvent)
-            );
-
-            paperReceiver.sendPackets(packets);
-        }
     }
 
 }

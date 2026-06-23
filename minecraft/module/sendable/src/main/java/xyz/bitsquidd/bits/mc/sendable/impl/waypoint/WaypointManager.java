@@ -7,28 +7,15 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
+import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 
-import java.util.Optional;
 
+public abstract class WaypointManager extends SendableManager<AbstractWaypoint, OperationSuite.Multiple<AbstractWaypoint>, SendableCollection.Multiple<AbstractWaypoint>> {
 
-public abstract class WaypointManager extends SendableManager<AbstractWaypoint, WaypointCollection> {
-
-    @Override
-    protected WaypointCollection createCollection() {
-        return new WaypointCollection();
+    protected WaypointManager() {
+        super(SendableCollection.Multiple::new);
     }
 
-
-    //region Operations
-    public final <S extends AbstractWaypoint> Optional<SendableHandle<S>> add(Receiver receiver, S waypoint) {
-        return getOrCreateCollection(receiver).add(waypoint);
-    }
-
-    public final <S extends AbstractWaypoint> void addGlobal(S waypoint) {
-        performGlobalAdd(() -> globalSendables.add(waypoint), r -> add(r, waypoint));
-    }
-    //endregion
 }

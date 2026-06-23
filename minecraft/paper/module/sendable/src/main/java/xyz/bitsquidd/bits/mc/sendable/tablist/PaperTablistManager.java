@@ -13,10 +13,10 @@ import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.AbstractTablist;
-import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.TablistManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
 
@@ -27,10 +27,14 @@ import java.util.Map;
 public class PaperTablistManager extends TablistManager {
 
     @Override
-    protected void render(Receiver receiver, TablistCollection collection) {
+    protected void render(Receiver receiver, SendableCollection.Keyed<TablistPosition, AbstractTablist> collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         Map<TablistPosition, Component> positionContentMap = new EnumMap<>(TablistPosition.class);
+        positionContentMap.putAll(Map.of(
+          TablistPosition.HEADER, Component.empty(),
+          TablistPosition.FOOTER, Component.empty()
+        ));
 
         for (TablistPosition value : TablistPosition.values()) {
             Component content = Component.empty();
@@ -47,17 +51,6 @@ public class PaperTablistManager extends TablistManager {
         paperReceiver.sendPacket(new ClientboundTabListPacket(
           PaperAdventure.asVanillaNullToEmpty(positionContentMap.get(TablistPosition.HEADER)),
           PaperAdventure.asVanillaNullToEmpty(positionContentMap.get(TablistPosition.FOOTER))
-        ));
-    }
-
-    @Override
-    protected void forceCleanupUser(Receiver receiver) {
-        super.forceCleanupUser(receiver);
-        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
-
-        paperReceiver.sendPacket(new ClientboundTabListPacket(
-          net.minecraft.network.chat.Component.empty(),
-          net.minecraft.network.chat.Component.empty()
         ));
     }
 

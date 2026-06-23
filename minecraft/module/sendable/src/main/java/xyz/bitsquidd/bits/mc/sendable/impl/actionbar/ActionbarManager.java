@@ -7,29 +7,15 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.actionbar;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
+import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 
-import java.util.Optional;
 
+public abstract class ActionbarManager extends SendableManager<AbstractActionbar, OperationSuite.Multiple<AbstractActionbar>, SendableCollection.Multiple<AbstractActionbar>> {
 
-public abstract class ActionbarManager extends SendableManager<AbstractActionbar, ActionbarCollection> {
-
-    @Override
-    protected ActionbarCollection createCollection() {
-        return new ActionbarCollection();
+    protected ActionbarManager() {
+        super(SendableCollection.Multiple::new);
     }
 
-
-    //region Operations
-    public final <S extends AbstractActionbar> Optional<SendableHandle<S>> add(Receiver receiver, S actionbar) {
-        return getOrCreateCollection(receiver).add(actionbar);
-    }
-
-    public final <S extends AbstractActionbar> void addGlobal(S actionbar) {
-        performGlobalAdd(() -> globalSendables.add(actionbar), r -> add(r, actionbar));
-    }
-    //endregion
-    
 }

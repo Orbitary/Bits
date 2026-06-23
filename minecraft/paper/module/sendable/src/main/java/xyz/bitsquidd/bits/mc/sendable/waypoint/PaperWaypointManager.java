@@ -30,11 +30,11 @@ import org.joml.Vector3i;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractLocationWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractTransmittingWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractWaypoint;
-import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.WaypointCollection;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.WaypointManager;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
 
@@ -53,7 +53,7 @@ public class PaperWaypointManager extends WaypointManager {
     private final Map<UUID, Set<UUID>> tracked = new ConcurrentHashMap<>();
 
     @Override
-    protected void render(Receiver receiver, WaypointCollection collection) {
+    protected void render(Receiver receiver, SendableCollection.Multiple<AbstractWaypoint> collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         List<Packet<?>> waypointPackets = new ArrayList<>();
@@ -208,20 +208,12 @@ public class PaperWaypointManager extends WaypointManager {
 
 
     @Override
-    protected void cleanupReceiver(Receiver receiver) {
-        super.cleanupReceiver(receiver);
+    protected void shutdownReceiver(Receiver receiver) {
+        super.shutdownReceiver(receiver);
         UUID uuid = receiver.getUniqueId();
 
         transmittors.remove(uuid);
         tracked.remove(uuid);
-    }
-
-
-    @Override
-    protected void forceCleanupUser(Receiver receiver) {
-        super.forceCleanupUser(receiver);
-
-        // TODO Consider if we need a force cleanup here?
     }
 
 }

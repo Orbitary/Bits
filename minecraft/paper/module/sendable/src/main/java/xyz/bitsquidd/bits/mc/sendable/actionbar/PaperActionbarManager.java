@@ -14,14 +14,15 @@ import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarCollection;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
+import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.AbstractActionbar;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
 
 
 public class PaperActionbarManager extends ActionbarManager {
 
     @Override
-    protected void render(Receiver receiver, ActionbarCollection collection) {
+    protected void render(Receiver receiver, SendableCollection.Multiple<AbstractActionbar> collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         TextComponent.Builder builder = Component.text();
@@ -37,16 +38,6 @@ public class PaperActionbarManager extends ActionbarManager {
      */
     protected void merge(TextComponent.Builder builder, Component component) {
         builder.append(component);
-    }
-
-    @Override
-    protected void forceCleanupUser(Receiver receiver) {
-        super.forceCleanupUser(receiver);
-        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
-
-        paperReceiver.sendPacket(new ClientboundSetActionBarTextPacket(
-          net.minecraft.network.chat.Component.empty()
-        ));
     }
 
 }

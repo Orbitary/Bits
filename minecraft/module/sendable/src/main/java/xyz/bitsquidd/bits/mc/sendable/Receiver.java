@@ -7,6 +7,7 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.AbstractActionbar;
@@ -37,7 +38,7 @@ public interface Receiver {
 
     //region Generic
     default void removeSendables(SendableFilter<? super Sendable> filter) {
-        SendableOrchestrator.get().getSendableManagers().forEach(manager -> manager.getOrCreateCollection(this).remove(filter));
+        SendableOrchestrator.get().getSendableManagers().forEach(manager -> manager.remove(this, filter));
     }
 
     default void removeSendables(Class<? extends Sendable> clazz) {
@@ -61,8 +62,9 @@ public interface Receiver {
 
 
     //region Actionbar
+    @SuppressWarnings("unchecked")
     default <S extends AbstractActionbar> Optional<SendableHandle<S>> addActionbar(S actionbar) {
-        return SendableOrchestrator.get().actionbar().add(this, actionbar);
+        return (Optional<SendableHandle<S>>)(Optional<?>)SendableOrchestrator.get().actionbar().put(this, new OperationSuite.Multiple<>(new SendableHandle<>(actionbar, this, SendableOrchestrator.get().actionbar())));
     }
 
     default void removeActionbar(SendableFilter<? super AbstractActionbar> filter) {
@@ -70,8 +72,8 @@ public interface Receiver {
     }
 
     default void setActionbar(AbstractActionbar actionbar) {
-        SendableOrchestrator.get().actionbar().remove(this, SendableFilter.alwaysTrue());
-        SendableOrchestrator.get().actionbar().add(this, actionbar);
+        removeActionbar(SendableFilter.alwaysTrue());
+        addActionbar(actionbar);
     }
 
     default Collection<SendableHandle<AbstractActionbar>> getActionbars(SendableFilter<? super AbstractActionbar> filter) {
@@ -86,8 +88,9 @@ public interface Receiver {
 
 
     //region Bossbar
+    @SuppressWarnings("unchecked")
     default <S extends AbstractBossbar> Optional<SendableHandle<S>> addBossbar(Integer index, S bossbar) {
-        return SendableOrchestrator.get().bossbar().add(this, index, bossbar);
+        return (Optional<SendableHandle<S>>)(Optional<?>)SendableOrchestrator.get().bossbar().put(this, new OperationSuite.Keyed<>(index, new SendableHandle<>(bossbar, this, SendableOrchestrator.get().bossbar())));
     }
 
     default void removeBossbar(SendableFilter<? super AbstractBossbar> filter) {
@@ -95,9 +98,10 @@ public interface Receiver {
     }
 
     default void setBossbar(Integer index, AbstractBossbar bossbar) {
-        SendableOrchestrator.get().bossbar().remove(this, SendableFilter.alwaysTrue());
-        SendableOrchestrator.get().bossbar().add(this, index, bossbar);
+        removeBossbar(SendableFilter.alwaysTrue());
+        addBossbar(index, bossbar);
     }
+
 
     default Collection<SendableHandle<AbstractBossbar>> getBossbars(SendableFilter<? super AbstractBossbar> filter) {
         return SendableOrchestrator.get().bossbar().get(this, filter);
@@ -110,8 +114,9 @@ public interface Receiver {
 
 
     //region Sidebar
+    @SuppressWarnings("unchecked")
     default <S extends AbstractSidebar> Optional<SendableHandle<S>> addSidebar(S sidebar) {
-        return SendableOrchestrator.get().sidebar().add(this, sidebar);
+        return (Optional<SendableHandle<S>>)(Optional<?>)SendableOrchestrator.get().sidebar().put(this, new OperationSuite.Multiple<>(new SendableHandle<>(sidebar, this, SendableOrchestrator.get().sidebar())));
     }
 
     default void removeSidebar(SendableFilter<? super AbstractSidebar> filter) {
@@ -119,8 +124,8 @@ public interface Receiver {
     }
 
     default void setSidebar(AbstractSidebar sidebar) {
-        SendableOrchestrator.get().sidebar().remove(this, SendableFilter.alwaysTrue());
-        SendableOrchestrator.get().sidebar().add(this, sidebar);
+        removeSidebar(SendableFilter.alwaysTrue());
+        addSidebar(sidebar);
     }
 
     default Collection<SendableHandle<AbstractSidebar>> getSidebars(SendableFilter<? super AbstractSidebar> filter) {
@@ -134,8 +139,9 @@ public interface Receiver {
 
 
     //region Tablist
+    @SuppressWarnings("unchecked")
     default <S extends AbstractTablist> Optional<SendableHandle<S>> addTablist(TablistPosition position, S tablist) {
-        return SendableOrchestrator.get().tablist().add(this, position, tablist);
+        return (Optional<SendableHandle<S>>)(Optional<?>)SendableOrchestrator.get().tablist().put(this, new OperationSuite.Keyed<>(position, new SendableHandle<>(tablist, this, SendableOrchestrator.get().tablist())));
     }
 
     default void removeTablist(SendableFilter<? super AbstractTablist> filter) {
@@ -143,8 +149,8 @@ public interface Receiver {
     }
 
     default void setTablist(TablistPosition position, AbstractTablist tablist) {
-        SendableOrchestrator.get().tablist().remove(this, SendableFilter.alwaysTrue());
-        SendableOrchestrator.get().tablist().add(this, position, tablist);
+        removeTablist(SendableFilter.alwaysTrue());
+        addTablist(position, tablist);
     }
 
     default Collection<SendableHandle<AbstractTablist>> getTablists(SendableFilter<? super AbstractTablist> filter) {
@@ -158,8 +164,9 @@ public interface Receiver {
 
 
     //region Title
+    @SuppressWarnings("unchecked")
     default <S extends AbstractTitle> Optional<SendableHandle<S>> addTitle(S title) {
-        return SendableOrchestrator.get().title().add(this, title);
+        return (Optional<SendableHandle<S>>)(Optional<?>)SendableOrchestrator.get().title().put(this, new OperationSuite.Multiple<>(new SendableHandle<>(title, this, SendableOrchestrator.get().title())));
     }
 
     default void removeTitle(SendableFilter<? super AbstractTitle> filter) {
@@ -167,8 +174,8 @@ public interface Receiver {
     }
 
     default void setTitle(AbstractTitle title) {
-        SendableOrchestrator.get().title().remove(this, SendableFilter.alwaysTrue());
-        SendableOrchestrator.get().title().add(this, title);
+        removeTitle(SendableFilter.alwaysTrue());
+        addTitle(title);
     }
 
     default Collection<SendableHandle<AbstractTitle>> getTitles(SendableFilter<? super AbstractTitle> filter) {
@@ -182,8 +189,9 @@ public interface Receiver {
 
 
     //region Waypoint
+    @SuppressWarnings("unchecked")
     default <S extends AbstractWaypoint> Optional<SendableHandle<S>> addWaypoint(S waypoint) {
-        return SendableOrchestrator.get().waypoint().add(this, waypoint);
+        return (Optional<SendableHandle<S>>)(Optional<?>)SendableOrchestrator.get().waypoint().put(this, new OperationSuite.Multiple<>(new SendableHandle<>(waypoint, this, SendableOrchestrator.get().waypoint())));
     }
 
     default void removeWaypoint(SendableFilter<? super AbstractWaypoint> filter) {
@@ -191,8 +199,8 @@ public interface Receiver {
     }
 
     default void setWaypoint(AbstractWaypoint waypoint) {
-        SendableOrchestrator.get().waypoint().remove(this, SendableFilter.alwaysTrue());
-        SendableOrchestrator.get().waypoint().add(this, waypoint);
+        removeWaypoint(SendableFilter.alwaysTrue());
+        addWaypoint(waypoint);
     }
 
     default Collection<SendableHandle<AbstractWaypoint>> getWaypoints(SendableFilter<? super AbstractWaypoint> filter) {

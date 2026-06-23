@@ -7,59 +7,36 @@
 
 package xyz.bitsquidd.bits.mc.sendable.collection;
 
-import com.google.errorprone.annotations.DoNotMock;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.Unmodifiable;
 
-import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableFilter;
-import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
+import xyz.bitsquidd.bits.wrapper.collection.Single;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
-/**
- * Representation of a collection of sendables of a specific type.
- * <p>
- * <b>Developer Note: All extending classes must implement some form of add() functionality.</b>
- *
- * @param <S> The type of sendable in the collection.
- *
- * @since 0.0.14
- */
-@DoNotMock
-public sealed abstract class SendableCollection<S extends Sendable> permits KeyedSendableCollection, ListSendableCollection, SingleSendableCollection {
+public sealed abstract class SendableCollection<S extends Sendable, P extends OperationSuite<S>> permits SendableCollection.Keyed, SendableCollection.Multiple, SendableCollection.Replace {
     private boolean needsForceRender = false;
-    private @Nullable Receiver receiver = null;
 
-    protected SendableCollection() {}
-
-    public final void setReceiver(Receiver receiver) {
-        this.receiver = receiver;
-    }
 
     //region Collection Operations
+    public abstract Optional<SendableHandle<S>> put(P operation);
+
+    public abstract @Unmodifiable List<SendableHandle<? extends S>> getAll();
+
+    protected abstract void removeInternal(SendableHandle<? extends S> handle);
+
+
     @SuppressWarnings("unchecked") // We cast to <S> for simplicity - especially for public-facing methods.
-    public final Set<SendableHandle<S>> get(SendableFilter<? super S> filter) {
-        return (Set<SendableHandle<S>>)(Set<?>)getAll().stream().filter(filter).collect(Collectors.toSet());
+    public final @Unmodifiable List<SendableHandle<S>> get(SendableFilter<? super S> filter) {
+        return (List<SendableHandle<S>>)(List<?>)getAll().stream().filter(filter).toList();
     }
-
-    public void clear() {
-        getAll().forEach(h -> remove(h::equals));
-    }
-
-    /**
-     * Merges this collection into another collection of the same type. Used for merging global or grouped collections into player collections.
-     */
-    @ApiStatus.Internal
-    public abstract void mergeInto(SendableCollection<S> other, Receiver receiver);
-
-    public abstract @Unmodifiable Set<SendableHandle<? extends S>> getAll();
-
 
     public final void remove(SendableFilter<? super S> filter) {
         get(filter).forEach(handle -> {
@@ -68,11 +45,10 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
             needsForceRender = true; // We mark a final render on remove, only when something is removed.
         });
     }
-
-    protected abstract void removeInternal(SendableHandle<? extends S> handle);
     //endregion
 
 
+    //region Lifecycle
     public final void tick() {
         getAll().forEach(SendableHandle::bits$tick);
         remove(SendableHandle::isExpired);
@@ -86,17 +62,112 @@ public sealed abstract class SendableCollection<S extends Sendable> permits Keye
         getAll().forEach(SendableHandle::bits$markRendered);
         needsForceRender = false;
     }
+    //endregion
 
 
-    protected final <SE extends S> SendableHandle<SE> createHandle(SE sendable) {
-        return new SendableHandle<>(sendable, receiver, manager());
+    public static final class Multiple<S extends Sendable> extends SendableCollection<S, OperationSuite.Multiple<S>> {
+        private final List<SendableHandle<? extends S>> sendables = new CopyOnWriteArrayList<>();
+
+        @Override
+        public Optional<SendableHandle<S>> put(OperationSuite.Multiple<S> operation) {
+            SendableHandle<S> handle = operation.sendable();
+            S definition = handle.definition();
+
+            int priority = definition.config().priority();
+            int index = 0;
+
+            List.copyOf(sendables).stream().filter(h -> definition.config().replaces(handle.definition())).forEach(h -> this.remove(h::equals));
+            while (index < sendables.size() && sendables.get(index).config().priority() >= priority) {
+                index++;
+            }
+
+            sendables.add(index, handle);
+            return Optional.of(handle);
+        }
+
+        @Override
+        public @Unmodifiable List<SendableHandle<? extends S>> getAll() {
+            return List.copyOf(sendables);
+        }
+
+        @Override
+        protected void removeInternal(SendableHandle<? extends S> handle) {
+            sendables.remove(handle);
+        }
+
     }
 
-    protected abstract SendableManager<S, ?> manager();
+
+    public static final class Replace<S extends Sendable> extends SendableCollection<S, OperationSuite.Replace<S>> {
+        private final Single<SendableHandle<? extends S>> sendables = new Single<>();
+
+        @Override
+        public Optional<SendableHandle<S>> put(OperationSuite.Replace<S> operation) {
+            SendableHandle<S> handle = operation.sendable();
+            S definition = handle.definition();
+
+            SendableHandle<? extends S> existingHandle = sendables.get().orElse(null);
+            if (existingHandle != null) {
+                if (definition.config().priority() < existingHandle.config().priority() && !definition.config().replaces(existingHandle.definition())) return Optional.empty(); // Existing sendable has higher priority, do not replace
+
+                remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
+            }
+
+            this.sendables.set(handle);
+            return Optional.of(handle);
+        }
 
 
-    // Collections must override their toString.
-    @Override
-    public abstract String toString();
+        @Override
+        public @Unmodifiable List<SendableHandle<? extends S>> getAll() {
+            return sendables.asList();
+        }
+
+        @Override
+        protected void removeInternal(SendableHandle<? extends S> handle) {
+            sendables.removeIf(h -> h.equals(handle));
+        }
+
+    }
+
+
+    public static final class Keyed<K, S extends Sendable> extends SendableCollection<S, OperationSuite.Keyed<K, S>> {
+        private final BiMap<K, SendableHandle<? extends S>> sendables = HashBiMap.create();
+
+        @Override
+        public Optional<SendableHandle<S>> put(OperationSuite.Keyed<K, S> operation) {
+            SendableHandle<S> handle = operation.sendable();
+            S definition = handle.definition();
+            K key = operation.key();
+
+            if (sendables.containsKey(key)) {
+                SendableHandle<? extends S> existingHandle = sendables.get(key);
+                if (definition.config().priority() < existingHandle.config().priority() && !definition.config().replaces(existingHandle.definition())) return Optional.empty(); // Existing sendable has higher priority, do not replace
+
+                remove(h -> h.equals(existingHandle)); // Expire the existing sendable before replacing
+            }
+
+            sendables.put(key, handle);
+            return Optional.of(handle);
+        }
+
+        @SuppressWarnings("unchecked")
+        public Optional<SendableHandle<S>> get(K key) {
+            return Optional.ofNullable((SendableHandle<S>)sendables.get(key));
+        }
+
+        @Override
+        public @Unmodifiable List<SendableHandle<? extends S>> getAll() {
+            return List.copyOf(sendables.values());
+        }
+
+
+        @Override
+        protected void removeInternal(SendableHandle<? extends S> filter) {
+            sendables.values().remove(filter);
+        }
+
+
+    }
 
 }

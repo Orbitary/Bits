@@ -31,6 +31,17 @@ public interface PaperReceiver extends Receiver {
             public Player getPlayer() {
                 return player;
             }
+
+
+            @Override
+            public int hashCode() {
+                return getUniqueId().hashCode();
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof PaperReceiver other && getUniqueId().equals(other.getUniqueId());
+            }
         };
     }
 

@@ -22,7 +22,8 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarCollection;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
+import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.AbstractSidebar;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.SidebarManager;
 
 import java.util.ArrayList;
@@ -48,16 +49,16 @@ public class PaperSidebarManager extends SidebarManager {
     private final Map<UUID, Component> playerTitle = new ConcurrentHashMap<>();
 
     @Override
-    protected void render(Receiver receiver, SidebarCollection collection) {
+    protected void render(Receiver receiver, SendableCollection.Multiple<AbstractSidebar> collection) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
-        Component title = collection.getAllOrdered().stream()
+        Component title = collection.getAll().stream()
           .map(s -> s.definition().title(s.state(receiver)))
           .filter(Objects::nonNull)
           .findFirst()
           .orElse(Component.empty());
 
-        List<Component> lineComponents = collection.getAllOrdered().stream()
+        List<Component> lineComponents = collection.getAll().stream()
           .map(s -> s.definition().content(s.state(receiver)))
           .flatMap(Collection::stream)
           .limit(MAX_LINES) // This does mean lower priority sidebars may be cut off
@@ -119,8 +120,8 @@ public class PaperSidebarManager extends SidebarManager {
 
 
     @Override
-    protected void initialiseReceiver(Receiver receiver) {
-        super.initialiseReceiver(receiver);
+    protected void startupReceiver(Receiver receiver) {
+        super.startupReceiver(receiver);
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         Objective objective = new Objective(
@@ -148,27 +149,10 @@ public class PaperSidebarManager extends SidebarManager {
     }
 
     @Override
-    protected void cleanupReceiver(Receiver receiver) {
-        super.cleanupReceiver(receiver);
+    protected void shutdownReceiver(Receiver receiver) {
+        super.shutdownReceiver(receiver);
         playerLineCount.remove(receiver.getUniqueId());
         playerTitle.remove(receiver.getUniqueId());
     }
-
-    @Override
-    protected void forceCleanupUser(Receiver receiver) {
-        super.forceCleanupUser(receiver);
-        if (!(receiver instanceof PaperReceiver paperReceiver)) return;
-
-        List<Packet<?>> packets = new ArrayList<>();
-        for (int i = 0; i < MAX_LINES; i++) {
-            packets.add(new ClientboundResetScorePacket(
-              entryNames[i],
-              id
-            ));
-        }
-
-        paperReceiver.sendPackets(packets);
-    }
-
 
 }
