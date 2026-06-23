@@ -19,7 +19,8 @@ import net.minecraft.world.BossEvent;
 import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
+import xyz.bitsquidd.bits.mc.sendable.SendableFilter;
+import xyz.bitsquidd.bits.mc.sendable.collection.WeakStorage;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.AbstractBossbar;
@@ -43,7 +44,7 @@ public class PaperBossbarManager extends BossbarManager {
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, BossEvent>> bossbarIds = new ConcurrentHashMap<>();
 
     @Override
-    protected void render(Receiver receiver, SendableCollection.Keyed<Integer, AbstractBossbar> collection) {
+    protected void render(Receiver receiver, WeakStorage<? extends AbstractBossbar> storage) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         for (int i = 0; i < MAX_BOSSBARS; i++) {
@@ -52,7 +53,7 @@ public class PaperBossbarManager extends BossbarManager {
             BossBarOverlay overlay = BossBarOverlay.DEFAULT;
             Percentage progress = Percentage.ZERO;
 
-            SendableHandle<? extends AbstractBossbar> handle = collection.get(i).orElse(null);
+            SendableHandle<? extends AbstractBossbar> handle = storage.getFirst(SendableFilter.withData(BOSSBAR_INDEX, i)).orElse(null);
             if (handle != null) {
                 SendableState state = handle.state(receiver);
                 content = handle.definition().content(state);

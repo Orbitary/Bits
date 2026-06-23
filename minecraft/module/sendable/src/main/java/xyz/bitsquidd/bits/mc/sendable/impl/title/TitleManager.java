@@ -8,14 +8,10 @@
 package xyz.bitsquidd.bits.mc.sendable.impl.title;
 
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 
 
-public abstract class TitleManager extends SendableManager<AbstractTitle, OperationSuite.Multiple<AbstractTitle>, SendableCollection.Multiple<AbstractTitle>> {
+public abstract class TitleManager extends SendableManager<AbstractTitle> {
 
-    protected TitleManager() {
-        super(SendableCollection.Multiple::new);
-    }
+    protected TitleManager() {}
 
 }

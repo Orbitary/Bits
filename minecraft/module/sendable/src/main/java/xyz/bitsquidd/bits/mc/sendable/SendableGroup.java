@@ -7,6 +7,10 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.AbstractActionbar;
 import xyz.bitsquidd.bits.mc.sendable.impl.bossbar.AbstractBossbar;
 import xyz.bitsquidd.bits.mc.sendable.impl.sidebar.AbstractSidebar;
@@ -25,18 +29,21 @@ import java.util.Map;
  * Representation of a group of sendables that can be sent to a {@link Receiver}.
  */
 public final class SendableGroup {
-    private final List<AbstractActionbar> actionbars = new ArrayList<>();
-    private final Map<Integer, AbstractBossbar> bossbars = new HashMap<>();
-    private final List<AbstractSidebar> sidebars = new ArrayList<>();
-    private final Map<TablistPosition, AbstractTablist> tablists = new HashMap<>();
-    private final List<AbstractTitle> titles = new ArrayList<>();
-    private final List<AbstractWaypoint> waypoints = new ArrayList<>();
+    private final List<AbstractActionbar> actionbars;
+    private final Map<Integer, AbstractBossbar> bossbars;
+    private final List<AbstractSidebar> sidebars;
+    private final Map<TablistPosition, AbstractTablist> tablists;
+    private final List<AbstractTitle> titles;
+    private final List<AbstractWaypoint> waypoints;
 
-
-    public static SendableGroup empty() {
-        return new SendableGroup();
+    private SendableGroup(Builder builder) {
+        this.actionbars = ImmutableList.copyOf(builder.actionbars);
+        this.bossbars = ImmutableMap.copyOf(builder.bossbars);
+        this.sidebars = ImmutableList.copyOf(builder.sidebars);
+        this.tablists = ImmutableMap.copyOf(builder.tablists);
+        this.titles = ImmutableList.copyOf(builder.titles);
+        this.waypoints = ImmutableList.copyOf(builder.waypoints);
     }
-
 
     public void applyTo(Receiver receiver) {
         actionbars.forEach(receiver::addActionbar);
@@ -47,44 +54,62 @@ public final class SendableGroup {
         waypoints.forEach(receiver::addWaypoint);
     }
 
-    public void clear() {
-        actionbars.clear();
-        bossbars.clear();
-        sidebars.clear();
-        tablists.clear();
-        titles.clear();
-        waypoints.clear();
+
+    public static SendableGroup empty() {
+        return new Builder().build();
     }
 
-
-    public SendableGroup actionbar(AbstractActionbar actionbar) {
-        this.actionbars.add(actionbar);
-        return this;
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public SendableGroup bossbar(int index, AbstractBossbar bossbar) {
-        this.bossbars.put(index, bossbar);
-        return this;
-    }
+    public static final class Builder implements Buildable<SendableGroup> {
+        private final List<AbstractActionbar> actionbars = new ArrayList<>();
+        private final Map<Integer, AbstractBossbar> bossbars = new HashMap<>();
+        private final List<AbstractSidebar> sidebars = new ArrayList<>();
+        private final Map<TablistPosition, AbstractTablist> tablists = new HashMap<>();
+        private final List<AbstractTitle> titles = new ArrayList<>();
+        private final List<AbstractWaypoint> waypoints = new ArrayList<>();
 
-    public SendableGroup sidebar(AbstractSidebar sidebar) {
-        this.sidebars.add(sidebar);
-        return this;
-    }
+        private Builder() {}
 
-    public SendableGroup tablist(TablistPosition position, AbstractTablist tablist) {
-        this.tablists.put(position, tablist);
-        return this;
-    }
 
-    public SendableGroup title(AbstractTitle title) {
-        this.titles.add(title);
-        return this;
-    }
+        public Builder actionbar(AbstractActionbar actionbar) {
+            this.actionbars.add(actionbar);
+            return this;
+        }
 
-    public SendableGroup waypoint(AbstractWaypoint waypoint) {
-        this.waypoints.add(waypoint);
-        return this;
+        public Builder bossbar(int index, AbstractBossbar bossbar) {
+            this.bossbars.put(index, bossbar);
+            return this;
+        }
+
+        public Builder sidebar(AbstractSidebar sidebar) {
+            this.sidebars.add(sidebar);
+            return this;
+        }
+
+        public Builder tablist(TablistPosition position, AbstractTablist tablist) {
+            this.tablists.put(position, tablist);
+            return this;
+        }
+
+        public Builder title(AbstractTitle title) {
+            this.titles.add(title);
+            return this;
+        }
+
+        public Builder waypoint(AbstractWaypoint waypoint) {
+            this.waypoints.add(waypoint);
+            return this;
+        }
+
+
+        @Override
+        public SendableGroup build() {
+            return new SendableGroup(this);
+        }
+
     }
 
 

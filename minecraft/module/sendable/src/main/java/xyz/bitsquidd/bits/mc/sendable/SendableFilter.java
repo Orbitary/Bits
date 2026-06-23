@@ -8,6 +8,8 @@
 package xyz.bitsquidd.bits.mc.sendable;
 
 
+import net.kyori.adventure.key.Key;
+
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
@@ -21,7 +23,13 @@ public interface SendableFilter<S extends Sendable> extends Predicate<SendableHa
         return handle -> clazz.isAssignableFrom(handle.definition().getClass());
     }
 
-    
+    static <S extends Sendable> SendableFilter<S> withData(Key key, Object value) {
+        return handle -> {
+            Object data = handle.getData(key);
+            return data != null && data.equals(value);
+        };
+    }
+
     static <S extends Sendable> SendableFilter<S> alwaysTrue() {
         return h -> true;
     }

@@ -14,7 +14,7 @@ import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
+import xyz.bitsquidd.bits.mc.sendable.collection.WeakStorage;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.AbstractActionbar;
 import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
 
@@ -22,11 +22,11 @@ import xyz.bitsquidd.bits.mc.sendable.impl.actionbar.ActionbarManager;
 public class PaperActionbarManager extends ActionbarManager {
 
     @Override
-    protected void render(Receiver receiver, SendableCollection.Multiple<AbstractActionbar> collection) {
+    protected void render(Receiver receiver, WeakStorage<? extends AbstractActionbar> storage) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         TextComponent.Builder builder = Component.text();
-        collection.getAll().forEach(actionbarHandle -> merge(builder, actionbarHandle.definition().content(actionbarHandle.state(receiver))));
+        storage.getAll().forEach(actionbarHandle -> merge(builder, actionbarHandle.definition().content(actionbarHandle.state(receiver))));
 
         paperReceiver.sendPacket(new ClientboundSetActionBarTextPacket(
           PaperAdventure.asVanillaNullToEmpty(builder.build())

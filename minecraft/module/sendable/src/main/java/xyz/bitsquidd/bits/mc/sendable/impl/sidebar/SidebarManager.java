@@ -8,15 +8,11 @@
 package xyz.bitsquidd.bits.mc.sendable.impl.sidebar;
 
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 
 
-public abstract class SidebarManager extends SendableManager<AbstractSidebar, OperationSuite.Multiple<AbstractSidebar>, SendableCollection.Multiple<AbstractSidebar>> {
+public abstract class SidebarManager extends SendableManager<AbstractSidebar> {
 
-    protected SidebarManager() {
-        super(SendableCollection.Multiple::new);
-    }
+    protected SidebarManager() {}
 
 }
 

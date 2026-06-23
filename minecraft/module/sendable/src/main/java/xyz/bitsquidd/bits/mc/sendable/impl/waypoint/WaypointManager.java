@@ -8,14 +8,10 @@
 package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 
 
-public abstract class WaypointManager extends SendableManager<AbstractWaypoint, OperationSuite.Multiple<AbstractWaypoint>, SendableCollection.Multiple<AbstractWaypoint>> {
+public abstract class WaypointManager extends SendableManager<AbstractWaypoint> {
 
-    protected WaypointManager() {
-        super(SendableCollection.Multiple::new);
-    }
+    protected WaypointManager() {}
 
 }

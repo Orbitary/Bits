@@ -30,7 +30,7 @@ import org.joml.Vector3i;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
+import xyz.bitsquidd.bits.mc.sendable.collection.WeakStorage;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractLocationWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractTransmittingWaypoint;
@@ -53,12 +53,12 @@ public class PaperWaypointManager extends WaypointManager {
     private final Map<UUID, Set<UUID>> tracked = new ConcurrentHashMap<>();
 
     @Override
-    protected void render(Receiver receiver, SendableCollection.Multiple<AbstractWaypoint> collection) {
+    protected void render(Receiver receiver, WeakStorage<? extends AbstractWaypoint> storage) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         List<Packet<?>> waypointPackets = new ArrayList<>();
 
-        collection.getAll().forEach(waypointHandle -> {
+        storage.getAll().forEach(waypointHandle -> {
             AbstractWaypoint waypointDefinition = waypointHandle.definition();
 
             Key assetKey = waypointDefinition.getAssetKey();

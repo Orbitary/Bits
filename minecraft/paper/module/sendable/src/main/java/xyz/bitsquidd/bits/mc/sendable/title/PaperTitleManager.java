@@ -17,7 +17,7 @@ import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import xyz.bitsquidd.bits.format.Time;
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
+import xyz.bitsquidd.bits.mc.sendable.collection.WeakStorage;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.AbstractTitle;
@@ -29,10 +29,10 @@ import java.util.List;
 public class PaperTitleManager extends TitleManager {
 
     @Override
-    protected void render(Receiver receiver, SendableCollection.Multiple<AbstractTitle> collection) {
+    protected void render(Receiver receiver, WeakStorage<? extends AbstractTitle> storage) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
-        List<SendableHandle<? extends AbstractTitle>> titles = collection.getAll();
+        List<? extends SendableHandle<? extends AbstractTitle>> titles = storage.getAll();
         if (titles.isEmpty()) {
             paperReceiver.sendPacket(new ClientboundSetTitlesAnimationPacket(0, 0, 0));
             paperReceiver.sendPacket(new ClientboundSetSubtitleTextPacket(Component.empty()));

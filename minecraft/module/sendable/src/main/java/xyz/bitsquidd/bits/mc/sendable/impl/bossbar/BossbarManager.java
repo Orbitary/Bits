@@ -7,16 +7,16 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.bossbar;
 
+import net.kyori.adventure.key.Key;
+
+import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 
 
-public abstract class BossbarManager extends SendableManager<AbstractBossbar, OperationSuite.Keyed<Integer, AbstractBossbar>, SendableCollection.Keyed<Integer, AbstractBossbar>> {
+public abstract class BossbarManager extends SendableManager<AbstractBossbar> {
+    public static final Key BOSSBAR_INDEX = Bits.key("bossbar_index");
 
-    protected BossbarManager() {
-        super(SendableCollection.Keyed::new);
-    }
+    protected BossbarManager() {}
 
 }
 

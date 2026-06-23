@@ -36,7 +36,7 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
     private final TitleManager titleManager = registerManager(createTitleManager());
     private final WaypointManager waypointManager = registerManager(createWaypointManager());
 
-    private final ImmutableSet<SendableManager<?, ?, ?>> cachedManagers = ImmutableSet.copyOf(getAllManagers().stream().filter(m -> m instanceof SendableManager).map(m -> (SendableManager<?, ?, ?>)m).collect(Collectors.toSet()));
+    private final ImmutableSet<SendableManager<?>> cachedManagers = ImmutableSet.copyOf(getAllManagers().stream().filter(m -> m instanceof SendableManager).map(m -> (SendableManager<?>)m).collect(Collectors.toSet()));
 
     protected SendableOrchestrator() {
         if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(SendableOrchestrator.class);
@@ -50,7 +50,7 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
 
 
     @Unmodifiable
-    public final Set<SendableManager<?, ?, ?>> getSendableManagers() {
+    public final Set<SendableManager<?>> getSendableManagers() {
         return cachedManagers;
     }
 

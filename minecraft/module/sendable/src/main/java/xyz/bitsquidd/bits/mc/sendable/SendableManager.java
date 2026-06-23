@@ -10,27 +10,22 @@ package xyz.bitsquidd.bits.mc.sendable;
 import org.jetbrains.annotations.ApiStatus;
 
 import xyz.bitsquidd.bits.lifecycle.manager.CoreManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
+import xyz.bitsquidd.bits.mc.sendable.collection.SendableStorage;
+import xyz.bitsquidd.bits.mc.sendable.collection.WeakStorage;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.util.Safety;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
-public abstract class SendableManager<S extends Sendable, O extends OperationSuite<S>, C extends SendableCollection<S, O>> implements CoreManager {
-    private final Supplier<C> collectionSupplier;
-    protected final ConcurrentHashMap<Receiver, C> playerSendables = new ConcurrentHashMap<>();
+public abstract class SendableManager<S extends Sendable> implements CoreManager {
+    protected final ConcurrentHashMap<Receiver, SendableStorage<S>> playerSendables = new ConcurrentHashMap<>();
 
-    protected SendableManager(Supplier<C> collectionSupplier) {
-        this.collectionSupplier = collectionSupplier;
-    }
+    protected SendableManager() {}
 
 
     public final void tickAll() {
@@ -38,15 +33,19 @@ public abstract class SendableManager<S extends Sendable, O extends OperationSui
           c.getClass().getSimpleName(),
           () -> {
               c.tick();
-              if (c.needsRender()) {
-                  render(r, c);
+
+              SendableStorage<S> global = getOrCreateCollection(GlobalReceiver.INSTANCE);
+              boolean needsRender = c.needsRender() || global.needsRender();
+
+              if (needsRender) {
+                  render(r, WeakStorage.from(List.of(c, global)));
                   c.markRendered();
               }
           }
         ));
     }
 
-    protected abstract void render(Receiver receiver, C collection);
+    protected abstract void render(Receiver receiver, WeakStorage<? extends S> storage);
 
 
     /**
@@ -84,30 +83,28 @@ public abstract class SendableManager<S extends Sendable, O extends OperationSui
 
 
     @ApiStatus.Internal
-    public final C getOrCreateCollection(Receiver receiver) {
+    public final SendableStorage<S> getOrCreateCollection(Receiver receiver) {
         return playerSendables.computeIfAbsent(
           receiver,
-          r -> collectionSupplier.get()
+          r -> new SendableStorage<>()
         );
     }
 
 
     //region Operations
-    public final Optional<SendableHandle<S>> put(Receiver receiver, O operation) {
-        return getOrCreateCollection(receiver).put(operation);
+    @ApiStatus.Internal
+    public final void put(Receiver receiver, SendableHandle<? extends S> handle) {
+        getOrCreateCollection(receiver).put(handle);
     }
 
-    public final void putAll(O operation) {
-        playerSendables.values().forEach(c -> c.put(operation));
-    }
-
-
-    public final List<SendableHandle<S>> get(Receiver receiver, SendableFilter<? super S> filter) {
+    @ApiStatus.Internal
+    public final List<SendableHandle<? extends S>> get(Receiver receiver, SendableFilter<? super S> filter) {
         var collection = playerSendables.get(receiver);
         if (collection == null) return Collections.emptyList();
         return collection.get(filter);
     }
 
+    @ApiStatus.Internal
     @SuppressWarnings("unchecked")
     public final <SE extends S> List<SendableHandle<SE>> get(Receiver receiver, Class<? extends SE> clazz) {
         return get(receiver, SendableFilter.ofClass(clazz))
@@ -116,37 +113,25 @@ public abstract class SendableManager<S extends Sendable, O extends OperationSui
           .collect(Collectors.toList());
     }
 
-
-    public final List<SendableHandle<S>> getAll(SendableFilter<? super S> filter) {
-        return playerSendables.values().stream().flatMap(c -> c.get(filter).stream()).collect(Collectors.toList());
-    }
-
-    @SuppressWarnings("unchecked")
-    public final <SE extends S> List<SendableHandle<SE>> getAll(Class<? extends SE> clazz) {
-        return getAll(SendableFilter.ofClass(clazz))
-          .stream()
-          .map(handle -> (SendableHandle<SE>)handle)
-          .collect(Collectors.toList());
-    }
-
-
+    @ApiStatus.Internal
     public final void remove(Receiver receiver, SendableFilter<? super S> filter) {
         var collection = playerSendables.get(receiver);
         if (collection != null) collection.remove(filter);
     }
 
-    public final void remove(Receiver receiver, Class<? extends S> clazz) {
-        remove(receiver, SendableFilter.ofClass(clazz));
+
+    // Note: Syntactically different from GlobalReceiver.INSTANCE.put() as this will not trigger for non-initialized receivers at the time of call.
+    public final void putAll(Receiver receiver, List<? extends SendableHandle<S>> sendables) {
+        sendables.forEach(sendable -> put(receiver, sendable));
+    }
+
+    public final List<SendableHandle<? extends S>> getAll(SendableFilter<? super S> filter) {
+        return playerSendables.values().stream().flatMap(c -> c.get(filter).stream()).collect(Collectors.toList());
     }
 
     public final void removeAll(SendableFilter<? super S> filter) {
         playerSendables.values().forEach(c -> c.remove(filter));
     }
-
-    public final void removeAll(Class<? extends S> clazz) {
-        removeAll(SendableFilter.ofClass(clazz));
-    }
-
     //endregion
 
 

@@ -7,16 +7,15 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.tablist;
 
+import net.kyori.adventure.key.Key;
+
+import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
-import xyz.bitsquidd.bits.mc.sendable.impl.tablist.data.TablistPosition;
 
 
-public abstract class TablistManager extends SendableManager<AbstractTablist, OperationSuite.Keyed<TablistPosition, AbstractTablist>, SendableCollection.Keyed<TablistPosition, AbstractTablist>> {
+public abstract class TablistManager extends SendableManager<AbstractTablist> {
+    public static final Key TABLIST_INDEX = Bits.key("tablist_index");
 
-    protected TablistManager() {
-        super(SendableCollection.Keyed::new);
-    }
+    protected TablistManager() {}
 
 }

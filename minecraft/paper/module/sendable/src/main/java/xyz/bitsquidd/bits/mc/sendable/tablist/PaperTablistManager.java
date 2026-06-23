@@ -13,7 +13,8 @@ import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
+import xyz.bitsquidd.bits.mc.sendable.SendableFilter;
+import xyz.bitsquidd.bits.mc.sendable.collection.WeakStorage;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.tablist.AbstractTablist;
@@ -27,7 +28,7 @@ import java.util.Map;
 public class PaperTablistManager extends TablistManager {
 
     @Override
-    protected void render(Receiver receiver, SendableCollection.Keyed<TablistPosition, AbstractTablist> collection) {
+    protected void render(Receiver receiver, WeakStorage<? extends AbstractTablist> storage) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         Map<TablistPosition, Component> positionContentMap = new EnumMap<>(TablistPosition.class);
@@ -39,7 +40,7 @@ public class PaperTablistManager extends TablistManager {
         for (TablistPosition value : TablistPosition.values()) {
             Component content = Component.empty();
 
-            SendableHandle<? extends AbstractTablist> handle = collection.get(value).orElse(null);
+            SendableHandle<? extends AbstractTablist> handle = storage.getFirst(SendableFilter.withData(TABLIST_INDEX, value)).orElse(null);
             if (handle != null) {
                 SendableState state = handle.state(receiver);
                 content = handle.definition().content(state);

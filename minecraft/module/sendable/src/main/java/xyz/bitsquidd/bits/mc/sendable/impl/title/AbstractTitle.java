@@ -67,7 +67,7 @@ public abstract class AbstractTitle extends Sendable {
 
 
     // TODO not a massive fan of this being here. Consider repositioning.
-    public final void gracefullyExpire(SendableHandle<AbstractTitle> handle) {
+    public final void gracefullyExpire(SendableHandle<? extends AbstractTitle> handle) {
         handle.setTick(config().fadeOutStartTick);
     }
 

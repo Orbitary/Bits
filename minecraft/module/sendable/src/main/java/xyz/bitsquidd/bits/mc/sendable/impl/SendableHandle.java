@@ -7,14 +7,19 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl;
 
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.ApiStatus;
+
+import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.SendableConfig;
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
 import xyz.bitsquidd.bits.wrapper.Percentage;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -23,9 +28,11 @@ import java.util.UUID;
 public final class SendableHandle<S extends Sendable> {
     private final S definition;
     private final Receiver receiver;
-    private final SendableManager<? super S, ?, ?> manager; // Internal use only for manager callbacks.
+    private final SendableManager<? super S> manager; // Internal use only for manager callbacks.
     private final SendableConfig config;
     private final UUID uuid = UUID.randomUUID();
+
+    private final Map<Key, Object> data = new ConcurrentHashMap<>();
 
     private volatile long tick = -1; // Start at -1 so that the first tick (tick 0) happens immediately on add.
     private volatile boolean hasAdded = false;
@@ -33,11 +40,21 @@ public final class SendableHandle<S extends Sendable> {
     private volatile boolean needsRender = true;
     private volatile boolean expired = false;
 
-    public SendableHandle(S definition, Receiver receiver, SendableManager<? super S, ?, ?> manager) {
+    public SendableHandle(S definition, Receiver receiver, SendableManager<? super S> manager) {
         this.definition = definition;
         this.receiver = receiver;
         this.config = definition.config();
         this.manager = manager;
+    }
+
+    public SendableHandle<S> copyFor(Receiver newReceiver) {
+        SendableHandle<S> handle = new SendableHandle<>(definition, newReceiver, manager);
+        handle.tick = this.tick;
+        handle.hasAdded = false;
+        handle.reversing = this.reversing;
+        handle.needsRender = this.needsRender;
+        handle.expired = this.expired;
+        return handle;
     }
 
     @ApiStatus.Internal
@@ -65,6 +82,17 @@ public final class SendableHandle<S extends Sendable> {
         if (!hasAdded) triggerAdd();
         triggerTick();
     }
+
+
+    public SendableHandle<S> data(Key key, Object value) {
+        data.put(key, value);
+        return this;
+    }
+
+    public @Nullable Object getData(Key key) {
+        return data.get(key);
+    }
+
 
     //region Experimental
 

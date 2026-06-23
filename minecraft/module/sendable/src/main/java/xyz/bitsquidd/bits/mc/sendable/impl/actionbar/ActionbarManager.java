@@ -8,14 +8,10 @@
 package xyz.bitsquidd.bits.mc.sendable.impl.actionbar;
 
 import xyz.bitsquidd.bits.mc.sendable.SendableManager;
-import xyz.bitsquidd.bits.mc.sendable.collection.OperationSuite;
-import xyz.bitsquidd.bits.mc.sendable.collection.SendableCollection;
 
 
-public abstract class ActionbarManager extends SendableManager<AbstractActionbar, OperationSuite.Multiple<AbstractActionbar>, SendableCollection.Multiple<AbstractActionbar>> {
+public abstract class ActionbarManager extends SendableManager<AbstractActionbar> {
 
-    protected ActionbarManager() {
-        super(SendableCollection.Multiple::new);
-    }
+    protected ActionbarManager() {}
 
 }
