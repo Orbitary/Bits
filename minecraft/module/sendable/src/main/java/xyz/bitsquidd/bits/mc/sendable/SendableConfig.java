@@ -7,12 +7,11 @@
 
 package xyz.bitsquidd.bits.mc.sendable;
 
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import xyz.bitsquidd.bits.lifecycle.builder.ExtendableBuildable;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
-
-import java.util.function.Predicate;
 
 
 public abstract class SendableConfig {
@@ -20,7 +19,7 @@ public abstract class SendableConfig {
     protected final long maxTicks;              // How many (global) ticks until the sendable is removed.
 
     private final int priority;                 // The priority of the sendable. Higher priority = replace / overlap lower priority ones.
-    private final Predicate<Sendable> replaces; // A predicate to determine whether this sendable should replace another sendable.
+    private final @Nullable SendableFilter<Sendable> replaces; // A predicate to determine whether this sendable should replace another sendable.
 
     private final boolean reverseOnExpire;      // Whether the sendable should reverse when it reaches max ticks.
     private final boolean persistent;           // Whether the sendable should persist (e.g. through player respawns, world changing, disconnect etc.)
@@ -47,8 +46,8 @@ public abstract class SendableConfig {
         return priority;
     }
 
-    public boolean replaces(Sendable other) {
-        return replaces.test(other);
+    public @Nullable SendableFilter<Sendable> replaces() {
+        return replaces;
     }
 
     public boolean reverseOnExpire() {
@@ -65,7 +64,7 @@ public abstract class SendableConfig {
         private long maxTicks = Sendable.MAX_TICKS;
 
         private int priority = 0;
-        private Predicate<Sendable> replaces = s -> false;
+        private @Nullable SendableFilter<Sendable> replaces;
 
         private boolean reverseOnExpire = false;
         private boolean persistent = false;
@@ -88,7 +87,7 @@ public abstract class SendableConfig {
             return self();
         }
 
-        public B replaces(Predicate<Sendable> replaces) {
+        public B replaces(SendableFilter<Sendable> replaces) {
             this.replaces = replaces;
             return self();
         }

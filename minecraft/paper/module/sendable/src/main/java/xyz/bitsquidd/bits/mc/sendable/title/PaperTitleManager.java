@@ -24,21 +24,29 @@ import xyz.bitsquidd.bits.mc.sendable.impl.title.AbstractTitle;
 import xyz.bitsquidd.bits.mc.sendable.impl.title.TitleManager;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class PaperTitleManager extends TitleManager {
+    private final Map<UUID, Boolean> hasActiveTitle = new ConcurrentHashMap<>();
 
     @Override
     protected void render(Receiver receiver, WeakStorage<? extends AbstractTitle> storage) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
+        UUID uuid = receiver.getUniqueId();
         List<? extends SendableHandle<? extends AbstractTitle>> titles = storage.getAll();
         if (titles.isEmpty()) {
-            paperReceiver.sendPacket(new ClientboundSetTitlesAnimationPacket(0, 0, 0));
-            paperReceiver.sendPacket(new ClientboundSetSubtitleTextPacket(Component.empty()));
-            paperReceiver.sendPacket(new ClientboundSetTitleTextPacket(Component.empty()));
+            if (Boolean.TRUE.equals(hasActiveTitle.put(uuid, false))) {
+                paperReceiver.sendPacket(new ClientboundSetTitlesAnimationPacket(0, 0, 0));
+                paperReceiver.sendPacket(new ClientboundSetSubtitleTextPacket(Component.empty()));
+                paperReceiver.sendPacket(new ClientboundSetTitleTextPacket(Component.empty()));
+            }
             return;
         }
+        hasActiveTitle.put(uuid, true);
         SendableHandle<? extends AbstractTitle> handle = titles.getFirst();
 
         SendableState state = handle.state(receiver);
@@ -57,6 +65,12 @@ public class PaperTitleManager extends TitleManager {
         paperReceiver.sendPacket(new ClientboundSetTitleTextPacket(
           PaperAdventure.asVanillaNullToEmpty(handle.definition().title(state))
         ));
+    }
+
+    @Override
+    protected void shutdownReceiver(Receiver receiver) {
+        super.shutdownReceiver(receiver);
+        hasActiveTitle.remove(receiver.getUniqueId());
     }
 
 }

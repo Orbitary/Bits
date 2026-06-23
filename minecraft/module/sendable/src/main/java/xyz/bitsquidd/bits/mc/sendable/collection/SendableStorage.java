@@ -26,6 +26,9 @@ public final class SendableStorage<S extends Sendable> implements Storage<S> {
 
     //region Collection Operations
     public synchronized void put(SendableHandle<? extends S> sendable) {
+        SendableFilter<Sendable> replaces = sendable.config().replaces();
+        if (replaces != null) remove(replaces);
+
         int priority = sendable.config().priority();
         int index = 0;
         while (index < sendables.size() && sendables.get(index).config().priority() >= priority) {

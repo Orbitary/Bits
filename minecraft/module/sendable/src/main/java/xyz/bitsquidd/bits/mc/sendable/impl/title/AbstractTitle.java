@@ -19,7 +19,7 @@ import java.time.Duration;
 
 
 public abstract class AbstractTitle extends Sendable {
-
+    private static final Duration STAY_DURATION = Duration.ofHours(1);
 
     @Override
     protected TitleConfig.Builder createConfig() {
@@ -42,10 +42,10 @@ public abstract class AbstractTitle extends Sendable {
     public final Title.Times getTimes(SendableState state) {
         if (state.tick() < config().fadeInEndTick) {
             // Currently fading in
-            return Title.Times.times(Time.FROM_TICKS(config().fadeInDuration), Duration.ofHours(1), Duration.ZERO);
+            return Title.Times.times(Time.FROM_TICKS(config().fadeInDuration), STAY_DURATION, Duration.ZERO);
         } else if (state.tick() < config().fadeOutStartTick) {
             // Currently staying (fully visible)
-            return Title.Times.times(Duration.ZERO, Duration.ofHours(1), Duration.ZERO);
+            return Title.Times.times(Duration.ZERO, STAY_DURATION, Duration.ZERO);
         } else {
             // Currently fading out
             return Title.Times.times(Duration.ZERO, Duration.ZERO, Time.FROM_TICKS(config().fadeOutDuration));

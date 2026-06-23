@@ -36,6 +36,7 @@ import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractLocationWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractTransmittingWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.WaypointManager;
+import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 import xyz.bitsquidd.bits.util.reflection.ReflectionUtils;
 
 import java.util.ArrayList;
@@ -94,20 +95,20 @@ public class PaperWaypointManager extends WaypointManager {
                     if (player == null) return;
                     ServerPlayer serverPlayer = ((CraftPlayer)player).getHandle();
 
-                    resolveConnection(transmittingWaypoint.getTransmitterUUID(), icon, handleUUID, serverPlayer)
+                    Runnables.basic(() -> resolveConnection(transmittingWaypoint.getTransmitterUUID(), icon, handleUUID, serverPlayer)
                       .ifPresentOrElse(
                         connection -> {
                             receiverConnections.put(handleUUID, connection);
                             connection.connect();
                         },
                         waypointHandle::bits$markForExpire
-                      );
+                      ));
                 } else if (existing.isBroken()) {
                     existing.disconnect();
                     receiverConnections.remove(handleUUID);
                     waypointHandle.bits$markForExpire();
                 } else {
-                    existing.update();
+                    Runnables.basic(existing::update);
                 }
             } else {
                 throw new IllegalStateException("Unknown waypoint type: " + waypointDefinition.getClass());
@@ -130,12 +131,16 @@ public class PaperWaypointManager extends WaypointManager {
         if (waypointDefinition instanceof AbstractLocationWaypoint) {
             paperReceiver.sendPacket(ClientboundTrackedWaypointPacket.removeWaypoint(waypointUUID));
             Set<UUID> receiverTracked = tracked.get(receiverUUID);
-            if (receiverTracked != null) receiverTracked.remove(waypointUUID);
+            if (receiverTracked != null) {
+                receiverTracked.remove(waypointUUID);
+                if (receiverTracked.isEmpty()) tracked.remove(receiverUUID);
+            }
         } else if (waypointDefinition instanceof AbstractTransmittingWaypoint) {
             Map<UUID, WaypointTransmitter.Connection> receiverConnections = transmittors.get(receiverUUID);
             if (receiverConnections != null) {
                 WaypointTransmitter.Connection connection = receiverConnections.remove(waypointUUID);
                 if (connection != null) connection.disconnect();
+                if (receiverConnections.isEmpty()) transmittors.remove(receiverUUID);
             }
         } else {
             throw new IllegalStateException("Unknown waypoint type: " + waypointDefinition.getClass());

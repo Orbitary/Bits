@@ -32,10 +32,6 @@ public class PaperTablistManager extends TablistManager {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
         Map<TablistPosition, Component> positionContentMap = new EnumMap<>(TablistPosition.class);
-        positionContentMap.putAll(Map.of(
-          TablistPosition.HEADER, Component.empty(),
-          TablistPosition.FOOTER, Component.empty()
-        ));
 
         for (TablistPosition value : TablistPosition.values()) {
             Component content = Component.empty();

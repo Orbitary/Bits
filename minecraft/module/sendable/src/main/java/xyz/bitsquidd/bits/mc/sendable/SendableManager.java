@@ -157,7 +157,6 @@ public abstract class SendableManager<S extends Sendable> implements CoreManager
     @Override
     public void cleanup() {
         removeAll(SendableFilter.alwaysTrue());
-        playerSendables.clear();
     }
 
 }

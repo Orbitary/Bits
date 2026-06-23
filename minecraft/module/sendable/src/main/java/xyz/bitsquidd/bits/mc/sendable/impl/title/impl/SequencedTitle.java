@@ -7,6 +7,7 @@
 
 package xyz.bitsquidd.bits.mc.sendable.impl.title.impl;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
@@ -18,15 +19,17 @@ import java.util.List;
 
 
 public abstract class SequencedTitle extends AbstractTitle {
+    private static final Key LAST_STARTED_PHASE = Key.key("bits", "sequenced_title_last_started_phase");
+
     private final List<TitlePhase> resolvedPhases;
-    private final List<Integer> cumulativeTicks;
+    private final List<Long> cumulativeTicks;
 
     protected SequencedTitle(List<TitlePhase> phases) {
         resolvedPhases = List.copyOf(phases);
         if (resolvedPhases.isEmpty()) throw new IllegalStateException("At least one TitlePhase must be provided");
 
-        int sum = 0;
-        List<Integer> cumulative = new ArrayList<>();
+        long sum = 0;
+        List<Long> cumulative = new ArrayList<>();
         for (TitlePhase phase : resolvedPhases) {
             sum += phase.durationTicks;
             cumulative.add(sum);
@@ -35,15 +38,8 @@ public abstract class SequencedTitle extends AbstractTitle {
         cumulativeTicks = Collections.unmodifiableList(cumulative);
     }
 
-    private int currentPhaseIndex(SendableState state) {
-        for (int i = 0; i < cumulativeTicks.size(); i++) {
-            if (state.tick() < cumulativeTicks.get(i)) return i;
-        }
-        return resolvedPhases.size() - 1;
-    }
-
     private TitlePhase currentPhase(SendableState state) {
-        return resolvedPhases.get(currentPhaseIndex(state));
+        return resolvedPhases.get(phaseIndexAtTick(state.tick()));
     }
 
     private int phaseIndexAtTick(long tick) {
@@ -65,6 +61,7 @@ public abstract class SequencedTitle extends AbstractTitle {
         int prevPhaseIndex = state.tick() > 0 ? phaseIndexAtTick(state.tick() - 1) : -1;
         if (phaseIndex != prevPhaseIndex) {
             if (prevPhaseIndex >= 0) resolvedPhases.get(prevPhaseIndex).onEnd.accept(state);
+            state.handle().data(LAST_STARTED_PHASE, phaseIndex);
             phase.onStart.accept(state);
         }
         phase.onTick.accept(state);
@@ -72,7 +69,8 @@ public abstract class SequencedTitle extends AbstractTitle {
 
     @Override
     public void onExpire(SendableState state) {
-        int phaseIndex = phaseIndexAtTick(state.tick());
+        Object lastStarted = state.handle().getData(LAST_STARTED_PHASE);
+        int phaseIndex = lastStarted instanceof Integer i ? i : phaseIndexAtTick(state.tick());
         resolvedPhases.get(phaseIndex).onEnd.accept(state);
     }
 
