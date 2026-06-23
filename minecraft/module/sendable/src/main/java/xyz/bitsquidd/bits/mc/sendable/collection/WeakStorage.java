@@ -35,17 +35,17 @@ public final class WeakStorage<S extends Sendable> implements Storage<S> {
 
     @Override
     public @Unmodifiable List<SendableHandle<? extends S>> getAll() {
-        return List.copyOf(sendables);
+        return sendables; // No need to copy, already unmodifiable.
     }
 
     @Override
     public @Unmodifiable List<SendableHandle<? extends S>> get(SendableFilter<? super S> filter) {
-        return getAll().stream().filter(filter).toList();
+        return sendables.stream().filter(filter).toList();
     }
 
     @Override
     public Optional<SendableHandle<? extends S>> getFirst(SendableFilter<? super S> filter) {
-        return getAll().stream().filter(filter).findFirst();
+        return sendables.stream().filter(filter).findFirst();
     }
 
 }

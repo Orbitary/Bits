@@ -39,6 +39,7 @@ public class PaperSendableOrchestrator extends SendableOrchestrator implements P
     @Override
     public void startup() {
         super.startup();
+        // Runs async: Sendable.onTick/onExpire/onAdd callbacks execute off the main thread.
         ticker = Runnables.buildTimer(this::tickAll, 0, 1)
           .async()
           .forced()

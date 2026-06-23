@@ -29,8 +29,7 @@ public final class Sendables {
 
     //region Actionbar
     public static <S extends AbstractActionbar> void addActionbar(S actionbar) {
-        SendableOrchestrator.get().actionbar()
-          .putAll(r -> new SendableHandle<>(actionbar, r, SendableOrchestrator.get().actionbar()));
+        SendableOrchestrator.get().actionbar().putAll(r -> new SendableHandle<>(actionbar, r, SendableOrchestrator.get().actionbar()));
     }
 
 
@@ -55,8 +54,7 @@ public final class Sendables {
 
     //region Bossbar
     public static <S extends AbstractBossbar> void addBossbar(S bossbar) {
-        SendableOrchestrator.get().bossbar()
-          .putAll(r -> new SendableHandle<>(bossbar, r, SendableOrchestrator.get().bossbar()));
+        SendableOrchestrator.get().bossbar().putAll(r -> new SendableHandle<>(bossbar, r, SendableOrchestrator.get().bossbar()));
     }
 
 
@@ -81,8 +79,7 @@ public final class Sendables {
 
     //region Sidebar
     public static <S extends AbstractSidebar> void addSidebar(S sidebar) {
-        SendableOrchestrator.get().sidebar()
-          .putAll(r -> new SendableHandle<>(sidebar, r, SendableOrchestrator.get().sidebar()));
+        SendableOrchestrator.get().sidebar().putAll(r -> new SendableHandle<>(sidebar, r, SendableOrchestrator.get().sidebar()));
     }
 
 
@@ -107,8 +104,7 @@ public final class Sendables {
 
     //region Tablist
     public static <S extends AbstractTablist> void addTablist(S tablist) {
-        SendableOrchestrator.get().tablist()
-          .putAll(r -> new SendableHandle<>(tablist, r, SendableOrchestrator.get().tablist()));
+        SendableOrchestrator.get().tablist().putAll(r -> new SendableHandle<>(tablist, r, SendableOrchestrator.get().tablist()));
     }
 
 
@@ -133,8 +129,7 @@ public final class Sendables {
 
     //region Title
     public static <S extends AbstractTitle> void addTitle(S title) {
-        SendableOrchestrator.get().title()
-          .putAll(r -> new SendableHandle<>(title, r, SendableOrchestrator.get().title()));
+        SendableOrchestrator.get().title().putAll(r -> new SendableHandle<>(title, r, SendableOrchestrator.get().title()));
     }
 
 
@@ -159,8 +154,7 @@ public final class Sendables {
 
     //region Waypoint
     public static <S extends AbstractWaypoint> void addWaypoint(S waypoint) {
-        SendableOrchestrator.get().waypoint()
-          .putAll(r -> new SendableHandle<>(waypoint, r, SendableOrchestrator.get().waypoint()));
+        SendableOrchestrator.get().waypoint().putAll(r -> new SendableHandle<>(waypoint, r, SendableOrchestrator.get().waypoint()));
     }
 
 

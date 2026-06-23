@@ -25,7 +25,7 @@ public final class SendableStorage<S extends Sendable> implements Storage<S> {
 
 
     //region Collection Operations
-    public void put(SendableHandle<? extends S> sendable) {
+    public synchronized void put(SendableHandle<? extends S> sendable) {
         int priority = sendable.config().priority();
         int index = 0;
         while (index < sendables.size() && sendables.get(index).config().priority() >= priority) {
@@ -41,12 +41,12 @@ public final class SendableStorage<S extends Sendable> implements Storage<S> {
 
     @Override
     public @Unmodifiable List<SendableHandle<? extends S>> get(SendableFilter<? super S> filter) {
-        return getAll().stream().filter(filter).toList();
+        return sendables.stream().filter(filter).toList();
     }
 
     @Override
     public Optional<SendableHandle<? extends S>> getFirst(SendableFilter<? super S> filter) {
-        return getAll().stream().filter(filter).findFirst();
+        return sendables.stream().filter(filter).findFirst();
     }
 
     public boolean remove(SendableFilter<? super S> filter) {
@@ -54,7 +54,6 @@ public final class SendableStorage<S extends Sendable> implements Storage<S> {
             if (!filter.test(handle)) return false;
 
             if (!handle.isExpired()) handle.bits$markForExpire();
-            sendables.remove(handle);
             needsForceRender = true; // We mark a final render on remove, only when something is removed.
             return true;
         });
@@ -64,16 +63,16 @@ public final class SendableStorage<S extends Sendable> implements Storage<S> {
 
     //region Lifecycle
     public void tick() {
-        getAll().forEach(SendableHandle::bits$tick);
+        sendables.forEach(SendableHandle::bits$tick);
         remove(SendableHandle::isExpired);
     }
 
     public boolean needsRender() {
-        return getAll().stream().anyMatch(SendableHandle::needsRender) || needsForceRender;
+        return sendables.stream().anyMatch(SendableHandle::needsRender) || needsForceRender;
     }
 
     public void markRendered() {
-        getAll().forEach(SendableHandle::bits$markRendered);
+        sendables.forEach(SendableHandle::bits$markRendered);
         needsForceRender = false;
     }
     //endregion

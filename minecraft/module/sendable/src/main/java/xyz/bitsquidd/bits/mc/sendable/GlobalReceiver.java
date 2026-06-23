@@ -15,12 +15,13 @@ import java.util.UUID;
  */
 public final class GlobalReceiver implements Receiver {
     public static final GlobalReceiver INSTANCE = new GlobalReceiver();
+    private static final UUID GLOBAL_RECEIVER_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     private GlobalReceiver() {}
 
     @Override
     public UUID getUniqueId() {
-        return UUID.fromString("00000000-0000-0000-0000-000000000000");
+        return GLOBAL_RECEIVER_UUID;
     }
 
     @Override

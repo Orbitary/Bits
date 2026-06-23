@@ -73,12 +73,12 @@ public abstract class SendableConfig {
 
         protected Builder() {}
 
-        public B tickRate(@Range(from = 0, to = Sendable.MAX_TICKS) int tickRate) {
+        public B tickRate(@Range(from = 0, to = Sendable.MAX_TICKS) long tickRate) {
             this.tickRate = Math.clamp(tickRate, 0, Sendable.MAX_TICKS);
             return self();
         }
 
-        public B maxTicks(@Range(from = 0, to = Sendable.MAX_TICKS) int maxTicks) {
+        public B maxTicks(@Range(from = 0, to = Sendable.MAX_TICKS) long maxTicks) {
             this.maxTicks = Math.clamp(maxTicks, 0, Sendable.MAX_TICKS);
             return self();
         }

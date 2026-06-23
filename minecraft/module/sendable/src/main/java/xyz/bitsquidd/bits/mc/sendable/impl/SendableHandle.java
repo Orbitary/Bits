@@ -49,6 +49,7 @@ public final class SendableHandle<S extends Sendable> {
 
     public SendableHandle<S> copyFor(Receiver newReceiver) {
         SendableHandle<S> handle = new SendableHandle<>(definition, newReceiver, manager);
+        handle.data.putAll(data);
         handle.tick = this.tick;
         handle.hasAdded = false;
         handle.reversing = this.reversing;

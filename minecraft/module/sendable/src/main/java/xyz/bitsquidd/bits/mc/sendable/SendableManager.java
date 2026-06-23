@@ -30,20 +30,27 @@ public abstract class SendableManager<S extends Sendable> implements CoreManager
 
 
     public final void tickAll() {
-        playerSendables.forEach((r, c) -> Safety.safeExecute(
-          c.getClass().getSimpleName(),
-          () -> {
-              c.tick();
+        SendableStorage<S> global = getOrCreateCollection(GlobalReceiver.INSTANCE);
+        global.tick();
 
-              SendableStorage<S> global = getOrCreateCollection(GlobalReceiver.INSTANCE);
-              boolean needsRender = c.needsRender() || global.needsRender();
+        playerSendables.forEach((r, c) -> {
+            if (r.equals(GlobalReceiver.INSTANCE)) return;
+            Safety.safeExecute(
+              c.getClass().getSimpleName(),
+              () -> {
+                  c.tick();
 
-              if (needsRender) {
-                  render(r, WeakStorage.from(List.of(c, global)));
-                  c.markRendered();
+                  boolean needsRender = c.needsRender() || global.needsRender();
+
+                  if (needsRender) {
+                      render(r, WeakStorage.from(List.of(c, global)));
+                      c.markRendered();
+                  }
               }
-          }
-        ));
+            );
+        });
+
+        global.markRendered();
     }
 
     protected abstract void render(Receiver receiver, WeakStorage<? extends S> storage);
