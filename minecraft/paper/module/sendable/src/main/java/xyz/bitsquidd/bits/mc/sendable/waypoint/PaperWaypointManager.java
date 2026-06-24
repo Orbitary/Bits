@@ -32,6 +32,7 @@ import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
 import xyz.bitsquidd.bits.mc.sendable.Receiver;
 import xyz.bitsquidd.bits.mc.sendable.collection.WeakStorage;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractLocationWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractTransmittingWaypoint;
 import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.AbstractWaypoint;
@@ -59,10 +60,11 @@ public class PaperWaypointManager extends WaypointManager {
 
         List<Packet<?>> waypointPackets = new ArrayList<>();
 
-        storage.getAll().forEach(waypointHandle -> {
-            AbstractWaypoint waypointDefinition = waypointHandle.definition();
+        storage.getAll().forEach(handle -> {
+            SendableState state = handle.state(receiver);
+            AbstractWaypoint waypointDefinition = handle.definition();
 
-            Key assetKey = waypointDefinition.getAssetKey();
+            Key assetKey = waypointDefinition.getAssetKey(state);
             ResourceKey<WaypointStyleAsset> nmsAssetKey = ResourceKey.create(
               WaypointStyleAssets.ROOT_ID,
               Identifier.parse(assetKey.asString())
@@ -70,13 +72,13 @@ public class PaperWaypointManager extends WaypointManager {
             Waypoint.Icon icon = ReflectionUtils.Instance.tryCreate(
               Waypoint.Icon.class,
               nmsAssetKey,
-              waypointDefinition.getColor()
+              waypointDefinition.getColor(state)
             ).orElseThrow();
 
-            UUID handleUUID = waypointHandle.uuid();
+            UUID handleUUID = handle.uuid();
 
             if (waypointDefinition instanceof AbstractLocationWaypoint locationalWaypoint) {
-                Vector3i position = locationalWaypoint.getPosition();
+                Vector3i position = locationalWaypoint.getPosition(state);
 
                 waypointPackets.add(ClientboundTrackedWaypointPacket.addWaypointPosition(
                   handleUUID, icon, new Vec3i(position.x, position.y, position.z)
@@ -101,12 +103,12 @@ public class PaperWaypointManager extends WaypointManager {
                                 receiverConnections.put(handleUUID, connection);
                                 connection.connect();
                             },
-                            waypointHandle::bits$markForExpire
+                            handle::bits$markForExpire
                           );
                     } else if (existing.isBroken()) {
                         existing.disconnect();
                         receiverConnections.remove(handleUUID);
-                        waypointHandle.bits$markForExpire();
+                        handle.bits$markForExpire();
                     } else {
                         existing.update();
                     }

@@ -9,10 +9,12 @@ package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 
 import org.joml.Vector3i;
 
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
+
 
 public non-sealed abstract class AbstractLocationWaypoint extends AbstractWaypoint {
 
-    public abstract Vector3i getPosition();
+    public abstract Vector3i getPosition(SendableState state);
 
 
 }

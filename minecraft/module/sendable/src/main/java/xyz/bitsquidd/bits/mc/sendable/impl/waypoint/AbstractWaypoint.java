@@ -10,6 +10,7 @@ package xyz.bitsquidd.bits.mc.sendable.impl.waypoint;
 import net.kyori.adventure.key.Key;
 
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
+import xyz.bitsquidd.bits.mc.sendable.impl.SendableState;
 
 import java.util.Optional;
 
@@ -21,10 +22,10 @@ public sealed abstract class AbstractWaypoint extends Sendable permits AbstractL
         return new WaypointConfig.Builder();
     }
 
-    public abstract Key getAssetKey();
+    public abstract Key getAssetKey(SendableState state);
 
-    public Optional<Integer> getColor() {
-        return Optional.empty();
+    public Optional<Integer> getColor(SendableState state) {
+        return Optional.of(0xffffff);
     }
 
 }
