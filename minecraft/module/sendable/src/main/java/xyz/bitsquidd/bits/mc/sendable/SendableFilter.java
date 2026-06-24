@@ -13,6 +13,7 @@ import net.kyori.adventure.key.Key;
 import xyz.bitsquidd.bits.mc.sendable.impl.Sendable;
 import xyz.bitsquidd.bits.mc.sendable.impl.SendableHandle;
 
+import java.util.Collection;
 import java.util.function.Predicate;
 
 
@@ -28,6 +29,10 @@ public interface SendableFilter<S extends Sendable> extends Predicate<SendableHa
             Object data = handle.getData(key);
             return data != null && data.equals(value);
         };
+    }
+
+    static <S extends Sendable> SendableFilter<S> ofDefinition(Collection<? extends S> definitions) {
+        return handle -> definitions.contains(handle.definition());
     }
 
     static <S extends Sendable> SendableFilter<S> alwaysTrue() {

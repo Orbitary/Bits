@@ -59,6 +59,20 @@ public interface Receiver {
     }
 
     /**
+     * Removes the specified sendables from this receiver.
+     *
+     *
+     */
+    default void removeSendables(Sendable... sendables) {
+        removeSendables(List.of(sendables));
+    }
+
+    default void removeSendables(Collection<? extends Sendable> sendables) {
+        removeSendables(SendableFilter.ofDefinition(sendables));
+    }
+
+
+    /**
      * Retrieves a list of sendables from this receiver that match the provided {@link SendableFilter filter}.
      * <p>
      * <b>This will not retrieve global sendables currently visible to the player. Use {@link GlobalReceiver#getSendables(SendableFilter)} to retrieve active global sendables.</b>
@@ -125,6 +139,28 @@ public interface Receiver {
      */
     default void removeActionbars(Class<? extends AbstractActionbar> clazz) {
         removeActionbars(SendableFilter.ofClass(clazz));
+    }
+
+    /**
+     * Removes the specified actionbars from this receiver.
+     *
+     * @param actionbars the actionbars to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeActionbars(AbstractActionbar... actionbars) {
+        removeActionbars(List.of(actionbars));
+    }
+
+    /**
+     * Removes the specified actionbars from this receiver.
+     *
+     * @param actionbars the actionbars to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeActionbars(Collection<? extends AbstractActionbar> actionbars) {
+        removeActionbars(SendableFilter.ofDefinition(actionbars));
     }
 
     /**
@@ -206,6 +242,28 @@ public interface Receiver {
      */
     default void removeBossbars(Class<? extends AbstractBossbar> clazz) {
         removeBossbars(SendableFilter.ofClass(clazz));
+    }
+
+    /**
+     * Removes the specified bossbars from this receiver.
+     *
+     * @param bossbars the bossbars to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeBossbars(AbstractBossbar... bossbars) {
+        removeBossbars(List.of(bossbars));
+    }
+
+    /**
+     * Removes the specified bossbars from this receiver.
+     *
+     * @param bossbars the bossbars to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeBossbars(Collection<? extends AbstractBossbar> bossbars) {
+        removeBossbars(SendableFilter.ofDefinition(bossbars));
     }
 
     /**
@@ -293,6 +351,28 @@ public interface Receiver {
     }
 
     /**
+     * Removes the specified sidebars from this receiver.
+     *
+     * @param sidebars the sidebars to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeSidebars(AbstractSidebar... sidebars) {
+        removeSidebars(List.of(sidebars));
+    }
+
+    /**
+     * Removes the specified sidebars from this receiver.
+     *
+     * @param sidebars the sidebars to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeSidebars(Collection<? extends AbstractSidebar> sidebars) {
+        removeSidebars(SendableFilter.ofDefinition(sidebars));
+    }
+
+    /**
      * Sets the sidebar for this receiver, removing any existing sidebars and adding the provided one.
      * <p>
      * <b>This will not remove global sidebars currently visible to the player. You will have to consider those separately.</b>
@@ -374,6 +454,28 @@ public interface Receiver {
      */
     default void removeTablists(Class<? extends AbstractTablist> clazz) {
         removeTablists(SendableFilter.ofClass(clazz));
+    }
+
+    /**
+     * Removes the specified tablists from this receiver.
+     *
+     * @param tablists the tablists to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeTablists(AbstractTablist... tablists) {
+        removeTablists(List.of(tablists));
+    }
+
+    /**
+     * Removes the specified tablists from this receiver.
+     *
+     * @param tablists the tablists to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeTablists(Collection<? extends AbstractTablist> tablists) {
+        removeTablists(SendableFilter.ofDefinition(tablists));
     }
 
     /**
@@ -461,6 +563,28 @@ public interface Receiver {
     }
 
     /**
+     * Removes the specified titles from this receiver.
+     *
+     * @param titles the titles to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeTitles(AbstractTitle... titles) {
+        removeTitles(List.of(titles));
+    }
+
+    /**
+     * Removes the specified titles from this receiver.
+     *
+     * @param titles the titles to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeTitles(Collection<? extends AbstractTitle> titles) {
+        removeTitles(SendableFilter.ofDefinition(titles));
+    }
+
+    /**
      * Sets the title for this receiver, removing any existing titles and adding the provided one.
      * <p>
      * <b>This will not remove global titles currently visible to the player. You will have to consider those separately.</b>
@@ -541,6 +665,28 @@ public interface Receiver {
      */
     default void removeWaypoints(Class<? extends AbstractWaypoint> clazz) {
         removeWaypoints(SendableFilter.ofClass(clazz));
+    }
+
+    /**
+     * Removes the specified waypoints from this receiver.
+     *
+     * @param waypoints the waypoints to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeWaypoints(AbstractWaypoint... waypoints) {
+        removeWaypoints(List.of(waypoints));
+    }
+
+    /**
+     * Removes the specified waypoints from this receiver.
+     *
+     * @param waypoints the waypoints to remove.
+     *
+     * @since 0.0.20
+     */
+    default void removeWaypoints(Collection<? extends AbstractWaypoint> waypoints) {
+        removeWaypoints(SendableFilter.ofDefinition(waypoints));
     }
 
     /**
