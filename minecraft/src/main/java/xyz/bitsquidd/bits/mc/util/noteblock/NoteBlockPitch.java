@@ -54,4 +54,13 @@ public enum NoteBlockPitch {
         return (float)Math.pow(2.0, semisFromMiddle / 12.0);
     }
 
+    public NoteBlockPitch alt() {
+        int ordinal = this.ordinal();
+        if (ordinal < 12) {
+            return values()[ordinal + 12];
+        } else {
+            return values()[ordinal - 12];
+        }
+    }
+
 }
