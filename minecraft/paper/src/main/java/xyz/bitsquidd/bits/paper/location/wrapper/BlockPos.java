@@ -18,6 +18,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Objects;
 
+
 /**
  * Immutable class representing a position in the world with x, y, z coordinates and yaw, pitch rotation.
  */
@@ -222,6 +223,11 @@ public final class BlockPos implements Locatable {
         float newYaw = this.yaw + yawAndPitch.yaw;
         float newPitch = this.pitch + yawAndPitch.pitch;
         return new BlockPos(this.x, this.y, this.z, newYaw, newPitch);
+    }
+
+    @Override
+    public BlockPos lookTowards(Locatable target) {
+        return (BlockPos)Locatable.super.lookTowards(target);
     }
 
     @Override
