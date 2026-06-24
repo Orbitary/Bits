@@ -13,7 +13,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
+import xyz.bitsquidd.bits.data.world.Relative;
+
 import java.text.DecimalFormat;
+
 
 public interface Locatable {
     DecimalFormat df = new DecimalFormat("#.00");
@@ -105,6 +108,12 @@ public interface Locatable {
         return asVector().add(vector);
     }
 
+    default Locatable translate(double amount, Relative relative) {
+        Vector direction = direction().relative(relative).normalize();
+        Vector translation = direction.multiply(amount);
+        return add(translation);
+    }
+
     //endregion
 
 
@@ -120,6 +129,20 @@ public interface Locatable {
     }
 
     Locatable rotate(YawAndPitch rotation);
+
+    default Locatable lookTowards(Locatable target) {
+        Vector direction = target.asVector().subtract(this.asVector()).normalize();
+        float yaw = (float)Math.toDegrees(Math.atan2(-direction.getX(), direction.getZ()));
+        float pitch = (float)Math.toDegrees(Math.asin(direction.getY()));
+        return withYaw(yaw).withPitch(pitch);
+    }
+
+    default Locatable lookTowards(Relative relative) {
+        Vector direction = direction().relative(relative).normalize();
+        float yaw = (float)Math.toDegrees(Math.atan2(-direction.getX(), direction.getZ()));
+        float pitch = (float)Math.toDegrees(Math.asin(direction.getY()));
+        return withYaw(yaw).withPitch(pitch);
+    }
 
     default Locatable rotateYaw(float yaw) {
         return rotate(YawAndPitch.of(yaw, 0));

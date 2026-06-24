@@ -16,8 +16,10 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import xyz.bitsquidd.bits.data.world.Cardinal;
+import xyz.bitsquidd.bits.data.world.Relative;
 
 import java.util.Objects;
+
 
 /**
  * Immutable class representing yaw and pitch angles.
@@ -88,10 +90,15 @@ public final class YawAndPitch {
         };
     }
 
+    /**
+     * Builds a YawAndPitch from a quaternion that was constructed via {@link #toQuaternion()}
+     * (i.e. rotateY(-yaw) then rotateX(pitch), applied to the base forward vector (0,0,1)).
+     * This is the exact inverse of {@link #toQuaternion()} / {@link #addTo(Quaternionf)}.
+     */
     public static YawAndPitch from(Quaternionf quaternion) {
         Vector3f euler = new Vector3f();
         quaternion.getEulerAnglesYXZ(euler);
-        return new YawAndPitch((float)Math.toDegrees(-euler.y + Math.PI), (float)Math.toDegrees(euler.x));
+        return new YawAndPitch((float)Math.toDegrees(-euler.y), (float)Math.toDegrees(euler.x));
     }
 
     public static YawAndPitch from(Rotation rotation) {
@@ -156,9 +163,15 @@ public final class YawAndPitch {
     }
 
 
+    /**
+     * Builds a quaternion equivalent to this yaw/pitch, matching Minecraft's forward-vector
+     * convention (see {@link #toVector()}). Minecraft's yaw rotates the +Z axis toward -X as
+     * yaw increases, which is the opposite handedness from JOML's standard rotateY(+angle),
+     * so yaw must be negated here. This must stay the exact inverse of {@link #from(Quaternionf)}.
+     */
     public Quaternionf toQuaternion() {
         Quaternionf quaternion = new Quaternionf();
-        quaternion.rotateY((float)Math.toRadians(yaw));
+        quaternion.rotateY((float)Math.toRadians(-yaw));
         quaternion.rotateX((float)Math.toRadians(pitch));
         return quaternion;
     }
@@ -221,6 +234,47 @@ public final class YawAndPitch {
     }
 
 
+    public Vector relative(Relative relative) {
+        return switch (relative) {
+            case FORWARD -> forward();
+            case BACKWARD -> backward();
+            case LEFT -> left();
+            case RIGHT -> right();
+            case UP -> up();
+            case DOWN -> down();
+        };
+    }
+
+    public Vector forward() {
+        return toVector().normalize();
+    }
+
+    public Vector backward() {
+        return forward().multiply(-1);
+    }
+
+    public Vector left() {
+        double yawRad = Math.toRadians(yaw - 90);
+        double x = Math.sin(yawRad);
+        double z = Math.cos(yawRad);
+        return new Vector(x, 0, z).normalize();
+    }
+
+    public Vector right() {
+        return left().multiply(-1);
+    }
+
+    public Vector up() {
+        Vector forward = forward();
+        Vector right = right();
+        return right.getCrossProduct(forward).normalize();
+    }
+
+    public Vector down() {
+        return up().multiply(-1);
+    }
+
+
     public Location applyTo(Location location) {
         location.setRotation(yaw, pitch);
         return location;
@@ -230,8 +284,12 @@ public final class YawAndPitch {
         return BlockPos.of(blockPos.x, blockPos.y, blockPos.z, yaw, pitch);
     }
 
+    /**
+     * Composes this yaw/pitch's rotation onto the given quaternion, using the same
+     * convention as {@link #toQuaternion()} (yaw negated to match Minecraft's handedness).
+     */
     public Quaternionf addTo(Quaternionf quaternion) {
-        quaternion.rotateY((float)Math.toRadians(yaw));
+        quaternion.rotateY((float)Math.toRadians(-yaw));
         quaternion.rotateX((float)Math.toRadians(pitch));
         return quaternion;
     }
