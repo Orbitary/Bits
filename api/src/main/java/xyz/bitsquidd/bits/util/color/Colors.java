@@ -11,6 +11,9 @@ package xyz.bitsquidd.bits.util.color;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.Range;
 
+import java.util.Collection;
+
+
 /**
  * A utility class for performing common color operations and transformations.
  *
@@ -220,30 +223,30 @@ public final class Colors {
     }
 
     /**
-     * Performs a linear interpolation between two colors.
+     * Performs a linear interpolation (average) between any number of colors.
      *
-     * @param color1 the starting color
-     * @param color2 the target color
-     * @param ratio  the interpolation ratio (0.0 for color1, 1.0 for color2)
+     * @param colors the colors to blend
      *
      * @return the blended color integer
      *
      * @since 0.0.10
      */
-    public static int blendColors(int color1, int color2, @Range(from = 0, to = 1) double ratio) {
-        ratio = Math.clamp(ratio, 0, 1);
+    public static int mix(Collection<Integer> colors) {
+        if (colors.isEmpty()) throw new IllegalArgumentException("At least one color must be provided");
 
-        int red1 = (color1 >> 16) & 0xFF;
-        int green1 = (color1 >> 8) & 0xFF;
-        int blue1 = color1 & 0xFF;
+        int redSum = 0;
+        int greenSum = 0;
+        int blueSum = 0;
 
-        int red2 = (color2 >> 16) & 0xFF;
-        int green2 = (color2 >> 8) & 0xFF;
-        int blue2 = color2 & 0xFF;
+        for (int color : colors) {
+            redSum += (color >> 16) & 0xFF;
+            greenSum += (color >> 8) & 0xFF;
+            blueSum += color & 0xFF;
+        }
 
-        int red = (int)((red1 * (1 - ratio)) + (red2 * ratio));
-        int green = (int)((green1 * (1 - ratio)) + (green2 * ratio));
-        int blue = (int)((blue1 * (1 - ratio)) + (blue2 * ratio));
+        int red = redSum / colors.size();
+        int green = greenSum / colors.size();
+        int blue = blueSum / colors.size();
 
         return (red << 16) | (green << 8) | blue;
     }

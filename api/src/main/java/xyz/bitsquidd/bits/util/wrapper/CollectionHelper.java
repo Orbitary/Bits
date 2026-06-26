@@ -172,4 +172,9 @@ public final class CollectionHelper {
         throw new IllegalStateException("Failed to select a weighted element");
     }
 
+
+    public static <T> void removeIfPresent(@Nullable Collection<T> collection, T element) {
+        if (collection != null) collection.remove(element);
+    }
+
 }
