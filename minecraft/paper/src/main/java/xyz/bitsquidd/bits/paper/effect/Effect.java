@@ -58,11 +58,14 @@ public final class Effect {
 
 
     public void apply(LivingEntity livingEntity, EffectModifier modifier) {
-        EffectManager.INSTANCE.attemptApplyTo(livingEntity, this, modifier);
+        apply(EffectManager.INSTANCE.registerEffect(livingEntity, this, modifier));
     }
 
     public void unapply(LivingEntity livingEntity) {
-        EffectManager.INSTANCE.attemptUnapplyFrom(livingEntity, this);
+        EffectManager.INSTANCE.getActiveEffect(livingEntity, this).ifPresent(instance -> {
+            EffectManager.INSTANCE.unregisterEffect(instance);
+            unapply(instance);
+        });
     }
 
 
@@ -71,8 +74,6 @@ public final class Effect {
         EffectInstance transformed = instance.transform(transform);
         behaviour.forEach(b -> b.apply(transformed));
         children.forEach(c -> c.apply(transformed));
-
-        EffectManager.INSTANCE.applyEffectInternal(instance);
     }
 
     @ApiStatus.Internal
@@ -80,17 +81,19 @@ public final class Effect {
         EffectInstance transformed = instance.transform(transform);
         behaviour.forEach(b -> b.unapply(transformed));
         children.forEach(c -> c.unapply(transformed));
-
-        EffectManager.INSTANCE.unapplyEffectInternal(instance);
     }
 
     @ApiStatus.Internal
     public void tick(EffectInstance data, long tick) {
         EffectInstance transformed = data.transform(transform);
+
+        if (tick >= transformed.endTick()) {
+            if (transformed.endTick() == tick) unapply(transformed);
+            return;
+        }
+
         behaviour.forEach(b -> b.tick(transformed, tick));
         children.forEach(c -> c.tick(transformed, tick));
-
-        if (data.isExpired(tick)) unapply(transformed);
     }
 
 

@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public class RunnableEffectBehaviour implements EffectBehaviour {
     private final Consumer<EffectInstance> onApply;
     private final Consumer<EffectInstance> onUnapply;
-    private final BiConsumer<EffectInstance, Integer> onTick;
+    private final BiConsumer<EffectInstance, Long> onTick;
 
     private RunnableEffectBehaviour(Builder builder) {
         this.onApply = builder.onApply;
@@ -51,7 +51,7 @@ public class RunnableEffectBehaviour implements EffectBehaviour {
     public static final class Builder implements Buildable<RunnableEffectBehaviour> {
         private Consumer<EffectInstance> onApply = _ -> {};
         private Consumer<EffectInstance> onUnapply = _ -> {};
-        private BiConsumer<EffectInstance, Integer> onTick = (_, _) -> {};
+        private BiConsumer<EffectInstance, Long> onTick = (_, _) -> {};
 
         private Builder() {}
 
@@ -74,8 +74,8 @@ public class RunnableEffectBehaviour implements EffectBehaviour {
             return this;
         }
 
-        public Builder onTick(BiConsumer<EffectInstance, Integer> onTick) {
-            BiConsumer<EffectInstance, Integer> copy = this.onTick;
+        public Builder onTick(BiConsumer<EffectInstance, Long> onTick) {
+            BiConsumer<EffectInstance, Long> copy = this.onTick;
             this.onTick = (data, tick) -> {
                 copy.accept(data, tick);
                 onTick.accept(data, tick);

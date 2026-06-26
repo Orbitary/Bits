@@ -43,9 +43,8 @@ public record EffectInstance(
     }
 
 
-    // TODO: If transforms are LONGER, this will cause it to be cancelled prematurely.
-    public boolean isExpired(long currentTick) {
-        return modifier.durationTicks() >= 0 && (currentTick - startTick) >= modifier.durationTicks();
+    public long endTick() {
+        return startTick + modifier.durationTicks();
     }
 
 }

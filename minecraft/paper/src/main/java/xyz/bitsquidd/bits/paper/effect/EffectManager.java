@@ -67,26 +67,19 @@ public final class EffectManager implements CoreManager {
 
 
     @ApiStatus.Internal
-    public void attemptApplyTo(LivingEntity livingEntity, Effect effect, EffectModifier modifier) {
+    public EffectInstance registerEffect(LivingEntity livingEntity, Effect effect, EffectModifier modifier) {
         EffectInstance instance = new EffectInstance(effect, modifier, livingEntity, UUID.randomUUID(), tick);
-        instance.effect().apply(instance);
-    }
-
-    @ApiStatus.Internal
-    public EffectInstance applyEffectInternal(EffectInstance instance) {
         activeEffects.computeIfAbsent(instance.target().getUniqueId(), _ -> new HashMap<>()).put(instance.effect(), instance);
         return instance;
     }
 
     @ApiStatus.Internal
-    public void attemptUnapplyFrom(LivingEntity livingEntity, Effect effect) {
-        EffectInstance instance = activeEffects.getOrDefault(livingEntity.getUniqueId(), Collections.emptyMap()).remove(effect);
-        if (instance == null) return;
-        instance.effect().unapply(instance);
+    public Optional<EffectInstance> getActiveEffect(LivingEntity livingEntity, Effect effect) {
+        return Optional.ofNullable(activeEffects.getOrDefault(livingEntity.getUniqueId(), Collections.emptyMap()).get(effect));
     }
 
     @ApiStatus.Internal
-    public void unapplyEffectInternal(EffectInstance instance) {
+    public void unregisterEffect(EffectInstance instance) {
         LivingEntity entity = instance.target();
         Map<Effect, EffectInstance> effects = activeEffects.get(entity.getUniqueId());
         if (effects == null) return;
