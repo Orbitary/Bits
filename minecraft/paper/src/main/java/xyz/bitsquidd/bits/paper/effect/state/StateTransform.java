@@ -45,6 +45,10 @@ public interface StateTransform {
             return data -> new EffectModifier(data.amplifier(), 1);
         }
 
+        public static StateTransform permanent() {
+            return data -> new EffectModifier(data.amplifier(), -1);
+        }
+
     }
 
 }

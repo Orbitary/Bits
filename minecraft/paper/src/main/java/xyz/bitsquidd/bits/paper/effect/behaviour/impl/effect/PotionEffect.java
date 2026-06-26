@@ -7,7 +7,6 @@
 
 package xyz.bitsquidd.bits.paper.effect.behaviour.impl.effect;
 
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
@@ -17,11 +16,11 @@ import xyz.bitsquidd.bits.paper.effect.state.EffectInstance;
 
 // TODO:
 //  Consider implementing a BukkitEffectRegistry - tracking Bukkit effects so we dont have to do a full remove(Type) (which may remove unrelated effects).
-public final class PotionEffectBehaviour implements EffectBehaviour {
+public final class PotionEffect implements EffectBehaviour {
     private final PotionEffectType bukkitEffect;
     private final boolean hasIcon;
 
-    private PotionEffectBehaviour(Builder builder) {
+    private PotionEffect(Builder builder) {
         this.bukkitEffect = builder.bukkitEffect;
         this.hasIcon = builder.hasIcon;
     }
@@ -29,7 +28,7 @@ public final class PotionEffectBehaviour implements EffectBehaviour {
 
     @Override
     public void apply(EffectInstance data) {
-        data.target().addPotionEffect(new PotionEffect(
+        data.target().addPotionEffect(new org.bukkit.potion.PotionEffect(
           bukkitEffect,
           Math.clamp(data.modifier().durationTicks(), -1, Integer.MAX_VALUE),
           Math.clamp(data.modifier().amplifier() - 1, 0, Integer.MAX_VALUE),
@@ -54,7 +53,7 @@ public final class PotionEffectBehaviour implements EffectBehaviour {
         return new Builder(bukkitEffect);
     }
 
-    public static final class Builder implements Buildable<PotionEffectBehaviour> {
+    public static final class Builder implements Buildable<PotionEffect> {
         private final PotionEffectType bukkitEffect;
         private boolean hasIcon;
 
@@ -71,8 +70,8 @@ public final class PotionEffectBehaviour implements EffectBehaviour {
 
 
         @Override
-        public PotionEffectBehaviour build() {
-            return new PotionEffectBehaviour(this);
+        public PotionEffect build() {
+            return new PotionEffect(this);
         }
 
     }

@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.paper.effect.behaviour.impl.effect;
+package xyz.bitsquidd.bits.paper.effect.behaviour.impl.attribute;
 
 import com.google.common.collect.Multimap;
 import net.kyori.adventure.key.Key;

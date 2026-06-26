@@ -15,12 +15,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
-public class RunnableEffectBehaviour implements EffectBehaviour {
+public class RunnableEffect implements EffectBehaviour {
     private final Consumer<EffectInstance> onApply;
     private final Consumer<EffectInstance> onUnapply;
     private final BiConsumer<EffectInstance, Long> onTick;
 
-    private RunnableEffectBehaviour(Builder builder) {
+    private RunnableEffect(Builder builder) {
         this.onApply = builder.onApply;
         this.onUnapply = builder.onUnapply;
         this.onTick = builder.onTick;
@@ -48,7 +48,7 @@ public class RunnableEffectBehaviour implements EffectBehaviour {
         return new Builder();
     }
 
-    public static final class Builder implements Buildable<RunnableEffectBehaviour> {
+    public static final class Builder implements Buildable<RunnableEffect> {
         private Consumer<EffectInstance> onApply = _ -> {};
         private Consumer<EffectInstance> onUnapply = _ -> {};
         private BiConsumer<EffectInstance, Long> onTick = (_, _) -> {};
@@ -84,8 +84,8 @@ public class RunnableEffectBehaviour implements EffectBehaviour {
         }
 
         @Override
-        public RunnableEffectBehaviour build() {
-            return new RunnableEffectBehaviour(this);
+        public RunnableEffect build() {
+            return new RunnableEffect(this);
         }
 
     }

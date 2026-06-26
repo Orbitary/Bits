@@ -15,4 +15,12 @@ public record EffectModifier(
   // <0 for infinite
   int durationTicks
 ) {
+    public static final EffectModifier DEFAULT = new EffectModifier(1, 200);
+
+    public static final EffectModifier INFINITE = new EffectModifier(1, -1);
+
+    public static EffectModifier of(int amplifier, int durationTicks) {
+        return new EffectModifier(amplifier, durationTicks);
+    }
+
 }

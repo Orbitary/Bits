@@ -13,13 +13,12 @@ import org.bukkit.attribute.AttributeModifier;
 import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.paper.effect.behaviour.EffectBehaviour;
-import xyz.bitsquidd.bits.paper.effect.behaviour.impl.effect.AttributeData;
 import xyz.bitsquidd.bits.paper.effect.state.EffectInstance;
 
 import java.util.UUID;
 
 
-public class AttributeEffectBehaviour implements EffectBehaviour {
+public class AttributeEffect implements EffectBehaviour {
     private final UUID uuid;
 
     private final Attribute attribute;
@@ -27,7 +26,7 @@ public class AttributeEffectBehaviour implements EffectBehaviour {
     private final float incrementPerLevel;
 
 
-    private AttributeEffectBehaviour(Builder builder) {
+    private AttributeEffect(Builder builder) {
         this.uuid = UUID.randomUUID();
 
         this.attribute = builder.attribute;
@@ -61,7 +60,7 @@ public class AttributeEffectBehaviour implements EffectBehaviour {
         return new Builder(attribute);
     }
 
-    public static final class Builder implements Buildable<AttributeEffectBehaviour> {
+    public static final class Builder implements Buildable<AttributeEffect> {
         private final Attribute attribute;
         private AttributeModifier.Operation operation = AttributeModifier.Operation.ADD_NUMBER;
         private float incrementPerLevel = 1;
@@ -81,8 +80,8 @@ public class AttributeEffectBehaviour implements EffectBehaviour {
         }
 
         @Override
-        public AttributeEffectBehaviour build() {
-            return new AttributeEffectBehaviour(this);
+        public AttributeEffect build() {
+            return new AttributeEffect(this);
         }
 
     }

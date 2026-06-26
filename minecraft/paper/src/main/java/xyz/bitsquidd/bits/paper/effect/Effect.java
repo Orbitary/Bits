@@ -24,6 +24,8 @@ import xyz.bitsquidd.bits.paper.effect.state.StateTransform;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 
 public final class Effect {
@@ -57,6 +59,24 @@ public final class Effect {
     }
 
 
+    public <D> Optional<D> getData(EffectData<D> key) {
+        return data.get(key);
+    }
+
+    public <D> List<D> getRawData(EffectData<D> key) {
+        return data.getRaw(key);
+    }
+
+
+    public int getDuration(EffectModifier modifier) {
+        return transform.transform(modifier).durationTicks();
+    }
+
+    public int getAmplifier(EffectModifier modifier) {
+        return transform.transform(modifier).amplifier();
+    }
+
+
     public void apply(LivingEntity livingEntity, EffectModifier modifier) {
         apply(EffectManager.INSTANCE.registerEffect(livingEntity, this, modifier));
     }
@@ -70,21 +90,21 @@ public final class Effect {
 
 
     @ApiStatus.Internal
-    public void apply(EffectInstance instance) {
+    void apply(EffectInstance instance) {
         EffectInstance transformed = instance.transform(transform);
         behaviour.forEach(b -> b.apply(transformed));
         children.forEach(c -> c.apply(transformed));
     }
 
     @ApiStatus.Internal
-    public void unapply(EffectInstance instance) {
+    void unapply(EffectInstance instance) {
         EffectInstance transformed = instance.transform(transform);
         behaviour.forEach(b -> b.unapply(transformed));
         children.forEach(c -> c.unapply(transformed));
     }
 
     @ApiStatus.Internal
-    public void tick(EffectInstance data, long tick) {
+    void tick(EffectInstance data, long tick) {
         EffectInstance transformed = data.transform(transform);
 
         if (tick >= transformed.endTick()) {
@@ -98,6 +118,8 @@ public final class Effect {
 
 
     //region Builder
+    public static final Effect EMPTY = builder(Key.key("empty")).build();
+
     public static Builder builder(Key id) {
         return new Builder(id);
     }
@@ -120,17 +142,27 @@ public final class Effect {
             return this;
         }
 
-        public Builder with(Effect child) {
+        public Builder with(Supplier<? extends EffectBehaviour> behaviour) {
+            this.behaviour.add(behaviour.get());
+            return this;
+        }
+
+        public Builder child(Effect child) {
             this.children.add(child);
             return this;
         }
 
-        public <D> Builder with(EffectData<D> key, D value) {
+        public Builder child(Supplier<? extends Effect> child) {
+            this.children.add(child.get());
+            return this;
+        }
+
+        public <D> Builder data(EffectData<D> key, D value) {
             this.data.put(key, value);
             return this;
         }
 
-        public Builder with(StateTransform transform) {
+        public Builder transform(StateTransform transform) {
             this.transform = transform;
             return this;
         }
