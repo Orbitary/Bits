@@ -82,7 +82,7 @@ public final class Randomness {
         return new Random(getSeed(strings));
     }
 
-    public static Long getSeed(String... strings) {
+    public static long getSeed(String... strings) {
         long seed = 0;
         for (String str : strings) {
             seed ^= str.hashCode();
