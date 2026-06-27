@@ -30,7 +30,7 @@ import java.util.Optional;
 public abstract class Bits extends ManagerContainer {
     private static @Nullable Bits instance;
 
-    protected final boolean developmentMode = false;
+    protected boolean developmentMode = false;
 
     /**
      * @throws BitsException if an instance already exists
