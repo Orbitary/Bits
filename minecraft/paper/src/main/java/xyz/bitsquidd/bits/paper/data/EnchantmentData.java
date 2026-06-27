@@ -30,6 +30,23 @@ public final class EnchantmentData {
     }
 
 
+    public Enchantment enchantment() {
+        return enchantment;
+    }
+
+    public int level() {
+        return level;
+    }
+
+    public boolean ignoreLevelRestriction() {
+        return ignoreLevelRestriction;
+    }
+
+    public boolean hidden() {
+        return hidden;
+    }
+
+
     public void applyTo(ItemMeta meta) {
         meta.addEnchant(enchantment, level, ignoreLevelRestriction);
     }
