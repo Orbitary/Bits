@@ -9,6 +9,8 @@ package xyz.bitsquidd.bits.paper.effect.behaviour.impl.attribute;
 
 import org.bukkit.attribute.Attribute;
 
+import xyz.bitsquidd.bits.paper.effect.data.impl.ColorEffectData;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,7 +33,7 @@ public final class AttributeColorRegistry {
 
     public static Integer getEffectiveColor(Attribute attribute) {
         if (colorOverrides.containsKey(attribute)) return colorOverrides.get(attribute);
-        return 0xFFFFFF; // Default to white if no override is set
+        return ColorEffectData.DEFAULT_COLOR; // Default to white if no override is set
     }
 
 }

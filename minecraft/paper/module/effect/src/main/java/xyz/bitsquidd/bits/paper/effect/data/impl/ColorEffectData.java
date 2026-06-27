@@ -24,7 +24,7 @@ import java.util.Optional;
  * @since 0.0.21
  */
 public final class ColorEffectData extends EffectData<Integer> {
-
+    public static final int DEFAULT_COLOR = 0xFFFFFF;
 
     ColorEffectData() {
         super(Bits.key("effect_color"));
@@ -33,7 +33,7 @@ public final class ColorEffectData extends EffectData<Integer> {
 
     @Override
     public Integer mergeStrategy(Optional<Integer> parent, List<Integer> children) {
-        return parent.orElse(Colors.mix(children));
+        return parent.orElse(children.isEmpty() ? DEFAULT_COLOR : Colors.mix(children));
     }
 
 }

@@ -142,7 +142,7 @@ public final class Effect {
      * @since 0.0.21
      */
     public void apply(LivingEntity target, EffectModifier modifier) {
-        apply(EffectManager.INSTANCE.registerEffect(target, this, modifier));
+        apply(EffectManager.get().registerEffect(target, this, modifier));
     }
 
     public void apply(Collection<? extends LivingEntity> targets, EffectModifier modifier) {
@@ -158,8 +158,8 @@ public final class Effect {
      * @since 0.0.21
      */
     public void unapply(LivingEntity target) {
-        EffectManager.INSTANCE.getActiveEffect(target, this).ifPresent(instance -> {
-            EffectManager.INSTANCE.unregisterEffect(instance);
+        EffectManager.get().getActiveEffect(target, this).ifPresent(instance -> {
+            EffectManager.get().unregisterEffect(instance);
             unapply(instance);
         });
     }
@@ -182,14 +182,17 @@ public final class Effect {
     }
 
     @ApiStatus.Internal
-    void tick(EffectInstance data, long tick) {
-        if (tick >= data.endTick()) {
-            if (data.endTick() == tick) unapply(data);
+    void tick(EffectInstance instance, long tick) {
+        if (tick >= instance.endTick()) {
+            if (instance.endTick() == tick) {
+                EffectManager.get().unregisterEffect(instance); // Although we do not need to unregister child effects, we must unregister the parent its self.
+                unapply(instance);
+            }
             return;
         }
 
-        behaviour.forEach(b -> b.getFirst().tick(data.transform(b.getSecond()), tick));
-        children.forEach(c -> c.getFirst().tick(data.transform(c.getSecond()), tick));
+        behaviour.forEach(b -> b.getFirst().tick(instance.transform(b.getSecond()), tick));
+        children.forEach(c -> c.getFirst().tick(instance.transform(c.getSecond()), tick));
     }
 
 

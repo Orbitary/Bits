@@ -13,6 +13,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import xyz.bitsquidd.bits.exception.BitsException;
+import xyz.bitsquidd.bits.lifecycle.manager.BitsModule;
 import xyz.bitsquidd.bits.lifecycle.manager.CoreManager;
 import xyz.bitsquidd.bits.paper.effect.state.EffectInstance;
 import xyz.bitsquidd.bits.paper.effect.state.EffectModifier;
@@ -33,13 +35,25 @@ import java.util.UUID;
  *
  * @since 0.0.21
  */
-public final class EffectManager implements CoreManager {
-    public static final EffectManager INSTANCE = new EffectManager();
+public class EffectManager implements CoreManager, BitsModule {
+    private static @Nullable EffectManager instance;
 
     private final Map<UUID, Map<Effect, EffectInstance>> activeEffects = new HashMap<>();
 
     private long tick = 0L;
     private @Nullable BukkitTask ticker;
+
+
+    public EffectManager() {
+        if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(EffectManager.class);
+        EffectManager.instance = this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends EffectManager> T get() {
+        if (instance == null) throw BitsException.INSTANCE_NOT_FOUND(EffectManager.class);
+        return (T)instance;
+    }
 
 
     @Override
