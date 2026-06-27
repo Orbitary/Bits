@@ -20,6 +20,10 @@ public abstract class EffectData<D> {
         this.id = id;
     }
 
+    public static <D> EffectData<D> of(Key id) {
+        return new EffectData<>(id) {};
+    }
+
 
     @Override
     public boolean equals(Object obj) {
