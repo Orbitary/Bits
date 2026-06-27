@@ -49,7 +49,7 @@ public final class ImmutableTriple<A, B, C> implements Triple<A, B, C> {
      * @since 0.0.21
      */
     public ImmutableTriple<A, B, C> withFirst(A first) {
-        return ImmutableTriple.of(first, this.second, this.third);
+        return new ImmutableTriple<>(first, this.second, this.third);
     }
 
     /**
@@ -58,7 +58,7 @@ public final class ImmutableTriple<A, B, C> implements Triple<A, B, C> {
      * @since 0.0.21
      */
     public ImmutableTriple<A, B, C> withSecond(B second) {
-        return ImmutableTriple.of(this.first, second, this.third);
+        return new ImmutableTriple<>(this.first, second, this.third);
     }
 
     /**
@@ -67,7 +67,7 @@ public final class ImmutableTriple<A, B, C> implements Triple<A, B, C> {
      * @since 0.0.21
      */
     public ImmutableTriple<A, B, C> withThird(C third) {
-        return ImmutableTriple.of(this.first, this.second, third);
+        return new ImmutableTriple<>(this.first, this.second, third);
     }
 
     @Override

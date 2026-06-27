@@ -36,7 +36,7 @@ public interface Triple<A, B, C> {
      *
      * @since 0.0.21
      */
-    static <A, B, C> Triple<A, B, C> immutable(A first, B second, C third) {
+    static <A, B, C> ImmutableTriple<A, B, C> immutable(A first, B second, C third) {
         return new ImmutableTriple<>(first, second, third);
     }
 
@@ -54,7 +54,7 @@ public interface Triple<A, B, C> {
      *
      * @since 0.0.21
      */
-    static <A, B, C> Triple<A, B, C> mutable(A first, B second, C third) {
+    static <A, B, C> MutableTriple<A, B, C> mutable(A first, B second, C third) {
         return new MutableTriple<>(first, second, third);
     }
 

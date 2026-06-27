@@ -41,7 +41,7 @@ public final class ImmutablePair<A, B> implements Pair<A, B> {
      * @since 0.0.21
      */
     public ImmutablePair<A, B> withFirst(A first) {
-        return ImmutablePair.of(first, this.second);
+        return new ImmutablePair<>(first, this.second);
     }
 
     /**
@@ -50,7 +50,7 @@ public final class ImmutablePair<A, B> implements Pair<A, B> {
      * @since 0.0.21
      */
     public ImmutablePair<A, B> withSecond(B second) {
-        return ImmutablePair.of(this.first, second);
+        return new ImmutablePair<>(this.first, second);
     }
 
     @SuppressWarnings("EqualsDoesntCheckParameterClass")

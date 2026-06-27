@@ -33,7 +33,7 @@ public interface Pair<A, B> {
      *
      * @since 0.0.11
      */
-    static <A, B> Pair<A, B> immutable(A first, B second) {
+    static <A, B> ImmutablePair<A, B> immutable(A first, B second) {
         return new ImmutablePair<>(first, second);
     }
 
@@ -49,7 +49,7 @@ public interface Pair<A, B> {
      *
      * @since 0.0.11
      */
-    static <A, B> Pair<A, B> mutable(A first, B second) {
+    static <A, B> MutablePair<A, B> mutable(A first, B second) {
         return new MutablePair<>(first, second);
     }
 
