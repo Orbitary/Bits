@@ -14,6 +14,8 @@ import org.bukkit.entity.LivingEntity;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import org.jetbrains.annotations.Unmodifiable;
+
 import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.paper.effect.behaviour.EffectBehaviour;
@@ -21,7 +23,7 @@ import xyz.bitsquidd.bits.paper.effect.data.EffectData;
 import xyz.bitsquidd.bits.paper.effect.data.EffectDataMap;
 import xyz.bitsquidd.bits.paper.effect.state.EffectInstance;
 import xyz.bitsquidd.bits.paper.effect.state.EffectModifier;
-import xyz.bitsquidd.bits.paper.effect.state.StateTransform;
+import xyz.bitsquidd.bits.paper.effect.state.EffectTransform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,7 @@ public final class Effect {
     private final List<EffectBehaviour> behaviour;
     private final List<Effect> children;
     private final EffectDataMap data;
-    private final StateTransform transform;
+    private final EffectTransform transform;
 
 
     private Effect(Builder builder) {
@@ -61,8 +63,22 @@ public final class Effect {
     }
 
 
+    @Unmodifiable
+    public List<EffectBehaviour> getBehaviour() {
+        return behaviour;
+    }
+
+    public List<Effect> getChildren() {
+        return children;
+    }
+
+
     public <D> Optional<D> getData(EffectData<D> key) {
         return data.get(key);
+    }
+
+    public <D> List<D> getChildData(EffectData<D> key) {
+        return data.getRaw(key);
     }
 
     public <D> List<D> getRawData(EffectData<D> key) {
@@ -110,7 +126,7 @@ public final class Effect {
         EffectInstance transformed = data.transform(transform);
 
         if (tick >= transformed.endTick()) {
-            if (transformed.endTick() == tick) unapply(transformed);
+            if (transformed.endTick() == tick) unapply(data); // Dont use transformed, it is already transformed in apply.
             return;
         }
 
@@ -130,13 +146,22 @@ public final class Effect {
         return new Builder(Bits.key(UUID.randomUUID().toString()));
     }
 
+    public Builder toBuilder() {
+        Builder builder = new Builder(id);
+        builder.behaviour.addAll(behaviour);
+        builder.children.addAll(children);
+        builder.data.mergeFrom(List.of(data));
+        builder.transform = transform;
+        return builder;
+    }
+
     public static final class Builder implements Buildable<Effect> {
         public final Key id;
 
         private final List<EffectBehaviour> behaviour = new ArrayList<>();
         private final List<Effect> children = new ArrayList<>();
         private final EffectDataMap data = new EffectDataMap();
-        private StateTransform transform = StateTransform.identity();
+        private EffectTransform transform = EffectTransform.identity();
 
         private Builder(Key id) {
             this.id = id;
@@ -154,14 +179,14 @@ public final class Effect {
         }
 
 
-        public Builder with(EffectBehaviour behaviour, StateTransform transform) {
+        public Builder with(EffectBehaviour behaviour, EffectTransform transform) {
             return child(builderInternal()
               .with(behaviour)
               .transform(transform)
             );
         }
 
-        public Builder with(Supplier<? extends EffectBehaviour> behaviour, StateTransform transform) {
+        public Builder with(Supplier<? extends EffectBehaviour> behaviour, EffectTransform transform) {
             return child(builderInternal()
               .with(behaviour.get())
               .transform(transform)
@@ -174,8 +199,19 @@ public final class Effect {
             return this;
         }
 
+        public Builder child(Effect child, EffectTransform transform) {
+            this.children.add(child.toBuilder().transform(child.transform.andThen(transform)).build());
+            return this;
+        }
+
         public Builder child(Supplier<? extends Effect> child) {
             this.children.add(child.get());
+            return this;
+        }
+
+        public Builder child(Supplier<? extends Effect> child, EffectTransform transform) {
+            Effect built = child.get();
+            this.children.add(built.toBuilder().transform(built.transform.andThen(transform)).build());
             return this;
         }
 
@@ -184,7 +220,7 @@ public final class Effect {
             return this;
         }
 
-        public Builder transform(StateTransform transform) {
+        public Builder transform(EffectTransform transform) {
             this.transform = transform;
             return this;
         }

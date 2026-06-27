@@ -80,6 +80,14 @@ public class AttributeEffect implements EffectBehaviour {
             return this;
         }
 
+
+        public Builder zero() {
+            this.incrementPerLevel = -1;
+            operation = AttributeModifier.Operation.MULTIPLY_SCALAR_1;
+            return this;
+        }
+
+
         @Override
         public AttributeEffect build() {
             return new AttributeEffect(this);

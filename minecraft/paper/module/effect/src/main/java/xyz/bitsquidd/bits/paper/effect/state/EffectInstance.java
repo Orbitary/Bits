@@ -38,7 +38,7 @@ public record EffectInstance(
     }
 
 
-    public EffectInstance transform(StateTransform transform) {
+    public EffectInstance transform(EffectTransform transform) {
         return new EffectInstance(effect, transform.transform(modifier), target, uuid, startTick);
     }
 

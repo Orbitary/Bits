@@ -8,15 +8,15 @@
 package xyz.bitsquidd.bits.paper.effect.state;
 
 @FunctionalInterface
-public interface StateTransform {
+public interface EffectTransform {
     EffectModifier transform(EffectModifier data);
 
-    static StateTransform identity() {
+    static EffectTransform identity() {
         return data -> data;
     }
 
 
-    default StateTransform andThen(StateTransform after) {
+    default EffectTransform andThen(EffectTransform after) {
         return data -> after.transform(this.transform(data));
     }
 
@@ -24,11 +24,11 @@ public interface StateTransform {
     final class Amplifier {
         private Amplifier() {}
 
-        public static StateTransform constant(int amplifier) {
+        public static EffectTransform constant(int amplifier) {
             return data -> new EffectModifier(amplifier, data.durationTicks());
         }
 
-        public static StateTransform proportional(double multiplier) {
+        public static EffectTransform proportional(double multiplier) {
             return data -> new EffectModifier((int)(data.amplifier() * multiplier), data.durationTicks());
         }
 
@@ -38,19 +38,19 @@ public interface StateTransform {
     final class Duration {
         private Duration() {}
 
-        public static StateTransform constant(int durationTicks) {
+        public static EffectTransform constant(int durationTicks) {
             return data -> new EffectModifier(data.amplifier(), durationTicks);
         }
 
-        public static StateTransform proportional(double multiplier) {
+        public static EffectTransform proportional(double multiplier) {
             return data -> new EffectModifier(data.amplifier(), (int)(data.durationTicks() * multiplier));
         }
 
-        public static StateTransform instant() {
+        public static EffectTransform instant() {
             return data -> new EffectModifier(data.amplifier(), 1);
         }
 
-        public static StateTransform permanent() {
+        public static EffectTransform permanent() {
             return data -> new EffectModifier(data.amplifier(), -1);
         }
 
