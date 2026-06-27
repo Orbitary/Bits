@@ -28,8 +28,8 @@ public final class Percentage {
         this.value = (float)Math.clamp(value, 0.0, 1.0);
     }
 
-    public static Percentage ZERO = new Percentage(0.0f);
-    public static Percentage FULL = new Percentage(1.0f);
+    public static final Percentage ZERO = new Percentage(0.0f);
+    public static final Percentage FULL = new Percentage(1.0f);
 
 
     //region Constructors
