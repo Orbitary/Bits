@@ -56,6 +56,19 @@ public final class EffectDataMap {
     }
 
     /**
+     * Removes the value associated with the given key from this map.
+     *
+     * @param effectData the key to remove
+     *
+     * @since 0.0.21
+     */
+    public void remove(EffectData<?> effectData) {
+        directValues.remove(effectData);
+        rawValues.remove(effectData);
+    }
+
+
+    /**
      * Merges a singleton value with the given key into this map, using the key's {@link EffectData#mergeStrategy} to resolve the final value.
      *
      * @param effectData the key

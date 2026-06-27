@@ -14,6 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
+import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.paper.effect.behaviour.EffectBehaviour;
 import xyz.bitsquidd.bits.paper.effect.behaviour.impl.attribute.AttributeColorRegistry;
@@ -214,6 +215,18 @@ public final class Effect {
     public static Builder builder(Key id) {
         return new Builder(id);
     }
+
+    /**
+     * Utility builder with arbitrary id: used for chaining.
+     *
+     * @return a new builder with an arbitrary id
+     *
+     * @since 0.0.21
+     */
+    public static Builder inner() {
+        return new Builder(Bits.key("."));
+    }
+
 
     /**
      * A fluent builder for constructing {@link Effect} instances.

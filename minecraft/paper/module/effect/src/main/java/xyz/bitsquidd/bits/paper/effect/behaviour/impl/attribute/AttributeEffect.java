@@ -59,7 +59,8 @@ public class AttributeEffect implements EffectBehaviour {
           .key(Bits.key(uuid.toString()))
           .operation(operation)
           .value(data.modifier().amplifier() * incrementPerLevel)
-          .build();
+          .build()
+          .applyTo(data.target());
     }
 
     @Override
