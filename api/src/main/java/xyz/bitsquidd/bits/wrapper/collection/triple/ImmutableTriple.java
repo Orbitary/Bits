@@ -21,15 +21,12 @@ public final class ImmutableTriple<A, B, C> implements Triple<A, B, C> {
     private final B second;
     private final C third;
 
-    private ImmutableTriple(A first, B second, C third) {
+    public ImmutableTriple(A first, B second, C third) {
         this.first = first;
         this.second = second;
         this.third = third;
     }
 
-    public static <A, B, C> ImmutableTriple<A, B, C> of(A first, B second, C third) {
-        return new ImmutableTriple<>(first, second, third);
-    }
 
     @Override
     public A getFirst() {

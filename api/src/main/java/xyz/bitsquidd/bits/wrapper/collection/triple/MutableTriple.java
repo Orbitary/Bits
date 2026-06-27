@@ -27,10 +27,6 @@ public final class MutableTriple<A, B, C> implements Triple<A, B, C> {
         this.third = third;
     }
 
-    public static <A, B, C> MutableTriple<A, B, C> of(A first, B second, C third) {
-        return new MutableTriple<>(first, second, third);
-    }
-
     @Override
     public A getFirst() {
         return this.first;

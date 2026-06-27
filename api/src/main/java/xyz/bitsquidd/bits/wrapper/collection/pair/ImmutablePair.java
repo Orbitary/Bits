@@ -19,14 +19,11 @@ public final class ImmutablePair<A, B> implements Pair<A, B> {
     private final A first;
     private final B second;
 
-    private ImmutablePair(A first, B second) {
+    public ImmutablePair(A first, B second) {
         this.first = first;
         this.second = second;
     }
 
-    public static <A, B> ImmutablePair<A, B> of(A first, B second) {
-        return new ImmutablePair<>(first, second);
-    }
 
     @Override
     public A getFirst() {

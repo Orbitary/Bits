@@ -22,6 +22,38 @@ package xyz.bitsquidd.bits.wrapper.collection.pair;
 public interface Pair<A, B> {
 
     /**
+     * Creates a new immutable pair of objects.
+     *
+     * @param <A>    the type of the first object
+     * @param <B>    the type of the second object
+     * @param first  the first object, may be null
+     * @param second the second object, may be null
+     *
+     * @return a new immutable pair containing the given objects
+     *
+     * @since 0.0.11
+     */
+    static <A, B> Pair<A, B> immutable(A first, B second) {
+        return new ImmutablePair<>(first, second);
+    }
+
+    /**
+     * Creates a new mutable pair of objects.
+     *
+     * @param <A>    the type of the first object
+     * @param <B>    the type of the second object
+     * @param first  the first object, may be null
+     * @param second the second object, may be null
+     *
+     * @return a new mutable pair containing the given objects
+     *
+     * @since 0.0.11
+     */
+    static <A, B> Pair<A, B> mutable(A first, B second) {
+        return new MutablePair<>(first, second);
+    }
+
+    /**
      * Gets the first element of the pair.
      *
      * @return the first element, may be null

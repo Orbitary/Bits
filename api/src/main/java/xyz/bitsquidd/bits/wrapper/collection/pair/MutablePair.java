@@ -24,10 +24,6 @@ public final class MutablePair<A, B> implements Pair<A, B> {
         this.second = second;
     }
 
-    public static <A, B> MutablePair<A, B> of(A first, B second) {
-        return new MutablePair<>(first, second);
-    }
-
     @Override
     public A getFirst() {
         return this.first;

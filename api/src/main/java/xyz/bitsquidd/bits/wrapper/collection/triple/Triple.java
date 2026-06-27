@@ -23,6 +23,43 @@ package xyz.bitsquidd.bits.wrapper.collection.triple;
 public interface Triple<A, B, C> {
 
     /**
+     * Creates a new immutable triple of objects.
+     *
+     * @param <A>    the type of the first object
+     * @param <B>    the type of the second object
+     * @param <C>    the type of the third object
+     * @param first  the first object, may be null
+     * @param second the second object, may be null
+     * @param third  the third object, may be null
+     *
+     * @return a new immutable triple containing the given objects
+     *
+     * @since 0.0.21
+     */
+    static <A, B, C> Triple<A, B, C> immutable(A first, B second, C third) {
+        return new ImmutableTriple<>(first, second, third);
+    }
+
+    /**
+     * Creates a new mutable triple of objects.
+     *
+     * @param <A>    the type of the first object
+     * @param <B>    the type of the second object
+     * @param <C>    the type of the third object
+     * @param first  the first object, may be null
+     * @param second the second object, may be null
+     * @param third  the third object, may be null
+     *
+     * @return a new mutable triple containing the given objects
+     *
+     * @since 0.0.21
+     */
+    static <A, B, C> Triple<A, B, C> mutable(A first, B second, C third) {
+        return new MutableTriple<>(first, second, third);
+    }
+
+
+    /**
      * Gets the first element of the triple.
      *
      * @return the first element, may be null
