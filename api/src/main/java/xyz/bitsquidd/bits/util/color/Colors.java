@@ -255,4 +255,17 @@ public final class Colors {
         return NAMED_COLORS.getOrDefault(name.toLowerCase(), 0xFFFFFF);
     }
 
+    public static int red(int color) {
+        return (color >> 16) & 0xFF;
+    }
+
+    public static int green(int color) {
+        return (color >> 8) & 0xFF;
+    }
+
+    public static int blue(int color) {
+        return color & 0xFF;
+    }
+
+
 }

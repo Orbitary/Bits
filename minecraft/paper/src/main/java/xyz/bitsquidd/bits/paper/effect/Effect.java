@@ -14,6 +14,7 @@ import org.bukkit.entity.LivingEntity;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.paper.effect.behaviour.EffectBehaviour;
 import xyz.bitsquidd.bits.paper.effect.data.EffectData;
@@ -25,6 +26,7 @@ import xyz.bitsquidd.bits.paper.effect.state.StateTransform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 
@@ -124,6 +126,10 @@ public final class Effect {
         return new Builder(id);
     }
 
+    private static Builder builderInternal() {
+        return new Builder(Bits.key(UUID.randomUUID().toString()));
+    }
+
     public static final class Builder implements Buildable<Effect> {
         public final Key id;
 
@@ -146,6 +152,22 @@ public final class Effect {
             this.behaviour.add(behaviour.get());
             return this;
         }
+
+
+        public Builder with(EffectBehaviour behaviour, StateTransform transform) {
+            return child(builderInternal()
+              .with(behaviour)
+              .transform(transform)
+            );
+        }
+
+        public Builder with(Supplier<? extends EffectBehaviour> behaviour, StateTransform transform) {
+            return child(builderInternal()
+              .with(behaviour.get())
+              .transform(transform)
+            );
+        }
+
 
         public Builder child(Effect child) {
             this.children.add(child);

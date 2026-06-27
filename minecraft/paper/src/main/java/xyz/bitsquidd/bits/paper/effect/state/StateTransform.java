@@ -16,6 +16,11 @@ public interface StateTransform {
     }
 
 
+    default StateTransform andThen(StateTransform after) {
+        return data -> after.transform(this.transform(data));
+    }
+
+
     final class Amplifier {
         private Amplifier() {}
 
