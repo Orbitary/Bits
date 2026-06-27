@@ -12,6 +12,7 @@ import org.bukkit.attribute.AttributeModifier;
 
 import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
+import xyz.bitsquidd.bits.paper.data.AttributeData;
 import xyz.bitsquidd.bits.paper.effect.behaviour.EffectBehaviour;
 import xyz.bitsquidd.bits.paper.effect.state.EffectInstance;
 

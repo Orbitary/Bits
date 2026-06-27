@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.paper.effect.behaviour.impl.attribute;
+package xyz.bitsquidd.bits.paper.data;
 
 import com.google.common.collect.Multimap;
 import net.kyori.adventure.key.Key;
@@ -16,6 +16,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlotGroup;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,9 +30,9 @@ import static xyz.bitsquidd.bits.paper.util.Keys.NSK;
 
 
 public final class AttributeData {
-    private final Attribute attribute;
-    private final double value;
-    private final AttributeModifier.Operation operation;
+    private final Attribute attribute;                    // The attribute to modify
+    private final double value;                           // The value to apply to the attribute
+    private final AttributeModifier.Operation operation;  // The operation to perform
 
     private final NamespacedKey key;
 
@@ -41,6 +42,23 @@ public final class AttributeData {
         this.operation = builder.operation;
 
         this.key = NSK(builder.key != null ? builder.key : Bits.key(UUID.randomUUID().toString()));
+    }
+
+
+    public Attribute attribute() {
+        return attribute;
+    }
+
+    public double value() {
+        return value;
+    }
+
+    public AttributeModifier.Operation operation() {
+        return operation;
+    }
+
+    public NamespacedKey key() {
+        return key;
     }
 
 
@@ -62,6 +80,10 @@ public final class AttributeData {
             slots
           )
         );
+    }
+
+    public void applyTo(ItemStack itemStack, EquipmentSlotGroup slots) {
+        itemStack.editMeta(m -> applyTo(m, slots));
     }
 
     public void applyTo(Attributable attributable) {
@@ -116,6 +138,10 @@ public final class AttributeData {
     //region Builder
     public static Builder builder(Attribute attribute) {
         return new Builder(attribute);
+    }
+
+    public static AttributeData basic(Attribute attribute, double value) {
+        return new Builder(attribute).value(value).build();
     }
 
     public static final class Builder implements Buildable<AttributeData> {
