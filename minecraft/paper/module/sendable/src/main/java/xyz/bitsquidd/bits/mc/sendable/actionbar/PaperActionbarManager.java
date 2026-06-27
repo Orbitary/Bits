@@ -9,7 +9,7 @@ package xyz.bitsquidd.bits.mc.sendable.actionbar;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.ComponentBuilder;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 
 import xyz.bitsquidd.bits.mc.sendable.PaperReceiver;
@@ -25,7 +25,7 @@ public class PaperActionbarManager extends ActionbarManager {
     protected void render(Receiver receiver, WeakStorage<? extends AbstractActionbar> storage) {
         if (!(receiver instanceof PaperReceiver paperReceiver)) return;
 
-        TextComponent.Builder builder = Component.text();
+        ComponentBuilder<?, ?> builder = Component.text();
         storage.getAll().forEach(actionbarHandle -> merge(builder, actionbarHandle.definition().content(actionbarHandle.state(receiver))));
 
         paperReceiver.sendPacket(new ClientboundSetActionBarTextPacket(
@@ -36,7 +36,7 @@ public class PaperActionbarManager extends ActionbarManager {
     /**
      * Merges the given actionbar. A more refined implementation may want to ZEROWIDTH the new content to have more control over spacing and ordering.
      */
-    protected void merge(TextComponent.Builder builder, Component component) {
+    protected void merge(ComponentBuilder<?, ?> builder, Component component) {
         builder.append(component);
     }
 
