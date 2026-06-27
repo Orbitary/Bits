@@ -23,24 +23,6 @@ package xyz.bitsquidd.bits.wrapper.collection.triple;
 public interface Triple<A, B, C> {
 
     /**
-     * Creates a new immutable triple of objects.
-     *
-     * @param <A>    the type of the first object
-     * @param <B>    the type of the second object
-     * @param <C>    the type of the third object
-     * @param first  the first object, may be null
-     * @param second the second object, may be null
-     * @param third  the third object, may be null
-     *
-     * @return a new immutable triple containing the given objects
-     *
-     * @since 0.0.21
-     */
-    static <A, B, C> Triple<A, B, C> of(A first, B second, C third) {
-        return ImmutableTriple.of(first, second, third);
-    }
-
-    /**
      * Gets the first element of the triple.
      *
      * @return the first element, may be null
