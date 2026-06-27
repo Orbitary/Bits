@@ -23,7 +23,6 @@ import xyz.bitsquidd.bits.mc.sendable.impl.waypoint.WaypointManager;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 public abstract class SendableOrchestrator extends ManagerContainer implements BitsModule {
@@ -36,7 +35,7 @@ public abstract class SendableOrchestrator extends ManagerContainer implements B
     private final TitleManager titleManager = registerManager(createTitleManager());
     private final WaypointManager waypointManager = registerManager(createWaypointManager());
 
-    private final ImmutableSet<SendableManager<?>> cachedManagers = ImmutableSet.copyOf(getAllManagers().stream().filter(m -> m instanceof SendableManager).map(m -> (SendableManager<?>)m).collect(Collectors.toSet()));
+    private final ImmutableSet<SendableManager<?>> cachedManagers = ImmutableSet.copyOf(getAllManagers().stream().filter(m -> m instanceof SendableManager).map(m -> (SendableManager<?>)m).toList());
 
     protected SendableOrchestrator() {
         if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(SendableOrchestrator.class);
