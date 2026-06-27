@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class SendableStorage<S extends Sendable> implements Storage<S> {
     private final List<SendableHandle<? extends S>> sendables = new CopyOnWriteArrayList<>();
 
-    private boolean needsForceRender = false;
+    private volatile boolean needsForceRender = false;
 
 
     //region Collection Operations
