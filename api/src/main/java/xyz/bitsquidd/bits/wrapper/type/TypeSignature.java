@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.wrapper.type;
@@ -17,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
 
 /**
  * Represents a complete type signature, including the raw class and any generic type arguments.

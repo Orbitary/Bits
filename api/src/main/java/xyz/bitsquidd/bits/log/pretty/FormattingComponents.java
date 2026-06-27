@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.log.pretty;
@@ -11,6 +10,7 @@ package xyz.bitsquidd.bits.log.pretty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+
 
 /**
  * A container for ANSI color and style components that can be applied to a string.

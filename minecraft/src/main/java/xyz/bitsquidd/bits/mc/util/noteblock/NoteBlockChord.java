@@ -1,10 +1,8 @@
 /*
- * This file is part of the BiomeBattle project.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2023-2026 BitSquidd - All Rights Reserved
- *
- * Unauthorized copying, distribution, or disclosure of this file, via any medium, is strictly prohibited.
- * Proprietary and confidential - for internal use only.
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.mc.util.noteblock;

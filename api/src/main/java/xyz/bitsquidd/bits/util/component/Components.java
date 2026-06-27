@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.util.component;
@@ -20,7 +19,12 @@ import org.jetbrains.annotations.Nullable;
 
 import xyz.bitsquidd.bits.log.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Stack;
+
 
 /**
  * Provides static utility methods for manipulating and processing Adventure {@link Component}s.

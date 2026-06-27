@@ -22,6 +22,7 @@ import xyz.bitsquidd.bits.util.color.Colors;
 import java.util.List;
 
 
+// TODO generic particle effects to allow stuff like flames.
 public class ParticleEffect implements EffectBehaviour {
     private final boolean ambient;
 

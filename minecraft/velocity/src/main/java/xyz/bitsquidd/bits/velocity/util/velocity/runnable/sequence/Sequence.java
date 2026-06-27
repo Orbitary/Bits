@@ -1,9 +1,8 @@
 /*
- * This file is part of Bits, licensed under the GNU Lesser General Public License v3.0.
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
  *
- * Copyright (c) 2024-2026 ImBit
- *
- * Enjoy the Bits and Bobs :)
+ * Copyright (c) 2023-2026 ImBit
  */
 
 package xyz.bitsquidd.bits.velocity.util.velocity.runnable.sequence;
@@ -14,6 +13,7 @@ import xyz.bitsquidd.bits.velocity.util.velocity.runnable.Tasks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * A sequence of runnables to be executed at specified ticks.
