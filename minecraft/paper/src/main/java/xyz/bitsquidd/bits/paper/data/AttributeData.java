@@ -144,6 +144,10 @@ public final class AttributeData {
         return new Builder(attribute).value(value).build();
     }
 
+    public static AttributeData zero(Attribute attribute) {
+        return new Builder(attribute).operation(AttributeModifier.Operation.MULTIPLY_SCALAR_1).value(-1).build();
+    }
+
     public static final class Builder implements Buildable<AttributeData> {
         private final Attribute attribute;
         private double value = 1;
