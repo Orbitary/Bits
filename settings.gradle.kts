@@ -47,6 +47,7 @@ include("minecraft:module:sendable")
 include("minecraft:paper")
 include("minecraft:paper:module:command")
 include("minecraft:paper:module:sendable")
+include("minecraft:paper:module:effect")
 include("minecraft:paper:bundle")
 
 include("minecraft:velocity")

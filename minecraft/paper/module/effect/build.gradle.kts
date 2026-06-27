@@ -7,7 +7,4 @@
 
 dependencies {
     api(project(":minecraft:paper"))
-    api(project(":minecraft:paper:module:command"))
-    api(project(":minecraft:paper:module:sendable"))
-    api(project(":minecraft:paper:module:effect"))
 }
