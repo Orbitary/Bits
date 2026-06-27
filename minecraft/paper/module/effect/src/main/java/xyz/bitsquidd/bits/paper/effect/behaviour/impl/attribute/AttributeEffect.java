@@ -36,6 +36,23 @@ public class AttributeEffect implements EffectBehaviour {
     }
 
 
+    public UUID uuid() {
+        return uuid;
+    }
+
+    public Attribute attribute() {
+        return attribute;
+    }
+
+    public AttributeModifier.Operation operation() {
+        return operation;
+    }
+
+    public float incrementPerLevel() {
+        return incrementPerLevel;
+    }
+
+
     @Override
     public void apply(EffectInstance data) {
         AttributeData.builder(attribute)

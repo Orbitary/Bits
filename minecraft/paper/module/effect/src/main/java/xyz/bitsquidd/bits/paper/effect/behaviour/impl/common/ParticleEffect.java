@@ -23,6 +23,16 @@ import java.util.List;
 
 
 // TODO generic particle effects to allow stuff like flames.
+
+/**
+ * An {@link EffectBehaviour} that spawns {@link org.bukkit.Particle#ENTITY_EFFECT} particles
+ * around the target entity on each tick.
+ * <p>
+ * Particle color is sampled randomly from the effect's {@link CommonEffectData#COLOR} data;
+ * defaults to white ({@code 0xFFFFFF}) if none is set.
+ *
+ * @since 0.0.21
+ */
 public class ParticleEffect implements EffectBehaviour {
     private final boolean ambient;
 
@@ -66,12 +76,12 @@ public class ParticleEffect implements EffectBehaviour {
     }
 
     public static final class Builder implements Buildable<ParticleEffect> {
-        private boolean ambient = false;
+        private boolean ambient = true;
 
         private Builder() {}
 
-        public Builder ambient() {
-            this.ambient = true;
+        public Builder ambient(boolean ambient) {
+            this.ambient = ambient;
             return this;
         }
 

@@ -15,6 +15,14 @@ import java.util.List;
 import java.util.Optional;
 
 
+/**
+ * An {@link EffectData} key for a packed ARGB color integer.
+ * <p>
+ * When parent and child values are merged, the parent color wins. If no parent color is set,
+ * the child colors are blended via {@link xyz.bitsquidd.bits.util.color.Colors#mix}.
+ *
+ * @since 0.0.21
+ */
 public final class ColorEffectData extends EffectData<Integer> {
 
 

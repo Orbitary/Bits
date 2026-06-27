@@ -17,6 +17,14 @@ import java.util.List;
 import java.util.Optional;
 
 
+/**
+ * An {@link EffectData} key for a display name {@link Component}.
+ * <p>
+ * When parent and child values are merged, the parent name wins. If no parent name is set,
+ * child names are joined with {@code " & "}.
+ *
+ * @since 0.0.21
+ */
 public final class NameEffectData extends EffectData<Component> {
     NameEffectData() {
         super(Bits.key("effect_name"));

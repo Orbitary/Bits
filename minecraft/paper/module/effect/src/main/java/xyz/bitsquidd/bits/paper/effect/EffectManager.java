@@ -26,6 +26,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 
+/**
+ * Manages the lifecycle of active {@link Effect} instances across all entities.
+ * <p>
+ * Registered effects are ticked each server tick and automatically cleaned up on shutdown.
+ *
+ * @since 0.0.21
+ */
 public final class EffectManager implements CoreManager {
     public static final EffectManager INSTANCE = new EffectManager();
 

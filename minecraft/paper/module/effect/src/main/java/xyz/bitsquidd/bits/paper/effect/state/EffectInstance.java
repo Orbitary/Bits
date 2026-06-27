@@ -16,6 +16,19 @@ import xyz.bitsquidd.bits.paper.effect.Effect;
 import java.util.UUID;
 
 
+/**
+ * Captures the runtime state of an active {@link Effect}: the effect definition, the
+ * {@link EffectModifier} at registration time, the target entity, a unique identifier,
+ * and the server tick at which the effect started.
+ *
+ * @param effect    the effect definition
+ * @param modifier  the modifier active when the effect was registered
+ * @param target    the entity the effect is applied to
+ * @param uuid      the unique identifier for this instance
+ * @param startTick the server tick at which this effect started
+ *
+ * @since 0.0.21
+ */
 public record EffectInstance(
   Effect effect,
   EffectModifier modifier,
@@ -38,11 +51,27 @@ public record EffectInstance(
     }
 
 
+    /**
+     * Returns a new instance with the modifier replaced by the result of applying the given transform.
+     *
+     * @param transform the transform to apply to the current modifier
+     * @return a new instance with the transformed modifier
+     *
+     * @since 0.0.21
+     */
     public EffectInstance transform(EffectTransform transform) {
         return new EffectInstance(effect, transform.transform(modifier), target, uuid, startTick);
     }
 
 
+    /**
+     * Returns the absolute server tick at which this effect expires,
+     * computed as {@code startTick + modifier().durationTicks()}.
+     *
+     * @return the expiry tick
+     *
+     * @since 0.0.21
+     */
     public long endTick() {
         return startTick + modifier.durationTicks();
     }

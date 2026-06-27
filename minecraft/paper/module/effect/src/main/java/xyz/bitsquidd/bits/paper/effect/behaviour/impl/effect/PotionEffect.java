@@ -16,6 +16,15 @@ import xyz.bitsquidd.bits.paper.effect.state.EffectInstance;
 
 // TODO:
 //  Consider implementing a BukkitEffectRegistry - tracking Bukkit effects so we dont have to do a full remove(Type) (which may remove unrelated effects).
+
+/**
+ * An {@link EffectBehaviour} that applies a vanilla Bukkit potion effect to the target entity.
+ * <p>
+ * The {@link xyz.bitsquidd.bits.paper.effect.state.EffectModifier} amplifier and duration are
+ * mapped to the corresponding Bukkit parameters on apply and removed on unapply.
+ *
+ * @since 0.0.21
+ */
 public final class PotionEffect implements EffectBehaviour {
     private final PotionEffectType bukkitEffect;
     private final boolean hasIcon;
@@ -23,6 +32,15 @@ public final class PotionEffect implements EffectBehaviour {
     private PotionEffect(Builder builder) {
         this.bukkitEffect = builder.bukkitEffect;
         this.hasIcon = builder.hasIcon;
+    }
+
+
+    public PotionEffectType bukkitEffect() {
+        return bukkitEffect;
+    }
+
+    public boolean hasIcon() {
+        return hasIcon;
     }
 
 

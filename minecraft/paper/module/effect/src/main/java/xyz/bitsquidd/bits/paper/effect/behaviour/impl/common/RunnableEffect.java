@@ -15,6 +15,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
+/**
+ * An {@link EffectBehaviour} that delegates each lifecycle event to configurable callbacks.
+ * <p>
+ * Multiple callbacks registered for the same event via the builder are composed and executed
+ * in registration order.
+ *
+ * @since 0.0.21
+ */
 public class RunnableEffect implements EffectBehaviour {
     private final Consumer<EffectInstance> onApply;
     private final Consumer<EffectInstance> onUnapply;
