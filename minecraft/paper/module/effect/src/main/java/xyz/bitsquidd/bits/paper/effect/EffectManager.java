@@ -82,7 +82,7 @@ public class EffectManager implements CoreManager, BitsModule {
     private void tick() {
         tick++;
         List.copyOf(activeEffects.values()).stream()
-          .flatMap(m -> m.values().stream())
+          .flatMap(m -> List.copyOf(m.values()).stream())
           .forEach(instance -> instance.effect().tick(instance, tick));
     }
 
