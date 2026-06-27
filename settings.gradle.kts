@@ -47,9 +47,11 @@ include("minecraft:module:sendable")
 include("minecraft:paper")
 include("minecraft:paper:module:command")
 include("minecraft:paper:module:sendable")
+include("minecraft:paper:bundle")
 
 include("minecraft:velocity")
 include("minecraft:velocity:module:command")
+include("minecraft:velocity:bundle")
 
 
 include("minecraft:fabric")
