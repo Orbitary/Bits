@@ -7,25 +7,24 @@
 
 package xyz.bitsquidd.bits.wrapper;
 
+import org.jspecify.annotations.Nullable;
+
 import xyz.bitsquidd.bits.Bits;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 /**
  * A wrapper for executing code after an asynchronous event or action completes.
- * <p>
- * This serves as a lightweight alternative to {@link java.util.concurrent.CompletableFuture}
- * for internal library events.
  *
  * @since 0.0.10
  */
 public final class Callback {
-    private boolean completed = false;
-    private final List<Runnable> listeners = new ArrayList<>();
+    private final CompletableFuture<@Nullable Void> future;
 
-    private Callback() {}
+    private Callback(CompletableFuture<@Nullable Void> future) {
+        this.future = future;
+    }
 
     /**
      * Creates a new, incomplete callback instance.
@@ -35,7 +34,7 @@ public final class Callback {
      * @since 0.0.10
      */
     public static Callback create() {
-        return new Callback();
+        return new Callback(new CompletableFuture<>());
     }
 
     /**
@@ -48,9 +47,7 @@ public final class Callback {
      * @since 0.0.10
      */
     public static Callback completed() {
-        Callback callback = new Callback();
-        callback.complete();
-        return callback;
+        return new Callback(CompletableFuture.completedFuture(null));
     }
 
     /**
@@ -63,7 +60,7 @@ public final class Callback {
      * @since 0.0.10
      */
     public static Callback later(long delay) {
-        Callback callback = new Callback();
+        Callback callback = create();
         Bits.get().runLater(callback::complete, delay);
         return callback;
     }
@@ -77,9 +74,7 @@ public final class Callback {
      * @since 0.0.10
      */
     public void complete() {
-        if (completed) return;
-        completed = true;
-        listeners.forEach(Runnable::run);
+        future.complete(null);
     }
 
     /**
@@ -90,7 +85,7 @@ public final class Callback {
      * @since 0.0.10
      */
     public boolean isCompleted() {
-        return completed;
+        return future.isDone();
     }
 
     /**
@@ -106,11 +101,7 @@ public final class Callback {
      * @since 0.0.10
      */
     public Callback whenComplete(Runnable listener) {
-        if (completed) {
-            listener.run();
-        } else {
-            listeners.add(listener);
-        }
+        future.thenRun(listener);
         return this;
     }
 

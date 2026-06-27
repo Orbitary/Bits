@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -26,7 +26,7 @@ import java.util.UUID;
  * @since 0.0.10
  */
 public final class Formatter {
-    private static final Map<Class<?>, FormatterFunction<?>> formatters = new HashMap<>();
+    private static final Map<Class<?>, FormatterFunction<?>> formatters = new ConcurrentHashMap<>();
 
     /**
      * A functional interface for defining how an object of a specific type should be formatted.

@@ -58,9 +58,9 @@ public final class TypeSignature<T> {
     }
 
     private final Class<T> rawType;
-    private final @Nullable Type @Nullable [] typeArguments;
+    private final Type[] typeArguments;
 
-    private TypeSignature(Class<T> rawType, @Nullable Type @Nullable [] typeArguments) {
+    private TypeSignature(Class<T> rawType, Type @Nullable [] typeArguments) {
         this.rawType = boxPrimitive(rawType);
         this.typeArguments = typeArguments != null ? typeArguments.clone() : new Type[0];
     }
@@ -97,9 +97,7 @@ public final class TypeSignature<T> {
     public boolean matches(TypeSignature<?> other) {
         if (!rawType.equals(other.rawType)) return false;
 
-        if (typeArguments == null && other.typeArguments == null) return true;
-        if (typeArguments == null || other.typeArguments == null) return false;
-
+        // Constructor always assigns typeArguments to either the cloned array or new Type[0] - it's never null post-construction.
         if (typeArguments.length != other.typeArguments.length) return false;
 
         for (int i = 0; i < typeArguments.length; i++) {
