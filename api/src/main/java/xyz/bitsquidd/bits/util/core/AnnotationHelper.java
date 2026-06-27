@@ -11,11 +11,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+
 public final class AnnotationHelper {
     private AnnotationHelper() {}
 
     /**
-     * Recursively search for annotation in class hierarchy, returning an Optional.
+     * Searches for an annotation in the class hierarchy and implemented interfaces, returning an Optional.
+     * Checks declared annotations only, walking superclasses then interfaces.
      *
      * @since 0.0.14
      */
@@ -24,6 +26,10 @@ public final class AnnotationHelper {
         while (current != null && current != Object.class) {
             T annotation = current.getDeclaredAnnotation(annotationClass);
             if (annotation != null) return Optional.of(annotation);
+            for (Class<?> iface : current.getInterfaces()) {
+                Optional<T> fromInterface = getAnnotationOptional(iface, annotationClass);
+                if (fromInterface.isPresent()) return fromInterface;
+            }
             current = current.getSuperclass();
         }
         return Optional.empty();
@@ -37,7 +43,7 @@ public final class AnnotationHelper {
     @SuppressWarnings("unchecked")
     public static <A extends Annotation, T> T getValueOrDefault(Class<?> targetClass, Class<A> annotationClass, String attributeName) {
         try {
-            A annotation = targetClass.getAnnotation(annotationClass);
+            A annotation = getAnnotationOptional(targetClass, annotationClass).orElse(null);
             Method method = annotationClass.getMethod(attributeName);
             if (annotation != null) {
                 return (T)method.invoke(annotation);
