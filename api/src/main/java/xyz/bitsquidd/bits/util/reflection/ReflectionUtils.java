@@ -462,6 +462,84 @@ public final class ReflectionUtils {
             }
         }
 
+        public static List<Field> getAnnotatedFields(String packageName, Class<? extends Annotation> annotation, ScannerFlags flags) throws ReflectionException {
+            List<Field> result = new ArrayList<>();
+            String annotationName = annotation.getName();
+
+            ClassGraph graph = new ClassGraph()
+                .enableClassInfo()
+                .enableFieldInfo()
+                .enableAnnotationInfo()
+                .overrideClassLoaders(CLASSLOADERS)
+                .acceptPackages(packageName);
+
+            try (ScanResult scanResult = graph.scan()) {
+                ClassInfoList classInfoList = scanResult.getClassesWithFieldAnnotation(annotationName);
+
+                for (ClassInfo info : classInfoList) {
+                    if (!flags.isValid(info)) continue;
+                    Class<?> clazz = getCorrectLoader(info, annotation);
+                    for (Field field : clazz.getDeclaredFields()) {
+                        if (!field.isAnnotationPresent(annotation)) continue;
+                        field.setAccessible(true);
+                        result.add(field);
+                    }
+                }
+            } catch (Exception e) {
+                throw new ReflectionException("Failed to scan fields in package: " + packageName, e);
+            }
+
+            return result;
+        }
+
+        public static List<Field> tryGetAnnotatedFields(String packageName, Class<? extends Annotation> annotation, ScannerFlags flags) {
+            try {
+                return getAnnotatedFields(packageName, annotation, flags);
+            } catch (ReflectionException e) {
+                Logger.warn("Failed to get annotated fields in package: " + packageName + " with annotation " + annotation.getName());
+                return Collections.emptyList();
+            }
+        }
+
+        public static List<java.lang.reflect.Method> getAnnotatedMethods(String packageName, Class<? extends Annotation> annotation, ScannerFlags flags) throws ReflectionException {
+            List<java.lang.reflect.Method> result = new ArrayList<>();
+            String annotationName = annotation.getName();
+
+            ClassGraph graph = new ClassGraph()
+                .enableClassInfo()
+                .enableMethodInfo()
+                .enableAnnotationInfo()
+                .overrideClassLoaders(CLASSLOADERS)
+                .acceptPackages(packageName);
+
+            try (ScanResult scanResult = graph.scan()) {
+                ClassInfoList classInfoList = scanResult.getClassesWithMethodAnnotation(annotationName);
+
+                for (ClassInfo info : classInfoList) {
+                    if (!flags.isValid(info)) continue;
+                    Class<?> clazz = getCorrectLoader(info, annotation);
+                    for (java.lang.reflect.Method method : clazz.getDeclaredMethods()) {
+                        if (!method.isAnnotationPresent(annotation)) continue;
+                        method.setAccessible(true);
+                        result.add(method);
+                    }
+                }
+            } catch (Exception e) {
+                throw new ReflectionException("Failed to scan methods in package: " + packageName, e);
+            }
+
+            return result;
+        }
+
+        public static List<java.lang.reflect.Method> tryGetAnnotatedMethods(String packageName, Class<? extends Annotation> annotation, ScannerFlags flags) {
+            try {
+                return getAnnotatedMethods(packageName, annotation, flags);
+            } catch (ReflectionException e) {
+                Logger.warn("Failed to get annotated methods in package: " + packageName + " with annotation " + annotation.getName());
+                return Collections.emptyList();
+            }
+        }
+
     }
 
     /**
