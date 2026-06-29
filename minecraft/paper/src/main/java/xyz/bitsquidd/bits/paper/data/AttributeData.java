@@ -24,7 +24,9 @@ import xyz.bitsquidd.bits.Bits;
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.log.Logger;
 
+import java.util.Random;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static xyz.bitsquidd.bits.paper.util.Keys.NSK;
 
@@ -32,13 +34,17 @@ import static xyz.bitsquidd.bits.paper.util.Keys.NSK;
 public final class AttributeData {
     private final Attribute attribute;                    // The attribute to modify
     private final double value;                           // The value to apply to the attribute
+    private final double randomise;                       // The randomisation factor either positive or negative to apply.
     private final AttributeModifier.Operation operation;  // The operation to perform
 
     private final NamespacedKey key;
 
+    private static final Random rng = new Random();
+
     private AttributeData(Builder builder) {
         this.attribute = builder.attribute;
         this.value = builder.value;
+        this.randomise = builder.randomise;
         this.operation = builder.operation;
 
         this.key = NSK(builder.key != null ? builder.key : Bits.key(UUID.randomUUID().toString()));
@@ -51,6 +57,10 @@ public final class AttributeData {
 
     public double value() {
         return value;
+    }
+
+    public double randomisedValue() {
+        return value + (rng.nextDouble() * 2 - 1) * randomise;
     }
 
     public AttributeModifier.Operation operation() {
@@ -75,7 +85,7 @@ public final class AttributeData {
           attribute,
           new AttributeModifier(
             key,
-            value,
+            randomisedValue(),
             operation,
             slots
           )
@@ -87,19 +97,34 @@ public final class AttributeData {
     }
 
     public void applyTo(Attributable attributable) {
-        AttributeInstance attributeInstance = attributable.getAttribute(attribute);
+        accessAttribute(
+          attributable, attribute, instance -> {
+              instance.removeModifier(key);
+              instance.addTransientModifier(new AttributeModifier(key, randomisedValue(), operation));
+          }
+        );
+    }
 
+    public void setBaseValue(Attributable attributable) {
+        accessAttribute(
+          attributable, attribute, instance -> {
+              instance.setBaseValue(randomisedValue());
+          }
+        );
+    }
+
+    private static void accessAttribute(Attributable attributable, Attribute attribute, Consumer<AttributeInstance> consumer) {
+        AttributeInstance attributeInstance = attributable.getAttribute(attribute);
         if (attributeInstance != null) {
-            attributeInstance.removeModifier(key);
-            attributeInstance.addTransientModifier(new AttributeModifier(key, value, operation));
+            consumer.accept(attributeInstance);
         } else {
             attributable.registerAttribute(attribute);
             AttributeInstance newAttributeInstance = attributable.getAttribute(attribute);
 
             if (newAttributeInstance != null) {
-                newAttributeInstance.addTransientModifier(new AttributeModifier(key, value, operation));
+                consumer.accept(newAttributeInstance);
             } else {
-                Logger.warn("Failed to register attribute " + attribute + " for attributable " + attributable + ". Skipping addition of modifier.");
+                Logger.warn("Failed to register attribute " + attribute + " for attributable " + attributable + ". Skipping operation.");
             }
         }
     }
@@ -152,6 +177,7 @@ public final class AttributeData {
         private final Attribute attribute;
         private double value = 1;
         private AttributeModifier.Operation operation = AttributeModifier.Operation.ADD_NUMBER;
+        private double randomise = 0;
         private @Nullable Key key = null;
 
         private Builder(Attribute attribute) {
@@ -165,6 +191,11 @@ public final class AttributeData {
 
         public Builder operation(AttributeModifier.Operation operation) {
             this.operation = operation;
+            return this;
+        }
+
+        public Builder randomise(double randomise) {
+            this.randomise = randomise;
             return this;
         }
 
