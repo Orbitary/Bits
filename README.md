@@ -51,17 +51,17 @@ repositories {
 
 dependencies {
     // Core API (required)
-    implementation("xyz.bitsquidd.bits:api:0.0.24")
+    implementation("xyz.bitsquidd.bits:api:0.0.25")
 
     // Platform implementations
-    implementation("xyz.bitsquidd.bits.paper:paper:0.0.24")
-    implementation("xyz.bitsquidd.bits.velocity:velocity:0.0.24")
-    implementation("xyz.bitsquidd.bits.fabric:fabric:0.0.24")
+    implementation("xyz.bitsquidd.bits.paper:paper:0.0.25")
+    implementation("xyz.bitsquidd.bits.velocity:velocity:0.0.25")
+    implementation("xyz.bitsquidd.bits.fabric:fabric:0.0.25")
 
     // Optional: Platform-specific modules
-    implementation("xyz.bitsquidd.bits.paper:sendable:0.0.24")
-    implementation("xyz.bitsquidd.bits.paper:command:0.0.24")
-    implementation("xyz.bitsquidd.bits.velocity:command:0.0.24")
+    implementation("xyz.bitsquidd.bits.paper:sendable:0.0.25")
+    implementation("xyz.bitsquidd.bits.paper:command:0.0.25")
+    implementation("xyz.bitsquidd.bits.velocity:command:0.0.25")
 }
 ```
 
@@ -110,24 +110,24 @@ dependencies {
 <dependency>
     <groupId>xyz.bitsquidd.bits</groupId>
     <artifactId>api</artifactId>
-    <version>0.0.24</version>
+    <version>0.0.25</version>
 </dependency>
 
 <!-- Platform implementations -->
 <dependency>
     <groupId>xyz.bitsquidd.bits.paper</groupId>
     <artifactId>paper</artifactId>
-    <version>0.0.24</version>
+    <version>0.0.25</version>
 </dependency>
 <dependency>
     <groupId>xyz.bitsquidd.bits.velocity</groupId>
     <artifactId>velocity</artifactId>
-    <version>0.0.24</version>
+    <version>0.0.25</version>
 </dependency>
 <dependency>
     <groupId>xyz.bitsquidd.bits.fabric</groupId>
     <artifactId>fabric</artifactId>
-    <version>0.0.24</version>
+    <version>0.0.25</version>
 </dependency>
 </dependencies>
 ```
