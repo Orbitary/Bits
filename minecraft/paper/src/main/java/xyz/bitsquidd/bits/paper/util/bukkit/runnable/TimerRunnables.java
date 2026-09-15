@@ -42,13 +42,17 @@ public final class TimerRunnables extends Runnables {
     public BukkitRunnable asRunnable() {
         if (isPausable) {
             return new BukkitRunnable() {
-                int tick = -(int)delay;
+                int rawTick = -(int)delay;
 
                 @Override
                 public void run() {
-                    tick++;
+                    if (BitsMinecraft.get().isPaused()) return;
 
-                    if (tick < 0 || tick % period != 0 || BitsMinecraft.get().isPaused()) return;
+                    rawTick++;
+
+                    if (rawTick < 0 || rawTick % period != 0) return;
+
+                    int tick = rawTick / (int)period;
 
                     if (stopCondition.apply(tick)) {
                         onStop.accept(tick);
