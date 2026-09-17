@@ -54,12 +54,16 @@ public abstract class Logger {
      */
     public Logger(LogFlags flags) {
         this.flags = flags;
-        if (instance == null) instance = this;
+        if (instance == null) instance = this; // The most recent instance created will be used as the global logger.
     }
 
     public static Logger get() {
         if (instance == null) throw new IllegalStateException("Logger is not initialized! Ensure you instantiate a `new Logger()` implementation during your application's startup.");
         return instance;
+    }
+
+    public void set() {
+        instance = this;
     }
 
 
