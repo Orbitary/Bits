@@ -9,13 +9,17 @@ package xyz.bitsquidd.bits.paper.location.containable.region;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import net.kyori.adventure.key.Key;
 import org.bukkit.World;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
 import xyz.bitsquidd.bits.paper.location.containable.Containable;
 import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.impl.RegionVisualiser;
+import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
+import xyz.bitsquidd.bits.paper.location.wrapper.ChunkCoordinate;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -57,7 +61,7 @@ public abstract class Region implements Containable {
     }
     //endregion
 
-    
+
     protected final Vector3d toLocal(double x, double y, double z, double centerX, double centerY, double centerZ) {
         Vector3d local = new Vector3d(x - centerX, y - centerY, z - centerZ);
         if (!rotation.equals(new Quaternionf(), 1.0e-6f)) new Quaternionf(rotation).conjugate().transform(local);
@@ -81,6 +85,50 @@ public abstract class Region implements Containable {
     //endregion
 
 
+    //region Chunks
+    @Override
+    public final Set<ChunkCoordinate> getChunks() {
+        BlockPos c = center();
+        BlockPos mn = min();
+        BlockPos mx = max();
+
+        double halfX = (mx.x - mn.x) / 2.0;
+        double halfY = (mx.y - mn.y) / 2.0;
+        double halfZ = (mx.z - mn.z) / 2.0;
+
+        double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
+        double minZ = Double.POSITIVE_INFINITY, maxZ = Double.NEGATIVE_INFINITY;
+
+        for (int sx = -1; sx <= 1; sx += 2) {
+            for (int sy = -1; sy <= 1; sy += 2) {
+                for (int sz = -1; sz <= 1; sz += 2) {
+                    Vector3d corner = new Vector3d(sx * halfX, sy * halfY, sz * halfZ);
+                    rotation.transform(corner);
+                    minX = Math.min(minX, c.x + corner.x);
+                    maxX = Math.max(maxX, c.x + corner.x);
+                    minZ = Math.min(minZ, c.z + corner.z);
+                    maxZ = Math.max(maxZ, c.z + corner.z);
+                }
+            }
+        }
+
+        int minChunkX = (int)Math.floor(minX) >> 4, maxChunkX = (int)Math.floor(maxX) >> 4;
+        int minChunkZ = (int)Math.floor(minZ) >> 4, maxChunkZ = (int)Math.floor(maxZ) >> 4;
+
+        Key worldKey = world.key();
+        Set<ChunkCoordinate> chunks = new HashSet<>();
+        for (int x = minChunkX; x <= maxChunkX; x++) {
+            for (int z = minChunkZ; z <= maxChunkZ; z++) {
+                chunks.add(new ChunkCoordinate(x, z, worldKey));
+            }
+        }
+        return chunks;
+    }
+    //endregion
+
+
+    // Implementations should be done yourself, not a good fit for raw regions.
+    @Deprecated(forRemoval = true)
     protected abstract Set<RegionVisualiser> createVisualiser();
 
 }
