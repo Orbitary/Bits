@@ -69,6 +69,9 @@ public sealed interface Animation {
             int size = baked.size();
             long tick = data.currentTick();
 
+            // Once finished: hold on the last frame of the final loop instead of wrapping back to the start.
+            if (isFinished(data)) tick = (size * loops) - 1;
+
             int effectiveIndex = loopMode.effectiveIndex(tick, size);
 
             KeyframeRecord record = baked.get(effectiveIndex);
@@ -181,7 +184,6 @@ public sealed interface Animation {
         @Override
         public void mutate(AnimationPose pose, AnimationData data) {
             for (Animation animation : animations) {
-                if (animation.isFinished(data)) continue;
                 animation.mutate(pose, data);
             }
         }
