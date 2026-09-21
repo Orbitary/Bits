@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.mc.animation;
 
+import org.joml.Quaternionf;
+
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.util.math.easing.Easing;
 import xyz.bitsquidd.bits.wrapper.collection.pair.Pair;
@@ -44,6 +46,10 @@ public sealed interface Animation {
 
     static Constant constant(AnimationKeyframe frame) {
         return new Constant(frame);
+    }
+
+    static Spin spin(float degreesPerTick) {
+        return new Spin(degreesPerTick);
     }
 
 
@@ -205,6 +211,26 @@ public sealed interface Animation {
         @Override
         public void mutate(AnimationPose pose, AnimationData data) {
             frame.applyTo(pose, data, 1f);
+        }
+
+        @Override
+        public boolean isFinished(AnimationData data) {
+            return false;
+        }
+
+    }
+
+    final class Spin implements Animation {
+        private final float degreesPerTick;
+
+        private Spin(float degreesPerTick) {
+            this.degreesPerTick = degreesPerTick;
+        }
+
+        @Override
+        public void mutate(AnimationPose pose, AnimationData data) {
+            float degrees = degreesPerTick * data.currentTick();
+            pose.rotation().mul(new Quaternionf().rotateY((float)Math.toRadians(degrees)));
         }
 
         @Override

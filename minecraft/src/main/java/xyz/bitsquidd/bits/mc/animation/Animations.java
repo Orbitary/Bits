@@ -35,12 +35,7 @@ public final class Animations {
 
 
     public static Animation spin(int duration) {
-        return Animation.basic(duration)
-          .loop(AnimationLoopMode.STRAIGHT)
-          .keyframe(0.00f, AnimationKeyframe.Rotation.empty(), Easings.IN_OUT_SIN.blend(Easings.LINEAR, 0.5f))
-          .keyframe(0.50f, AnimationKeyframe.Rotation.y(180f), Easings.IN_OUT_SIN.blend(Easings.LINEAR, 0.5f))
-          .keyframe(1.00f, AnimationKeyframe.Rotation.y(360f), Easings.IN_OUT_SIN.blend(Easings.LINEAR, 0.5f))
-          .build();
+        return Animation.spin(360f / duration);
     }
 
     public static Animation pulse(int duration, float minScale, float maxScale) {
