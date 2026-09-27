@@ -115,7 +115,7 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
 
     @Override
     public void cleanup() {
-        getAllManagers().forEach(this::cleanupManager);
+        getAllManagers().reversed().forEach(this::cleanupManager);
     }
 
     protected void cleanupManager(M manager) {
@@ -131,7 +131,7 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
 
     @Override
     public void shutdown() {
-        getAllManagers().forEach(this::shutdownManager);
+        getAllManagers().reversed().forEach(this::shutdownManager);
     }
 
     protected void shutdownManager(M manager) {
