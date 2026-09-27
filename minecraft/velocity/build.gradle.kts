@@ -5,8 +5,8 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.orbitary.util.providedApi
-import xyz.orbitary.util.shade
+import xyz.bitsquidd.util.providedApi
+import xyz.bitsquidd.util.shade
 
 allprojects {
     group = "xyz.orbitary.bits.velocity"

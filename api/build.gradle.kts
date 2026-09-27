@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.orbitary.util.shade
+import xyz.bitsquidd.util.shade
 
 description = "🦑 Utility API for Bits Plugin development."
 

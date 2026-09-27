@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.orbitary.util.shade
+import xyz.bitsquidd.util.shade
 
 /*
  * This file is part of a Bit libraries package.
