@@ -13,6 +13,12 @@ import xyz.bitsquidd.bits.util.math.easing.Easings;
 public final class Animations {
     private Animations() {}
 
+
+    public static Animation empty() {
+        return Animation.constant(AnimationKeyframe.Empty.INSTANCE);
+    }
+
+
     //region Floating
     public static Animation floating() {
         return floating(40, 0.5f);
@@ -20,7 +26,7 @@ public final class Animations {
 
     public static Animation floating(int duration, float height) {
         return Animation.basic(duration)
-          .loop(AnimationProgressMode.PING_PONG)
+          .loop(AnimationLoopMode.PING_PONG)
           .keyframe(0.00f, AnimationKeyframe.Translation.y(0f), Easings.IN_OUT_SIN)
           .keyframe(1.00f, AnimationKeyframe.Translation.y(height), Easings.IN_OUT_SIN)
           .build();
@@ -29,17 +35,12 @@ public final class Animations {
 
 
     public static Animation spin(int duration) {
-        return Animation.basic(duration)
-          .loop(AnimationProgressMode.STRAIGHT)
-          .keyframe(0.00f, AnimationKeyframe.Rotation.empty(), Easings.IN_OUT_SIN.blend(Easings.LINEAR, 0.5f))
-          .keyframe(0.50f, AnimationKeyframe.Rotation.y(180f), Easings.IN_OUT_SIN.blend(Easings.LINEAR, 0.5f))
-          .keyframe(1.00f, AnimationKeyframe.Rotation.y(360f), Easings.IN_OUT_SIN.blend(Easings.LINEAR, 0.5f))
-          .build();
+        return Animation.spin(360f / duration);
     }
 
     public static Animation pulse(int duration, float minScale, float maxScale) {
         return Animation.basic(duration)
-          .loop(AnimationProgressMode.PING_PONG)
+          .loop(AnimationLoopMode.PING_PONG)
           .keyframe(0.00f, AnimationKeyframe.Scale.of(minScale), Easings.IN_OUT_SIN)
           .keyframe(1.00f, AnimationKeyframe.Scale.of(maxScale), Easings.IN_OUT_SIN)
           .build();
@@ -48,7 +49,7 @@ public final class Animations {
 
     public static Animation swayX(int duration, float angle) {
         return Animation.basic(duration)
-          .loop(AnimationProgressMode.PING_PONG)
+          .loop(AnimationLoopMode.PING_PONG)
           .keyframe(0.00f, AnimationKeyframe.Rotation.x(-angle), Easings.IN_OUT_SIN)
           .keyframe(1.00f, AnimationKeyframe.Rotation.x(angle), Easings.IN_OUT_SIN)
           .build();
@@ -56,7 +57,7 @@ public final class Animations {
 
     public static Animation swayZ(int duration, float angle) {
         return Animation.basic(duration)
-          .loop(AnimationProgressMode.PING_PONG)
+          .loop(AnimationLoopMode.PING_PONG)
           .keyframe(0.00f, AnimationKeyframe.Rotation.z(-angle), Easings.IN_OUT_SIN)
           .keyframe(1.00f, AnimationKeyframe.Rotation.z(angle), Easings.IN_OUT_SIN)
           .build();
@@ -64,7 +65,7 @@ public final class Animations {
 
     public static Animation wiggleX(int duration, float amplitude) {
         return Animation.basic(duration)
-          .loop(AnimationProgressMode.PING_PONG)
+          .loop(AnimationLoopMode.PING_PONG)
           .keyframe(0.00f, AnimationKeyframe.Translation.x(-amplitude), Easings.IN_OUT_SIN)
           .keyframe(1.00f, AnimationKeyframe.Translation.x(amplitude), Easings.IN_OUT_SIN)
           .build();
@@ -72,7 +73,7 @@ public final class Animations {
 
     public static Animation wiggleZ(int duration, float amplitude) {
         return Animation.basic(duration)
-          .loop(AnimationProgressMode.PING_PONG)
+          .loop(AnimationLoopMode.PING_PONG)
           .keyframe(0.00f, AnimationKeyframe.Translation.z(-amplitude), Easings.IN_OUT_SIN)
           .keyframe(1.00f, AnimationKeyframe.Translation.z(amplitude), Easings.IN_OUT_SIN)
           .build();

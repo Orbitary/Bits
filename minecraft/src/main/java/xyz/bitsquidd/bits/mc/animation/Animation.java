@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.mc.animation;
 
+import org.joml.Quaternionf;
+
 import xyz.bitsquidd.bits.lifecycle.builder.Buildable;
 import xyz.bitsquidd.bits.util.math.easing.Easing;
 import xyz.bitsquidd.bits.wrapper.collection.pair.Pair;
@@ -18,7 +20,7 @@ import java.util.List;
 
 public sealed interface Animation {
 
-    void mutate(AnimationPoseNew pose, AnimationData data);
+    void mutate(AnimationPose pose, AnimationData data);
 
     boolean isFinished(AnimationData data);
 
@@ -46,6 +48,10 @@ public sealed interface Animation {
         return new Constant(frame);
     }
 
+    static Spin spin(float degreesPerTick) {
+        return new Spin(degreesPerTick);
+    }
+
 
     final class Basic implements Animation {
         private record KeyframeRecord(
@@ -55,9 +61,9 @@ public sealed interface Animation {
 
         private final List<KeyframeRecord> baked;
         private final long loops;
-        private final AnimationProgressMode loopMode;
+        private final AnimationLoopMode loopMode;
 
-        private Basic(List<KeyframeRecord> baked, long loops, AnimationProgressMode loopMode) {
+        private Basic(List<KeyframeRecord> baked, long loops, AnimationLoopMode loopMode) {
             this.baked = baked;
             this.loops = loops;
             this.loopMode = loopMode;
@@ -65,18 +71,14 @@ public sealed interface Animation {
 
 
         @Override
-        public void mutate(AnimationPoseNew pose, AnimationData data) {
+        public void mutate(AnimationPose pose, AnimationData data) {
             int size = baked.size();
             long tick = data.currentTick();
 
-            int effectiveIndex = switch (loopMode) {
-                case STRAIGHT -> (int)(tick % size);
-                case PING_PONG -> {
-                    long cycle = tick / size;
-                    int cycleTick = (int)(tick % size);
-                    yield (cycle % 2 == 1) ? size - 1 - cycleTick : cycleTick;
-                }
-            };
+            // Once finished: hold on the last frame of the final loop instead of wrapping back to the start.
+            if (isFinished(data)) tick = (size * loops) - 1;
+
+            int effectiveIndex = loopMode.effectiveIndex(tick, size);
 
             KeyframeRecord record = baked.get(effectiveIndex);
             List<Pair<AnimationKeyframe, Float>> keyframes = record.keyframes();
@@ -103,7 +105,7 @@ public sealed interface Animation {
             private final List<TimelineEntry> entries = new ArrayList<>();
 
             private long loops = -1;
-            private AnimationProgressMode loopMode = AnimationProgressMode.STRAIGHT;
+            private AnimationLoopMode loopMode = AnimationLoopMode.STRAIGHT;
 
             private Builder(long ticks) {
                 this.ticks = ticks;
@@ -126,7 +128,7 @@ public sealed interface Animation {
                 return this;
             }
 
-            public Builder loop(AnimationProgressMode loopMode) {
+            public Builder loop(AnimationLoopMode loopMode) {
                 this.loopMode = loopMode;
                 return this;
             }
@@ -186,9 +188,8 @@ public sealed interface Animation {
         }
 
         @Override
-        public void mutate(AnimationPoseNew pose, AnimationData data) {
+        public void mutate(AnimationPose pose, AnimationData data) {
             for (Animation animation : animations) {
-                if (animation.isFinished(data)) continue;
                 animation.mutate(pose, data);
             }
         }
@@ -208,8 +209,28 @@ public sealed interface Animation {
         }
 
         @Override
-        public void mutate(AnimationPoseNew pose, AnimationData data) {
+        public void mutate(AnimationPose pose, AnimationData data) {
             frame.applyTo(pose, data, 1f);
+        }
+
+        @Override
+        public boolean isFinished(AnimationData data) {
+            return false;
+        }
+
+    }
+
+    final class Spin implements Animation {
+        private final float degreesPerTick;
+
+        private Spin(float degreesPerTick) {
+            this.degreesPerTick = degreesPerTick;
+        }
+
+        @Override
+        public void mutate(AnimationPose pose, AnimationData data) {
+            float degrees = degreesPerTick * data.currentTick();
+            pose.rotation().mul(new Quaternionf().rotateY((float)Math.toRadians(degrees)));
         }
 
         @Override

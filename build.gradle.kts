@@ -32,6 +32,11 @@ allprojects {
         }
     }
 
+    dependencies {
+        compileOnly(rootProject.libs.lombok)
+        annotationProcessor(rootProject.libs.lombok)
+    }
+
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     }

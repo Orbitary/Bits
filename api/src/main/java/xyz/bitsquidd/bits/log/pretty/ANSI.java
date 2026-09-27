@@ -7,16 +7,82 @@
 
 package xyz.bitsquidd.bits.log.pretty;
 
+import java.io.Console;
+import java.util.regex.Pattern;
+
 /**
  * Provides a comprehensive set of ANSI escape codes for styling console output.
  *
  * @since 0.0.10
  */
 public class ANSI {
+    private static final Pattern ESCAPE_SEQUENCE = Pattern.compile("\\x1B\\[[0-9;]*m");
+
+    /**
+     * System property overriding {@link #isSupported()} detection, accepting {@code true} or {@code false}.
+     *
+     * @since 0.0.23
+     */
+    public static final String OVERRIDE_PROPERTY = "bits.ansi";
+
+    private static final boolean SUPPORTED = detectSupport();
+
     public final String code;
 
     private ANSI(String code) {
         this.code = code;
+    }
+
+    /**
+     * Whether the current output stream is expected to render ANSI escape codes.
+     * <p>
+     * Detection is a heuristic, resolved once at class initialisation, in order of precedence:
+     * the {@value #OVERRIDE_PROPERTY} system property, the {@code NO_COLOR} environment variable
+     * (see <a href="https://no-color.org">no-color.org</a>), then whether the process is attached
+     * to a terminal. Redirected output, IDE consoles and log files typically report {@code false}.
+     *
+     * @since 0.0.23
+     */
+    public static boolean isSupported() {
+        return SUPPORTED;
+    }
+
+    /**
+     * Removes every ANSI escape code from a string, leaving its visible text intact.
+     *
+     * @since 0.0.23
+     */
+    public static String strip(String text) {
+        return ESCAPE_SEQUENCE.matcher(text).replaceAll("");
+    }
+
+    /**
+     * Returns the string as-is where ANSI is supported, otherwise stripped of escape codes.
+     *
+     * @since 0.0.23
+     */
+    public static String render(String text) {
+        return SUPPORTED ? text : strip(text);
+    }
+
+    private static boolean detectSupport() {
+        String override = System.getProperty(OVERRIDE_PROPERTY);
+        if (override != null) return Boolean.parseBoolean(override);
+        if (System.getenv("NO_COLOR") != null) return false;
+        if ("dumb".equals(System.getenv("TERM"))) return false;
+
+        Console console = System.console();
+        if (console == null) return false;
+
+        // Console#isTerminal is Java 22+, whereas this module targets 21. Prior to 22 a
+        // non-null Console already implies a terminal; from 22 onward it no longer does.
+        try {
+            return (boolean)Console.class.getMethod("isTerminal").invoke(console);
+        } catch (NoSuchMethodException e) {
+            return true;
+        } catch (ReflectiveOperationException e) {
+            return false;
+        }
     }
 
     public static abstract class Color extends ANSI {

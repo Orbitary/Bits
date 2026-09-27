@@ -31,6 +31,26 @@ public enum Cardinal {
         this.unitVector = unitVector;
     }
 
+    //region Static Constructors
+    /**
+     * Resolves horizontal-plane {@code yaw} (in degrees) to a {@link Cardinal}.
+     * Only returns {@link #NORTH}, {@link #EAST}, {@link #SOUTH}, or {@link #WEST} — pitch is not considered.
+     */
+    public static Cardinal fromYaw(float yaw) {
+        float normalizedYaw = ((yaw % 360) + 360) % 360;
+
+        if (normalizedYaw >= 315 || normalizedYaw < 45) {
+            return NORTH;
+        } else if (normalizedYaw < 135) {
+            return EAST;
+        } else if (normalizedYaw < 225) {
+            return SOUTH;
+        } else {
+            return WEST;
+        }
+    }
+    //endregion
+
     //region Flipping
     public Cardinal flip() {
         return switch (this) {

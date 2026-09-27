@@ -13,10 +13,30 @@ package xyz.bitsquidd.bits.data.world;
  * @since 0.0.12
  */
 public enum WholeRot {
-    R0,
-    R90,
-    R180,
-    R270,
+    R0(0),
+    R90(90),
+    R180(180),
+    R270(270),
     ;
+
+    private final int degrees;
+
+    WholeRot(int degrees) {
+        this.degrees = degrees;
+    }
+
+    public int getDegrees() {
+        return degrees;
+    }
+
+    public static WholeRot from(int degrees) {
+        return switch (((degrees % 360) + 360) % 360) {
+            case 0 -> R0;
+            case 90 -> R90;
+            case 180 -> R180;
+            case 270 -> R270;
+            default -> throw new IllegalArgumentException("Invalid degrees: " + degrees);
+        };
+    }
 
 }

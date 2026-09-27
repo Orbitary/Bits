@@ -8,6 +8,7 @@
 package xyz.bitsquidd.bits.paper.location.wrapper;
 
 import net.kyori.adventure.key.Key;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.bukkit.Chunk;
@@ -50,6 +51,14 @@ public record ChunkCoordinate(
           levelChunk.getPos().x(),
           levelChunk.getPos().z(),
           levelChunk.getLevel().getWorld().key()
+        );
+    }
+
+    public static ChunkCoordinate fromChunkPos(Key world, ChunkPos chunk) {
+        return new ChunkCoordinate(
+          chunk.x(),
+          chunk.z(),
+          world
         );
     }
 

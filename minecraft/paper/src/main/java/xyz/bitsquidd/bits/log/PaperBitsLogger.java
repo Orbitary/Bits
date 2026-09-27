@@ -13,9 +13,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import xyz.bitsquidd.bits.mc.permission.Permission;
 
+import java.io.File;
+
+
 public class PaperBitsLogger extends BasicLogger {
+    private final org.apache.logging.log4j.Logger output;
+
     public PaperBitsLogger(JavaPlugin plugin, LogFlags flags) {
         super(plugin.getSLF4JLogger(), flags);
+        this.output = Log4jConsole.create("Bits", new File(plugin.getDataFolder(), "logs/bits.log"));
+    }
+
+    @Override
+    protected void writeLine(final String line) {
+        output.info(line);
     }
 
     private void notifyStaff(LogData logData) {

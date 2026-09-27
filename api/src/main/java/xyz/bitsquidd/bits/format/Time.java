@@ -36,19 +36,36 @@ public final class Time {
 
 
     /**
+     * The sign prefix ("-" or "") for a duration, to be applied to its magnitude - Duration's part-extraction
+     * methods (toSecondsPart, toMinutesPart, ...) carry the sign inconsistently across parts for negative
+     * durations (nanos are always non-negative, only seconds carries the sign), so every formatter below
+     * works on the absolute magnitude and re-applies the sign itself.
+     */
+    private static String sign(Duration duration) {
+        return duration.isNegative() ? "-" : "";
+    }
+
+    private static Duration magnitude(Duration duration) {
+        return duration.isNegative() ? duration.negated() : duration;
+    }
+
+
+    /**
      * Formats a duration into a generic time string with seconds and appropriate decimal places.
-     * e.g. "5s", "5.1s", "5.12s"
+     * e.g. "5s", "5.1s", "5.12s", "-5.1s"
      */
     public static String FORMAT_SECS(Duration duration) {
-        long seconds = duration.toSeconds();
-        int millis = duration.toMillisPart();
+        String sign = sign(duration);
+        Duration magnitude = magnitude(duration);
+        long seconds = magnitude.toSeconds();
+        int millis = magnitude.toMillisPart();
 
         if (millis == 0) {
-            return seconds + "s";
+            return sign + seconds + "s";
         } else if (millis % 100 == 0) {
-            return String.format("%d.%1ds", seconds, millis / 100);
+            return String.format("%s%d.%1ds", sign, seconds, millis / 100);
         } else {
-            return String.format("%d.%02ds", seconds, millis / 10);
+            return String.format("%s%d.%02ds", sign, seconds, millis / 10);
         }
     }
 
@@ -67,68 +84,95 @@ public final class Time {
 
     /**
      * Formats a duration into a generic time string with minutes and seconds.
-     * e.g. "5m", "5m 30s"
+     * e.g. "5m", "5m 30s", "-5m 30s"
      */
     public static String FORMAT_MINS_ROUNDED(Duration duration) {
-        long minutes = duration.toMinutes();
-        int seconds = duration.toSecondsPart();
+        String sign = sign(duration);
+        Duration magnitude = magnitude(duration);
+        long minutes = magnitude.toMinutes();
+        int seconds = magnitude.toSecondsPart();
 
         if (seconds == 0) {
-            return minutes + "m";
+            return sign + minutes + "m";
         } else {
-            return String.format("%dm %ds", minutes, seconds);
+            return String.format("%s%dm %ds", sign, minutes, seconds);
         }
     }
 
 
     /**
      * Formats a duration into a clock-style time string (MM:SS).
-     * e.g. "05:07" or "00:45"
+     * e.g. "05:07", "00:45" or "-05:07"
      */
     public static String FORMAT_CLOCK_MMSS(Duration duration) {
-        int secondsPart = duration.toSecondsPart();
-        int minutesPart = duration.toMinutesPart();
+        String sign = sign(duration);
+        Duration magnitude = magnitude(duration);
+        int secondsPart = magnitude.toSecondsPart();
+        int minutesPart = magnitude.toMinutesPart();
 
-        return String.format("%02d:%02d", minutesPart, secondsPart);
+        return String.format("%s%02d:%02d", sign, minutesPart, secondsPart);
     }
 
     /**
-     * Formats a duration into a clock-style time string (SS:SSMS).
-     * e.g. "05:07" or "00:45"
+     * Formats a duration into a clock-style time string (SS:msms), where msms is the elapsed 50ms tick within
+     * the second shown as a 2-digit 00-95 step (not true milliseconds).
+     * e.g. "07:15" (7 seconds, 3 ticks in) or "-07:15"
      */
     public static String FORMAT_CLOCK_SSMSMS(Duration duration) {
-        int secondsPart = duration.toSecondsPart();
-        int millisPart = duration.toMillisPart();
+        String sign = sign(duration);
+        Duration magnitude = magnitude(duration);
+        int secondsPart = magnitude.toSecondsPart();
+        int millisPart = magnitude.toMillisPart();
         millisPart = Math.min(95, (Math.round(millisPart / 50.0f) * 5));
 
-        return String.format("%02d:%02d", secondsPart, millisPart);
+        return String.format("%s%02d:%02d", sign, secondsPart, millisPart);
     }
 
     /**
-     * Formats a duration into a clock-style time string (MM:SS:MSMS).
-     * e.g. "05:07:15" or "00:45:05"
+     * Formats a duration into a clock-style time string (MM:SS:msms), where msms is the elapsed 50ms tick
+     * within the second shown as a 2-digit 00-95 step (not true milliseconds).
+     * e.g. "05:07:15" or "00:45:05" or "-05:07:15"
      */
     public static String FORMAT_CLOCK_MMSSMSMS(Duration duration) {
-        int secondsPart = duration.toSecondsPart();
-        int minutesPart = duration.toMinutesPart();
-        int millisPart = duration.toMillisPart();
+        String sign = sign(duration);
+        Duration magnitude = magnitude(duration);
+        int secondsPart = magnitude.toSecondsPart();
+        int minutesPart = magnitude.toMinutesPart();
+        int millisPart = magnitude.toMillisPart();
         millisPart = Math.min(95, (Math.round(millisPart / 50.0f) * 5));
 
-        return String.format("%02d:%02d:%02d", minutesPart, secondsPart, millisPart);
+        return String.format("%s%02d:%02d:%02d", sign, minutesPart, secondsPart, millisPart);
+    }
+
+    /**
+     * Formats a duration into a clock-style time string (MM:SS:MS) with true, unrounded milliseconds -
+     * unlike {@link #FORMAT_CLOCK_MMSSMSMS}, this does not quantize to the 50ms tick grid.
+     * e.g. "05:07:153" or "00:45:008" or "-05:07:153"
+     */
+    public static String FORMAT_CLOCK_MMSSMSMS_NOROUND(Duration duration) {
+        String sign = sign(duration);
+        Duration magnitude = magnitude(duration);
+        int secondsPart = magnitude.toSecondsPart();
+        int minutesPart = magnitude.toMinutesPart();
+        int millisPart = magnitude.toMillisPart();
+
+        return String.format("%s%02d:%02d:%03d", sign, minutesPart, secondsPart, millisPart);
     }
 
     /**
      * Formats a duration into a clock-style time string (M:SS), allowing for non-zero minutes without leading zero.
-     * e.g. "5:07" or "0:45"
+     * e.g. "5:07", "0:45" or "-5:07"
      */
     public static String FORMAT_CLOCK_NONZERO_MINUTES(Duration duration) {
-        int secondsPart = duration.toSecondsPart();
-        int minutesPart = (int)duration.toMinutes();
+        String sign = sign(duration);
+        Duration magnitude = magnitude(duration);
+        int secondsPart = magnitude.toSecondsPart();
+        int minutesPart = (int)magnitude.toMinutes();
 
         if (minutesPart > 0) {
-            return String.format("%d:%02d", minutesPart, secondsPart);
+            return String.format("%s%d:%02d", sign, minutesPart, secondsPart);
         } else {
-            return String.format("0:%02d", secondsPart);
+            return String.format("%s0:%02d", sign, secondsPart);
         }
     }
 

@@ -11,14 +11,14 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 
-public record AnimationPoseNew(
+public record AnimationPose(
   Vector3f translation,
   Quaternionf rotation,
   Vector3f scale
 ) {
 
-    public static AnimationPoseNew identity() {
-        return new AnimationPoseNew(
+    public static AnimationPose identity() {
+        return new AnimationPose(
           new Vector3f(0),  // No translation
           new Quaternionf(),  // No rotation
           new Vector3f(1)  // No scaling

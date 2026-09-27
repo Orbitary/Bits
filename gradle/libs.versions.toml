@@ -3,8 +3,11 @@ adventure = "5.1.1"
 jackson = "2.22.0"
 
 [libraries]
+lombok = { group = "org.projectlombok", name = "lombok", version = "1.18.46" }
+
 joml = { group = "org.joml", name = "joml", version = "1.10.8" }
 logger = { group = "org.slf4j", name = "slf4j-api", version = "2.0.18" }
+log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core", version = "2.19.0" }
 classgraph = { group = "io.github.classgraph", name = "classgraph", version = "4.8.184" }
 guava = { group = "com.google.guava", name = "guava", version = "33.6.0-jre" }
 

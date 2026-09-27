@@ -15,12 +15,24 @@ import java.util.function.Function;
 
 public sealed interface AnimationKeyframe {
 
-    void applyTo(AnimationPoseNew pose, AnimationData data, float proportion);
+    void applyTo(AnimationPose pose, AnimationData data, float proportion);
 
-    default void applyBlended(AnimationPoseNew pose, AnimationData data, AnimationKeyframe other, float proportion) {
+    default void applyBlended(AnimationPose pose, AnimationData data, AnimationKeyframe other, float proportion) {
         this.applyTo(pose, data, 1f - proportion);
         other.applyTo(pose, data, proportion);
     }
+
+
+    record Empty() implements AnimationKeyframe {
+        public static final Empty INSTANCE = new Empty();
+
+        @Override
+        public void applyTo(AnimationPose pose, AnimationData data, float proportion) {
+            // No-op
+        }
+
+    }
+
 
     record Translation(
       Function<AnimationData, Vector3f> translation
@@ -52,7 +64,7 @@ public sealed interface AnimationKeyframe {
 
 
         @Override
-        public void applyTo(AnimationPoseNew pose, AnimationData data, float proportion) {
+        public void applyTo(AnimationPose pose, AnimationData data, float proportion) {
             Vector3f effective = translation.apply(data).lerp(new Vector3f(), 1 - proportion);
             pose.translation().add(effective); // Translation combines additively
         }
@@ -89,13 +101,13 @@ public sealed interface AnimationKeyframe {
 
 
         @Override
-        public void applyTo(AnimationPoseNew pose, AnimationData data, float proportion) {
+        public void applyTo(AnimationPose pose, AnimationData data, float proportion) {
             Quaternionf effective = rotation.apply(data).slerp(new Quaternionf(), 1 - proportion);
             pose.rotation().mul(effective); // Rotation combines multiplicatively
         }
 
         @Override
-        public void applyBlended(AnimationPoseNew pose, AnimationData data, AnimationKeyframe other, float proportion) {
+        public void applyBlended(AnimationPose pose, AnimationData data, AnimationKeyframe other, float proportion) {
             if (other instanceof Rotation(Function<AnimationData, Quaternionf> otherRotation)) {
                 Quaternionf from = this.rotation.apply(data);
                 Quaternionf to = otherRotation.apply(data);
@@ -142,13 +154,13 @@ public sealed interface AnimationKeyframe {
 
 
         @Override
-        public void applyTo(AnimationPoseNew pose, AnimationData data, float proportion) {
+        public void applyTo(AnimationPose pose, AnimationData data, float proportion) {
             Vector3f effective = scale.apply(data).lerp(new Vector3f(1), 1 - proportion);
             pose.scale().mul(effective); // Scale combines multiplicatively
         }
 
         @Override
-        public void applyBlended(AnimationPoseNew pose, AnimationData data, AnimationKeyframe other, float proportion) {
+        public void applyBlended(AnimationPose pose, AnimationData data, AnimationKeyframe other, float proportion) {
             if (other instanceof Scale(Function<AnimationData, Vector3f> otherScale)) {
                 Vector3f from = this.scale.apply(data);
                 Vector3f to = otherScale.apply(data);

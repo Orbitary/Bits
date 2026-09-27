@@ -12,6 +12,9 @@ import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
 import java.util.Collections;
 import java.util.Set;
 
+
+// Implementations should be done yourself, not a good fit for raw regions.
+@Deprecated(forRemoval = true)
 public abstract class PointVisualiser extends RegionVisualiser {
     private final BlockPos point;
 

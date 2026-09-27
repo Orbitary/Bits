@@ -48,15 +48,22 @@ public abstract class Logger {
     }
 
 
+    /**
+     * Initializes the logger with the specified logging flags.
+     * Note: a static singleton pattern is not enforced; the most recent instance created will be used.
+     */
     public Logger(LogFlags flags) {
         this.flags = flags;
-        if (instance != null) throw new IllegalStateException("Logger is already initialized!");
-        instance = this;
+        if (instance == null) instance = this; // The most recent instance created will be used as the global logger.
     }
 
     public static Logger get() {
         if (instance == null) throw new IllegalStateException("Logger is not initialized! Ensure you instantiate a `new Logger()` implementation during your application's startup.");
         return instance;
+    }
+
+    public void set() {
+        instance = this;
     }
 
 

@@ -9,6 +9,6 @@ package xyz.bitsquidd.bits.mc.animation;
 
 
 public interface Animatable {
-    void applyPose(AnimationPoseNew pose);
+    void applyPose(AnimationPose pose);
 
 }

@@ -55,4 +55,23 @@ public final class AnnotationHelper {
         }
     }
 
+
+    /**
+     * Get if the class has any method annotated with the given annotation, searching superclasses and interfaces.
+     *
+     * @since 0.0.25
+     */
+    public static boolean hasMethodWithAnnotation(Class<?> clazz, Class<? extends Annotation> annotationClass) {
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(annotationClass)) return true;
+        }
+        Class<?> superclass = clazz.getSuperclass();
+        if (superclass != null && hasMethodWithAnnotation(superclass, annotationClass)) return true;
+        for (Class<?> iface : clazz.getInterfaces()) {
+            if (hasMethodWithAnnotation(iface, annotationClass)) return true;
+        }
+        return false;
+    }
+
+
 }

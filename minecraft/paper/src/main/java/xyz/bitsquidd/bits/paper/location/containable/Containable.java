@@ -7,6 +7,8 @@
 
 package xyz.bitsquidd.bits.paper.location.containable;
 
+import net.kyori.adventure.key.Key;
+import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,6 +17,7 @@ import org.bukkit.block.data.BlockData;
 
 import xyz.bitsquidd.bits.paper.location.wrapper.BlockLoc;
 import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
+import xyz.bitsquidd.bits.paper.location.wrapper.ChunkCoordinate;
 import xyz.bitsquidd.bits.paper.location.wrapper.Locatable;
 import xyz.bitsquidd.bits.paper.util.bukkit.runnable.Runnables;
 
@@ -165,6 +168,38 @@ public interface Containable {
               .collect(Collectors.toSet()),
             Runnables::runOnMainThread
           );
+    }
+    //endregion
+
+
+    //region Chunks
+
+    /**
+     * Every chunk holding a block this contains, per {@link #getBlockLocs()}.
+     * <p>
+     * Generic: optimised in implementations: {@link xyz.bitsquidd.bits.paper.location.containable.region.Region}
+     *
+     * @since 0.0.28
+     */
+    default Set<ChunkCoordinate> getChunks() {
+        Key worldKey = world().key();
+        return getBlockLocs().stream()
+          .map(loc -> new ChunkCoordinate(loc.x() >> 4, loc.z() >> 4, worldKey))
+          .collect(Collectors.toSet());
+    }
+
+    /**
+     * Like {@link #getChunks()}, but loads (or fetches, if already loaded) every touched chunk asynchronously.
+     *
+     * @since 0.0.28
+     */
+    default CompletableFuture<Set<Chunk>> getChunksAsync() {
+        List<CompletableFuture<Chunk>> futures = getChunks().stream()
+          .map(coord -> world().getChunkAtAsync(coord.x(), coord.z()))
+          .toList();
+
+        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
+          .thenApply(_ -> futures.stream().map(CompletableFuture::join).collect(Collectors.toSet()));
     }
     //endregion
 

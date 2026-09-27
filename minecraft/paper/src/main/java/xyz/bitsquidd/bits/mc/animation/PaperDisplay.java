@@ -25,7 +25,7 @@ public class PaperDisplay implements Animatable {
 
 
     @Override
-    public void applyPose(AnimationPoseNew pose) {
+    public void applyPose(AnimationPose pose) {
         display.setTransformation(
           new Transformation(
             pose.translation(),

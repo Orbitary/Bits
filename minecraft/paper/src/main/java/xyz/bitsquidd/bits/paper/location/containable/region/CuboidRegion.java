@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
 
 import xyz.bitsquidd.bits.paper.location.Locations;
 import xyz.bitsquidd.bits.paper.location.containable.area.visualisation.Center;
@@ -40,7 +42,12 @@ public final class CuboidRegion extends Region {
 
     @JsonCreator
     public CuboidRegion(@JsonProperty("world") World world, @JsonProperty("corner1") BlockPos corner1, @JsonProperty("corner2") BlockPos corner2) {
-        super(world);
+        this(world, corner1, corner2, new Quaternionf());
+    }
+
+
+    public CuboidRegion(World world, BlockPos corner1, BlockPos corner2, Quaternionf rotation) {
+        super(world, rotation);
 
         this.min = BlockPos.of(Locations.getMinLocation(List.of(corner1, corner2)));
         this.max = BlockPos.of(Locations.getMaxLocation(List.of(corner1, corner2)));
@@ -58,15 +65,20 @@ public final class CuboidRegion extends Region {
         if (corner1.getWorld() != corner2.getWorld()) throw new IllegalArgumentException("Both corners must be in the same world");
     }
 
+    public CuboidRegion(Location corner1, Location corner2, Quaternionf rotation) {
+        this(corner1.getWorld(), BlockPos.of(corner1), BlockPos.of(corner2), rotation);
+        if (corner1.getWorld() != corner2.getWorld()) throw new IllegalArgumentException("Both corners must be in the same world");
+    }
+
     //region Java Object Overrides
     @Override
     public String toString() {
-        return "CubeRegion{" + min + " -> " + max + "}";
+        return "CubeRegion{" + min + " -> " + max + ", rotation=" + rotation + "}";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(world, min, max);
+        return Objects.hash(world, min, max, rotation);
     }
 
     @Override
@@ -76,7 +88,8 @@ public final class CuboidRegion extends Region {
 
         return Objects.equals(world, other.world) &&
           Objects.equals(min, other.min) &&
-          Objects.equals(max, other.max);
+          Objects.equals(max, other.max) &&
+          rotation.equals(other.rotation, 1.0e-6f);
     }//endregion
 
 
@@ -85,10 +98,11 @@ public final class CuboidRegion extends Region {
         if (locatable == null) return false;
 
         Vector vector = locatable.asVector();
+        BlockPos c = center();
+        Vector3d local = toLocal(vector.getX(), vector.getY(), vector.getZ(), c.x, c.y, c.z);
 
-        return vector.getX() >= minX && vector.getX() <= maxX
-          && vector.getY() >= minY && vector.getY() <= maxY
-          && vector.getZ() >= minZ && vector.getZ() <= maxZ;
+        double halfX = (maxX - minX) / 2.0, halfY = (maxY - minY) / 2.0, halfZ = (maxZ - minZ) / 2.0;
+        return Math.abs(local.x) <= halfX && Math.abs(local.y) <= halfY && Math.abs(local.z) <= halfZ;
     }
 
     @Override
@@ -117,7 +131,11 @@ public final class CuboidRegion extends Region {
         double y = minY + Math.random() * (maxY - minY);
         double z = minZ + Math.random() * (maxZ - minZ);
 
-        return Optional.of(BlockPos.of(x, y, z));
+        BlockPos c = center();
+        Vector3d local = new Vector3d(x - c.x, y - c.y, z - c.z);
+        rotation.transform(local);
+
+        return Optional.of(BlockPos.of(c.x + local.x, c.y + local.y, c.z + local.z));
     }
 
     @Override
@@ -125,7 +143,8 @@ public final class CuboidRegion extends Region {
         return new CuboidRegion(
           world,
           BlockPos.of(minX - x, minY - y, minZ - z),
-          BlockPos.of(maxX + x, maxY + y, maxZ + z)
+          BlockPos.of(maxX + x, maxY + y, maxZ + z),
+          rotation
         );
     }
 
@@ -134,11 +153,13 @@ public final class CuboidRegion extends Region {
         return new CuboidRegion(
           world,
           BlockPos.of(minX + x, minY + y, minZ + z),
-          BlockPos.of(maxX + x, maxY + y, maxZ + z)
+          BlockPos.of(maxX + x, maxY + y, maxZ + z),
+          rotation
         );
     }
 
 
+    // TODO: Not rotation-aware.
     @Override
     protected Set<RegionVisualiser> createVisualiser() {
         return Set.of(

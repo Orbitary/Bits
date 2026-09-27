@@ -17,6 +17,9 @@ import xyz.bitsquidd.bits.paper.location.wrapper.BlockPos;
 import java.util.HashSet;
 import java.util.Set;
 
+
+// Implementations should be done yourself, not a good fit for raw regions.
+@Deprecated(forRemoval = true)
 public abstract class RegionVisualiser {
     private final Set<ItemDisplay> displays = new HashSet<>();
 

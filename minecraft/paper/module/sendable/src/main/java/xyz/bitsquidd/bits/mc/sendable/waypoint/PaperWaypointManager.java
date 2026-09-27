@@ -89,9 +89,9 @@ public class PaperWaypointManager extends WaypointManager {
                 UUID receiverUUID = receiver.getUniqueId();
                 Map<UUID, WaypointTransmitter.Connection> receiverConnections = transmittors.computeIfAbsent(receiverUUID, _ -> new ConcurrentHashMap<>());
 
-                WaypointTransmitter.Connection existing = receiverConnections.get(handleUUID);
-
                 Runnables.basic(() -> {
+                    WaypointTransmitter.Connection existing = receiverConnections.get(handleUUID);
+
                     if (existing == null) {
                         Player player = Bukkit.getPlayer(receiverUUID);
                         if (player == null) return;

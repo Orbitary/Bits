@@ -7,6 +7,7 @@
 
 package xyz.bitsquidd.bits.paper.effect.state;
 
+import lombok.With;
 import org.bukkit.entity.LivingEntity;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -29,6 +30,7 @@ import java.util.UUID;
  *
  * @since 0.0.21
  */
+@With
 public record EffectInstance(
   Effect effect,
   EffectModifier modifier,
@@ -55,6 +57,7 @@ public record EffectInstance(
      * Returns a new instance with the modifier replaced by the result of applying the given transform.
      *
      * @param transform the transform to apply to the current modifier
+     *
      * @return a new instance with the transformed modifier
      *
      * @since 0.0.21

@@ -35,7 +35,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 /**
@@ -56,6 +59,11 @@ import java.util.Set;
  * @since 0.0.10
  */
 public abstract class BitsArgumentRegistry<T> {
+    /**
+     * Classes excluded here have no no-arg constructor and are instantiated manually instead of via classpath scanning.
+     */
+    private static final Predicate<Class<?>> CAN_AUTO_REGISTER = clazz -> clazz != GenericEnumParser.class;
+
     private final Map<TypeSignature<?>, ArgumentParser<?, ?>> parsers = new HashMap<>();
 
     public BitsArgumentRegistry() {
@@ -103,7 +111,13 @@ public abstract class BitsArgumentRegistry<T> {
      */
     @SuppressWarnings("unchecked")
     protected AddableSet<ArgumentParser<?, ?>> initialiseParsers() {
-        return AddableSet.of((Set<ArgumentParser<?, ?>>)(Set<?>)ReflectionUtils.General.createClassesInDir("*", ArgumentParser.class, ScannerFlags.DEFAULT));
+        Set<ArgumentParser<?, ?>> parsers = (Set<ArgumentParser<?, ?>>)ReflectionUtils.Scanner.tryGetClasses("*", ArgumentParser.class, ScannerFlags.DEFAULT).stream()
+          .filter(CAN_AUTO_REGISTER)
+          .map(ReflectionUtils.Instance::tryCreate)
+          .filter(Optional::isPresent)
+          .map(Optional::get)
+          .collect(Collectors.toSet());
+        return AddableSet.of(parsers);
     }
 
     /**

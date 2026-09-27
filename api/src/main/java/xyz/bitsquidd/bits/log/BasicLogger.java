@@ -7,9 +7,11 @@
 
 package xyz.bitsquidd.bits.log;
 
+import xyz.bitsquidd.bits.log.pretty.ANSI;
 import xyz.bitsquidd.bits.log.pretty.PrettyLogLevel;
 
 import java.lang.reflect.InvocationTargetException;
+
 
 /**
  * A standard implementation of {@link Logger} that outputs to the system console.
@@ -38,36 +40,59 @@ public class BasicLogger extends Logger {
         return slf4j;
     }
 
+    /**
+     * Writes a formatted line, discarding its ANSI styling where the console cannot render it.
+     *
+     * @since 0.0.23
+     */
+    protected void write(final String line) {
+        writeLine(ANSI.render(line));
+    }
+
+    /**
+     * Writes a single, fully formatted line to the platform's console.
+     * <p>
+     * Override this to redirect output away from {@link java.lang.System#out}, which
+     * some platforms (notably Paper and Minecraft itself) intercept and re-prefix.
+     *
+     * @param line the formatted line to write
+     *
+     * @since 0.0.23
+     */
+    protected void writeLine(final String line) {
+        System.out.println(line);
+    }
+
     @Override
     public void debugInternal(final String msg) {
-        System.out.println(LogType.DEBUG.format(msg));
+        write(LogType.DEBUG.format(msg));
         onLog(new LogData(msg, LogType.DEBUG));
     }
 
     @Override
     public void successInternal(final String msg) {
-        System.out.println(LogType.SUCCESS.format(msg));
+        write(LogType.SUCCESS.format(msg));
         onLog(new LogData(msg, LogType.SUCCESS));
     }
 
     @Override
     public void infoInternal(final String msg) {
-        System.out.println(LogType.INFO.format(msg));
+        write(LogType.INFO.format(msg));
         onLog(new LogData(msg, LogType.INFO));
     }
 
     @Override
     public void warningInternal(final String msg) {
-        System.out.println(LogType.WARNING.format(msg));
+        write(LogType.WARNING.format(msg));
         onLog(new LogData(msg, LogType.WARNING));
     }
 
     @Override
     public void errorInternal(final String msg) {
-        System.out.println(LogType.ERROR.format(msg));
+        write(LogType.ERROR.format(msg));
         if (flags.logExtendedError()) {
             for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-                System.out.println(LogType.ERROR.format("\tat " + element));
+                write(LogType.ERROR.format("\tat " + element));
             }
         }
         onLog(new LogData(msg, LogType.ERROR));
@@ -89,7 +114,9 @@ public class BasicLogger extends Logger {
         }
 
         Throwable real = throwable;
-        while (real.getCause() != null && real.getCause() != real) real = real.getCause();
+        while (real.getCause() != null && real.getCause() != real) {
+            real = real.getCause();
+        }
 
         StackTraceElement[] stackTrace = real.getStackTrace();
         String header;
@@ -107,11 +134,11 @@ public class BasicLogger extends Logger {
               real.getMessage()
             );
         }
-        System.out.println(LogType.ERROR.format(header));
+        write(LogType.ERROR.format(header));
 
         if (flags.logExtendedError()) {
             for (StackTraceElement element : real.getStackTrace()) {
-                System.out.println(PrettyLogLevel.RED.formatMessage("\tat " + element));
+                write(PrettyLogLevel.RED.formatMessage("\tat " + element));
             }
         }
         onLog(new LogData(msg, LogType.FATAL));

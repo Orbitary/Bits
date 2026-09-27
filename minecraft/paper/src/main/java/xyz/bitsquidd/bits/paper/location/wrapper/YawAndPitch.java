@@ -205,23 +205,13 @@ public final class YawAndPitch {
     }
 
     public Cardinal toCardinal() {
-        float normalizedYaw = ((yaw % 360) + 360) % 360;
-
         if (pitch > 45) {
             return Cardinal.DOWN;
         } else if (pitch < -45) {
             return Cardinal.UP;
-        } else if (normalizedYaw >= 315 || normalizedYaw < 45) {
-            return Cardinal.NORTH;
-        } else if (normalizedYaw >= 45 && normalizedYaw < 135) {
-            return Cardinal.EAST;
-        } else if (normalizedYaw >= 135 && normalizedYaw < 225) {
-            return Cardinal.SOUTH;
-        } else if (normalizedYaw >= 225) {
-            return Cardinal.WEST;
         }
 
-        return Cardinal.NORTH; // Fallback, should not reach here
+        return Cardinal.fromYaw(yaw);
     }
 
     public Vector toVector() {

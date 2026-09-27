@@ -182,13 +182,15 @@ public final class Effect {
 
     @ApiStatus.Internal
     void apply(EffectInstance instance) {
-        behaviour.forEach(b -> b.getFirst().apply(instance.transform(b.getSecond())));
+        EffectInstance self = instance.withEffect(this);
+        behaviour.forEach(b -> b.getFirst().apply(self.transform(b.getSecond())));
         children.forEach(c -> c.getFirst().apply(instance.transform(c.getSecond())));
     }
 
     @ApiStatus.Internal
     void unapply(EffectInstance instance) {
-        behaviour.forEach(b -> b.getFirst().unapply(instance.transform(b.getSecond())));
+        EffectInstance self = instance.withEffect(this);
+        behaviour.forEach(b -> b.getFirst().unapply(self.transform(b.getSecond())));
         children.forEach(c -> c.getFirst().unapply(instance.transform(c.getSecond())));
     }
 
@@ -202,7 +204,8 @@ public final class Effect {
             return;
         }
 
-        behaviour.forEach(b -> b.getFirst().tick(instance.transform(b.getSecond()), tick));
+        EffectInstance self = instance.withEffect(this);
+        behaviour.forEach(b -> b.getFirst().tick(self.transform(b.getSecond()), tick));
         children.forEach(c -> c.getFirst().tick(instance.transform(c.getSecond()), tick));
     }
 

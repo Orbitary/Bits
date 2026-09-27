@@ -104,7 +104,8 @@ public class EffectManager implements CoreManager, BitsModule {
         LivingEntity entity = instance.target();
         Map<Effect, EffectInstance> effects = activeEffects.get(entity.getUniqueId());
         if (effects == null) return;
-        effects.remove(instance.effect());
+
+        effects.remove(instance.effect(), instance);
     }
 
 

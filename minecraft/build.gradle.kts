@@ -7,6 +7,8 @@
 
 dependencies {
     api(project(":api"))
+
+    compileOnly(rootProject.libs.log4j.core)
 }
 
 allprojects {
