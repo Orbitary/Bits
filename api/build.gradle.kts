@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.shade
+import xyz.orbitary.util.shade
 
 description = "🦑 Utility API for Bits Plugin development."
 
@@ -30,6 +30,6 @@ dependencies {
 }
 
 tasks.shadowJar {
-    relocate("io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
-    relocate("nonapi.io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
+    relocate("io.github.classgraph", "xyz.orbitary.lib.classgraph")
+    relocate("nonapi.io.github.classgraph", "xyz.orbitary.lib.classgraph")
 }

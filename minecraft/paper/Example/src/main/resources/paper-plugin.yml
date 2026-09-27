@@ -5,4 +5,4 @@ api-version: '1.21.10'
 authors:
     - 'BitSquidd'
 prefix: 'Bits'
-main: xyz.bitsquidd.bits.paper.example.ExampleBitsPlugin
+main: xyz.orbitary.bits.paper.example.ExampleBitsPlugin

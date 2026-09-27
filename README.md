@@ -51,17 +51,17 @@ repositories {
 
 dependencies {
     // Core API (required)
-    implementation("xyz.bitsquidd.bits:api:0.0.25")
+    implementation("xyz.orbitary.bits:api:0.0.25")
 
     // Platform implementations
-    implementation("xyz.bitsquidd.bits.paper:paper:0.0.25")
-    implementation("xyz.bitsquidd.bits.velocity:velocity:0.0.25")
-    implementation("xyz.bitsquidd.bits.fabric:fabric:0.0.25")
+    implementation("xyz.orbitary.bits.paper:paper:0.0.25")
+    implementation("xyz.orbitary.bits.velocity:velocity:0.0.25")
+    implementation("xyz.orbitary.bits.fabric:fabric:0.0.25")
 
     // Optional: Platform-specific modules
-    implementation("xyz.bitsquidd.bits.paper:sendable:0.0.25")
-    implementation("xyz.bitsquidd.bits.paper:command:0.0.25")
-    implementation("xyz.bitsquidd.bits.velocity:command:0.0.25")
+    implementation("xyz.orbitary.bits.paper:sendable:0.0.25")
+    implementation("xyz.orbitary.bits.paper:command:0.0.25")
+    implementation("xyz.orbitary.bits.velocity:command:0.0.25")
 }
 ```
 
@@ -77,17 +77,17 @@ repositories {
 
 dependencies {
     // Core API (required)
-    implementation 'xyz.bitsquidd.bits:api:0.0.20'
+    implementation 'xyz.orbitary.bits:api:0.0.20'
 
     // Platform implementations
-    implementation 'xyz.bitsquidd.bits.paper:paper:0.0.20'
-    implementation 'xyz.bitsquidd.bits.velocity:velocity:0.0.20'
-    implementation 'xyz.bitsquidd.bits.fabric:fabric:0.0.20'
+    implementation 'xyz.orbitary.bits.paper:paper:0.0.20'
+    implementation 'xyz.orbitary.bits.velocity:velocity:0.0.20'
+    implementation 'xyz.orbitary.bits.fabric:fabric:0.0.20'
 
     // Optional: Platform-specific modules
-    implementation 'xyz.bitsquidd.bits.paper:sendable:0.0.20'
-    implementation 'xyz.bitsquidd.bits.paper:command:0.0.20'
-    implementation 'xyz.bitsquidd.bits.velocity:command:0.0.20'
+    implementation 'xyz.orbitary.bits.paper:sendable:0.0.20'
+    implementation 'xyz.orbitary.bits.paper:command:0.0.20'
+    implementation 'xyz.orbitary.bits.velocity:command:0.0.20'
 }
 ```
 
@@ -108,24 +108,24 @@ dependencies {
 <dependencies>
 <!-- Core API (required) -->
 <dependency>
-    <groupId>xyz.bitsquidd.bits</groupId>
+    <groupId>xyz.orbitary.bits</groupId>
     <artifactId>api</artifactId>
     <version>0.0.25</version>
 </dependency>
 
 <!-- Platform implementations -->
 <dependency>
-    <groupId>xyz.bitsquidd.bits.paper</groupId>
+    <groupId>xyz.orbitary.bits.paper</groupId>
     <artifactId>paper</artifactId>
     <version>0.0.25</version>
 </dependency>
 <dependency>
-    <groupId>xyz.bitsquidd.bits.velocity</groupId>
+    <groupId>xyz.orbitary.bits.velocity</groupId>
     <artifactId>velocity</artifactId>
     <version>0.0.25</version>
 </dependency>
 <dependency>
-    <groupId>xyz.bitsquidd.bits.fabric</groupId>
+    <groupId>xyz.orbitary.bits.fabric</groupId>
     <artifactId>fabric</artifactId>
     <version>0.0.25</version>
 </dependency>

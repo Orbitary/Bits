@@ -1,0 +1,33 @@
+/*
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
+ *
+ * Copyright (c) 2023-2026 ImBit
+ */
+
+package xyz.orbitary.bits.discord.command.argument.impl;
+
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+
+import xyz.orbitary.bits.discord.command.JdaCommandContext;
+import xyz.orbitary.bits.discord.command.argument.JdaArgumentParser;
+
+
+public class BooleanParser extends JdaArgumentParser<Boolean> {
+    @Override
+    public Class<Boolean> type() {
+        return Boolean.class;
+    }
+
+    @Override
+    public OptionType optionType() {
+        return OptionType.BOOLEAN;
+    }
+
+    @Override
+    public Boolean resolve(OptionMapping m, JdaCommandContext ctx) {
+        return m.getAsBoolean();
+    }
+
+}

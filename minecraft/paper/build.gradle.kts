@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.shade
+import xyz.orbitary.util.shade
 
 /*
  * This file is part of a Bit libraries package.
@@ -22,7 +22,7 @@ val paperweightPlugin = paperLibs.plugins.paperweight.userdev.get().pluginId
 val paperApiVersion = paperLibs.versions.paper.api.get()
 
 allprojects {
-    group = "xyz.bitsquidd.bits.paper"
+    group = "xyz.orbitary.bits.paper"
 
     plugins.apply(paperweightPlugin)
 

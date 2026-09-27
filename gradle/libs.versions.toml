@@ -24,4 +24,4 @@ adventure-text-serializer-plain = { group = "net.kyori", name = "adventure-text-
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
 
 [plugins]
-bit-convention = { id = "xyz.bitsquidd.convention", version = "1.0.+" }
+bit-convention = { id = "xyz.orbitary.convention", version = "1.0.+" }

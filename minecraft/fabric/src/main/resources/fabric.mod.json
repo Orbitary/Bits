@@ -12,7 +12,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "xyz.bitsquidd.bits.fabric.BitsClientInitializer"
+      "xyz.orbitary.bits.fabric.BitsClientInitializer"
     ]
   },
   "depends": {

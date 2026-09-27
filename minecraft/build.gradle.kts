@@ -12,6 +12,6 @@ dependencies {
 }
 
 allprojects {
-    group = "xyz.bitsquidd.bits.minecraft"
+    group = "xyz.orbitary.bits.minecraft"
 
 }

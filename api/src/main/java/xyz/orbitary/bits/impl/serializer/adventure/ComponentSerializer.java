@@ -1,0 +1,36 @@
+/*
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
+ *
+ * Copyright (c) 2023-2026 ImBit
+ */
+
+package xyz.orbitary.bits.impl.serializer.adventure;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+
+import xyz.orbitary.bits.util.serializer.MultiSerializer;
+import xyz.orbitary.bits.util.serializer.Serializer;
+
+
+@Serializer
+public final class ComponentSerializer extends MultiSerializer<Component> {
+    private ComponentSerializer() {
+        super(Component.class);
+    }
+
+    // Although we could consider the JsonComponentSerializer, it is not as efficient as the minimessage format.
+    @Override
+    protected JsonNode serialize(Component value) {
+        return TextNode.valueOf(MiniMessage.miniMessage().serialize(value));
+    }
+
+    @Override
+    protected Component deserialize(JsonNode node) {
+        return MiniMessage.miniMessage().deserialize(node.asText());
+    }
+
+}

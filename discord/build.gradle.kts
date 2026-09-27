@@ -4,6 +4,6 @@ dependencies {
 }
 
 allprojects {
-    group = "xyz.bitsquidd.bits.discord"
+    group = "xyz.orbitary.bits.discord"
 
 }

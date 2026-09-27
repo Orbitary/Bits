@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 public class CustomLoggerFactory implements ILoggerFactory {
     @Override
     public Logger getLogger(String s) {
-        return xyz.bitsquidd.bits.log.Logger.get().slf4j();
+        return xyz.orbitary.bits.log.Logger.get().slf4j();
     }
 
 }

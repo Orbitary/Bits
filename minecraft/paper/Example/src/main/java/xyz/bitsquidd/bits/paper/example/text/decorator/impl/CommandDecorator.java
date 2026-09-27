@@ -1,11 +1,11 @@
-package xyz.bitsquidd.bits.paper.example.text.decorator.impl;
+package xyz.orbitary.bits.paper.example.text.decorator.impl;
 
 import net.kyori.adventure.text.Component;
 
-import xyz.bitsquidd.bits.command.CommandReturnType;
-import xyz.bitsquidd.bits.sendable.text.decorator.formatter.BasicColorFormatter;
-import xyz.bitsquidd.bits.sendable.text.decorator.impl.ColorLightenerFormatter;
-import xyz.bitsquidd.bits.sendable.text.decorator.impl.StyleDecorator;
+import xyz.orbitary.bits.command.CommandReturnType;
+import xyz.orbitary.bits.sendable.text.decorator.formatter.BasicColorFormatter;
+import xyz.orbitary.bits.sendable.text.decorator.impl.ColorLightenerFormatter;
+import xyz.orbitary.bits.sendable.text.decorator.impl.StyleDecorator;
 
 import java.util.Locale;
 

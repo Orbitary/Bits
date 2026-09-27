@@ -1,0 +1,64 @@
+/*
+ * This file is part of a Bit libraries package.
+ * Licensed under the GNU Lesser General Public License v3.0.
+ *
+ * Copyright (c) 2023-2026 ImBit
+ */
+
+package xyz.orbitary.bits;
+
+import net.dv8tion.jda.api.JDA;
+
+import xyz.orbitary.bits.discord.command.JdaCommandManager;
+import xyz.orbitary.bits.discord.lifecycle.manager.DiscordManagerOrchestrator;
+import xyz.orbitary.bits.lifecycle.manager.BitsModule;
+import xyz.orbitary.bits.wrapper.collection.AddableList;
+
+
+public class BitsDiscord extends Bits {
+    private final JDA jda;
+
+    public BitsDiscord(JDA jda) {
+        this.jda = jda;
+    }
+
+    public static BitsDiscord get() {
+        return (BitsDiscord)Bits.get();
+    }
+
+
+    public static JDA jda() {
+        return get().jda;
+    }
+
+    @Override
+    public void shutdown() {
+        super.shutdown();
+        jda.shutdown();
+    }
+
+
+    @Override
+    public void runLater(Runnable runnable, long delayMs) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(delayMs);
+                runnable.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
+    }
+
+    @Override
+    protected AddableList<BitsModule> modules() {
+        return super.modules()
+          .add(new JdaCommandManager());
+    }
+
+    @Override
+    protected DiscordManagerOrchestrator createManagerOrchestrator() {
+        return new DiscordManagerOrchestrator();
+    }
+
+}

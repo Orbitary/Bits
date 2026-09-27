@@ -1,12 +1,12 @@
-package xyz.bitsquidd.bits.paper.example.command;
+package xyz.orbitary.bits.paper.example.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 
-import xyz.bitsquidd.bits.command.CommandReturnType;
-import xyz.bitsquidd.bits.sendable.text.Text;
-import xyz.bitsquidd.bits.paper.example.text.decorator.impl.CommandDecorator;
-import xyz.bitsquidd.bits.paper.lib.command.PaperBitsCommandContext;
+import xyz.orbitary.bits.command.CommandReturnType;
+import xyz.orbitary.bits.sendable.text.Text;
+import xyz.orbitary.bits.paper.example.text.decorator.impl.CommandDecorator;
+import xyz.orbitary.bits.paper.lib.command.PaperBitsCommandContext;
 
 public class CustomCommandContext extends PaperBitsCommandContext {
     public CustomCommandContext(CommandContext<CommandSourceStack> brigadierContext) {

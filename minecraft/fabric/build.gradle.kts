@@ -5,8 +5,8 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.providedApi
-import xyz.bitsquidd.util.shade
+import xyz.orbitary.util.providedApi
+import xyz.orbitary.util.shade
 
 
 plugins {
@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    group = "xyz.bitsquidd.bits.fabric"
+    group = "xyz.orbitary.bits.fabric"
 
     minecraft("com.mojang:minecraft:26.2")
 
@@ -54,7 +54,7 @@ tasks {
 
     shadowJar {
         from(sourceSets["client"].output)
-        relocate("io.github.classgraph", "xyz.bitsquidd.lib.classgraph")
+        relocate("io.github.classgraph", "xyz.orbitary.lib.classgraph")
     }
 }
 

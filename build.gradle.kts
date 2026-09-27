@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-group = "xyz.bitsquidd.bits"
+group = "xyz.orbitary.bits"
 version = property("version") as String
 
 plugins {

@@ -1,10 +1,10 @@
-package xyz.bitsquidd.bits.paper.example;
+package xyz.orbitary.bits.paper.example;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.paper.PaperBitsConfig;
-import xyz.bitsquidd.bits.paper.example.command.CustomBitsCommandManager;
+import xyz.orbitary.bits.paper.PaperBitsConfig;
+import xyz.orbitary.bits.paper.example.command.CustomBitsCommandManager;
 
 public class ExampleBitsPlugin extends JavaPlugin {
     private static @Nullable ExampleBitsPlugin instance;

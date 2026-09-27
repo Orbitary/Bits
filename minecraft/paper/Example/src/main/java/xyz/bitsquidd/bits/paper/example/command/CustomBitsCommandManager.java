@@ -1,4 +1,4 @@
-package xyz.bitsquidd.bits.paper.example.command;
+package xyz.orbitary.bits.paper.example.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import net.kyori.adventure.text.Component;
@@ -7,12 +7,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.spigotmc.SpigotConfig;
 
-import xyz.bitsquidd.bits.command.BitsCommand;
-import xyz.bitsquidd.bits.command.CommandReturnType;
-import xyz.bitsquidd.bits.paper.PaperBitsConfig;
-import xyz.bitsquidd.bits.paper.example.command.impl.TeleportCommand;
-import xyz.bitsquidd.bits.paper.example.text.decorator.impl.CommandDecorator;
-import xyz.bitsquidd.bits.paper.lib.command.PaperBitsCommandManager;
+import xyz.orbitary.bits.command.BitsCommand;
+import xyz.orbitary.bits.command.CommandReturnType;
+import xyz.orbitary.bits.paper.PaperBitsConfig;
+import xyz.orbitary.bits.paper.example.command.impl.TeleportCommand;
+import xyz.orbitary.bits.paper.example.text.decorator.impl.CommandDecorator;
+import xyz.orbitary.bits.paper.lib.command.PaperBitsCommandManager;
 
 import java.util.List;
 

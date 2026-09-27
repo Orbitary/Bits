@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.bitsquidd.bits.config;
+package xyz.orbitary.bits.config;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -16,7 +16,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
-import xyz.bitsquidd.bits.permission.Permission;
+import xyz.orbitary.bits.permission.Permission;
 
 import java.util.Locale;
 

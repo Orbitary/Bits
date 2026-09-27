@@ -1,4 +1,4 @@
 @NotNullByDefault
-package xyz.bitsquidd.bits.paper.example.command;
+package xyz.orbitary.bits.paper.example.command;
 
 import org.jetbrains.annotations.NotNullByDefault;

@@ -1,4 +1,4 @@
-package xyz.bitsquidd.bits.paper.example.command;
+package xyz.orbitary.bits.paper.example.command;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
@@ -6,8 +6,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.command.UnknownCommandEvent;
 
-import xyz.bitsquidd.bits.sendable.text.Text;
-import xyz.bitsquidd.bits.sendable.text.decorator.ITextDecorator;
+import xyz.orbitary.bits.sendable.text.Text;
+import xyz.orbitary.bits.sendable.text.decorator.ITextDecorator;
 
 public class CustomBitsCommandListener implements Listener {
     private final ITextDecorator errorDecorator;

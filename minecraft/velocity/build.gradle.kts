@@ -5,11 +5,11 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-import xyz.bitsquidd.util.providedApi
-import xyz.bitsquidd.util.shade
+import xyz.orbitary.util.providedApi
+import xyz.orbitary.util.shade
 
 allprojects {
-    group = "xyz.bitsquidd.bits.velocity"
+    group = "xyz.orbitary.bits.velocity"
 
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(25))
