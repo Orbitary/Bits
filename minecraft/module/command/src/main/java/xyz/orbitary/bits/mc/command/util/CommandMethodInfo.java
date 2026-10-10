@@ -7,13 +7,11 @@
 
 package xyz.orbitary.bits.mc.command.util;
 
-import xyz.orbitary.bits.mc.command.BitsCommandManager;
+import org.jetbrains.annotations.Nullable;
+
 import xyz.orbitary.bits.mc.command.annotation.Async;
 import xyz.orbitary.bits.mc.command.annotation.Command;
-import xyz.orbitary.bits.mc.command.annotation.Permission;
-import xyz.orbitary.bits.mc.command.annotation.Requirement;
 import xyz.orbitary.bits.mc.command.requirement.BitsCommandRequirement;
-import xyz.orbitary.bits.mc.command.requirement.impl.PermissionRequirement;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -30,7 +28,7 @@ import java.util.List;
  * <p>
  * Example internal usage:
  * <pre>{@code
- * CommandMethodInfo<?> info = new CommandMethodInfo<>(method, classParams);
+ * CommandMethodInfo<?> info = new CommandMethodInfo<>(method, classParams, corePermission);
  * if (info.isAsync()) {
  *     // Execute asynchronously
  * }
@@ -49,9 +47,14 @@ public class CommandMethodInfo<T> {
     private final Command commandAnnotation;
     private final List<CommandParameterInfo> classParameters;
     private final List<CommandParameterInfo> methodParameters;
+    private final List<CommandParameterInfo> allParameters;
 
-    public CommandMethodInfo(Method method, List<CommandParameterInfo> classParameters) {
+    private final xyz.orbitary.bits.mc.permission.Permission corePermission;
+    private @Nullable List<BitsCommandRequirement> requirements;
+
+    public CommandMethodInfo(Method method, List<CommandParameterInfo> classParameters, xyz.orbitary.bits.mc.permission.Permission corePermission) {
         this.method = method;
+        this.corePermission = corePermission;
         this.commandAnnotation = method.getAnnotation(Command.class);
 
         this.isAsync = method.isAnnotationPresent(Async.class);
@@ -68,6 +71,9 @@ public class CommandMethodInfo<T> {
         this.methodParameters = methodParamInfos;
 
         this.classParameters = new ArrayList<>(classParameters);
+
+        this.allParameters = new ArrayList<>(this.classParameters);
+        this.allParameters.addAll(this.methodParameters);
     }
 
     /**
@@ -133,9 +139,7 @@ public class CommandMethodInfo<T> {
      * @since 0.0.10
      */
     public List<CommandParameterInfo> getAllParameters() {
-        List<CommandParameterInfo> allParams = new ArrayList<>(classParameters);
-        allParams.addAll(methodParameters);
-        return allParams;
+        return allParameters;
     }
 
     /**
@@ -149,37 +153,22 @@ public class CommandMethodInfo<T> {
         return commandAnnotation.value();
     }
 
-    //TODO: Merge with BitsCommandBuilder permission gathering?
-
     /**
-     * Retrieves a compiled list of requirements that must be met to invoke this method.
-     *
-     * @param corePermission the base permission string for the command tree
+     * Retrieves the requirements that must be met to invoke this method.
+     * <p>
+     * Resolved on first use, then cached.
      *
      * @return a list of parsed command requirements
      *
      * @since 0.0.10
      */
-    public List<BitsCommandRequirement> getRequirements(xyz.orbitary.bits.mc.permission.Permission corePermission) {
-        List<BitsCommandRequirement> requirements = new ArrayList<>();
-
-        // Gather permission strings and convert them to requirements.
-        Permission permissionAnnotation = method.getAnnotation(Permission.class);
-        if (permissionAnnotation != null) {
-            requirements.addAll(Arrays.stream(permissionAnnotation.value())
-              .map(appended -> PermissionRequirement.of(xyz.orbitary.bits.mc.permission.Permission.of(corePermission + "." + appended)))
-              .toList());
+    public List<BitsCommandRequirement> getRequirements() {
+        List<BitsCommandRequirement> resolved = requirements;
+        if (resolved == null) {
+            resolved = List.copyOf(RequirementCollector.collect(method, corePermission));
+            requirements = resolved;
         }
-
-        // Gather requirement instances
-        Requirement requirementAnnotation = method.getAnnotation(Requirement.class);
-        if (requirementAnnotation != null) {
-            requirements.addAll(Arrays.stream(requirementAnnotation.value())
-              .map(clazz -> BitsCommandManager.get().getRequirementRegistry().getRequirement(clazz))
-              .toList());
-        }
-
-        return requirements;
+        return resolved;
     }
 
 }

@@ -15,17 +15,15 @@ import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.Bits;
 import xyz.orbitary.bits.log.Logger;
-import xyz.orbitary.bits.mc.command.argument.BrigadierArgumentMapping;
-import xyz.orbitary.bits.mc.command.argument.parser.ArgumentParser;
 import xyz.orbitary.bits.mc.command.debugging.TreeDebugger;
 import xyz.orbitary.bits.mc.command.exception.CommandBuildException;
 import xyz.orbitary.bits.mc.command.util.BitsCommandBuilder;
 import xyz.orbitary.bits.mc.command.util.BitsCommandContext;
+import xyz.orbitary.bits.mc.command.util.BitsCommandSourceContext;
+import xyz.orbitary.bits.mc.command.util.CommandInvoker;
 import xyz.orbitary.bits.mc.command.util.CommandMethodInfo;
 import xyz.orbitary.bits.mc.command.util.CommandParameterInfo;
-import xyz.orbitary.bits.wrapper.GreedyString;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -107,10 +105,12 @@ public final class BrigadierTreeGenerator<T> {
 
             nextBranches.forEach(argumentBuilder -> {
                 mergeRequirement(
-                  argumentBuilder, ctx ->
-                    commandBuilder.getPermissions().stream().anyMatch(permission ->
-                      permission.hasPermission(commandManager.createSourceContext(ctx).getSender())
-                    )
+                  argumentBuilder, ctx -> {
+                      BitsCommandSourceContext<T> source = commandManager.createSourceContext(ctx);
+                      return commandBuilder.getPermissions().stream().anyMatch(permission ->
+                        permission.hasPermission(source.getSender())
+                      );
+                  }
                 );
             });
 
@@ -129,8 +129,10 @@ public final class BrigadierTreeGenerator<T> {
         // Calculate requirements required for this branch
         mergeRequirement(
           branch,
-          ctx -> commandBuilder.getRequirements().stream()
-            .allMatch(requirement -> requirement.test(commandManager.createSourceContext(ctx)))
+          ctx -> {
+              BitsCommandSourceContext<T> source = commandManager.createSourceContext(ctx);
+              return commandBuilder.getRequirements().stream().allMatch(requirement -> requirement.test(source));
+          }
         );
 
         // Create parameters needed for this class.
@@ -165,12 +167,12 @@ public final class BrigadierTreeGenerator<T> {
                     Logger.warn("Skipping non-public command method: " + method.getName() + " for command: " + commandBuilder.getCommandName());
                     continue;
                 }
-                processCommandMethod(workingBranch, commandBuilder, new CommandMethodInfo(method, nonMutatedParameters));
+                processCommandMethod(workingBranch, commandBuilder, new CommandMethodInfo(method, nonMutatedParameters, commandBuilder.getCorePermission()));
             }
 
             // Populate each child fully, then attach it to the parent
-            if (!Objects.equals(workingBranch, nextBranch)) nextBranch.then(buildBackward(addedParamBranches));
-            if (!Objects.equals(nextBranch, branch)) branch.then(buildBackward(List.of(nextBranch)));
+            if (!Objects.equals(workingBranch, nextBranch)) nextBranch.then(chain(addedParamBranches));
+            if (!Objects.equals(nextBranch, branch)) branch.then(nextBranch);
         });
     }
 
@@ -203,13 +205,15 @@ public final class BrigadierTreeGenerator<T> {
 
         // Add method requirements
         mergeRequirement(
-          workingBranch, ctx ->
-            methodInfo.getRequirements(commandBuilder.getCorePermission()).stream()
-              .allMatch(requirement -> requirement.test(commandManager.createSourceContext(ctx)))
+          workingBranch, ctx -> {
+              BitsCommandSourceContext<T> source = commandManager.createSourceContext(ctx);
+              return methodInfo.getRequirements().stream()
+                .allMatch(requirement -> requirement.test(source));
+          }
         );
         workingBranch.executes(createCommandExecution(commandBuilder, methodInfo));
 
-        if (!Objects.equals(workingBranch, nextBranch)) nextBranch.then(buildBackward(paramBranch));
+        if (!Objects.equals(workingBranch, nextBranch)) nextBranch.then(chain(paramBranch));
     }
 
 
@@ -219,96 +223,33 @@ public final class BrigadierTreeGenerator<T> {
       final BitsCommandBuilder commandBuilder,
       final CommandMethodInfo<T> methodInfo
     ) {
+        final CommandInvoker invoker = new CommandInvoker(commandBuilder, methodInfo);
+
         return ctx -> {
             final BitsCommandContext<T> bitsCtx = commandManager.createContext(ctx);
 
             // Create the list of arguments needed to call the method.
-            ArrayList<@Nullable Object> parsedArguments = new ArrayList<>();
-
+            List<@Nullable Object> parsedArguments = new ArrayList<>();
             for (CommandParameterInfo parameter : methodInfo.getAllParameters()) {
-                ArgumentParser<?, ?> parser = parameter.getParser();
-
-                // Collect primitive objects for the parameter
-                ArrayList<@Nullable Object> primitiveObjects = new ArrayList<>();
-                for (int i = 0; i < parser.getInputTypes().size(); i++) {
-                    BrigadierArgumentMapping holder = parameter.getHeldArguments().get(i);
-
-                    Object primitiveValue;
-                    try {
-                        Class<?> checkType = holder.typeSignature().toRawType();
-                        // GreedyString is a semantic marker only; Brigadier's greedyString() argument type
-                        // physically stores and returns a plain String, so fetch it as one.
-                        if (checkType == GreedyString.class) checkType = String.class;
-
-                        primitiveValue = ctx.getArgument(holder.argumentName(), checkType);
-                    } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("Failed to get argument: " + parameter, e);
-                    }
-
-                    primitiveObjects.add(primitiveValue);
-                }
-
-                Object value;
-                try {
-                    if (primitiveObjects.stream().anyMatch(Objects::isNull)) throw new IllegalArgumentException("One or more primitive arguments are null.");
-
-                    value = commandManager.getArgumentRegistry().parseArguments(parser, primitiveObjects, commandManager.createContext(ctx));
-                } catch (IllegalArgumentException e) {
-                    throw new RuntimeException("Failed to get argument: " + parameter, e);
-                }
-
-                parsedArguments.add(value);
+                parsedArguments.add(parameter.parse(ctx, bitsCtx));
             }
 
-
             // Execute the command with the required, parsed arguments
-            Runnable commandExecution = () -> {
-                try {
-                    Constructor<?> commandClass = commandBuilder.toConstructor();
-                    int constructorParamCount = commandBuilder.getParameters().size();
-
-                    Object[] constructorArgs = parsedArguments.subList(0, constructorParamCount).toArray();
-
-                    if (commandBuilder.requiresOuterInstance()) {
-                        Class<?> outerClass = commandBuilder.getCommandClass().getDeclaringClass();
-                        Object outerInstance = outerClass.getDeclaredConstructor().newInstance();
-
-                        Object[] argsWithOuter = new Object[constructorArgs.length + 1];
-                        argsWithOuter[0] = outerInstance;
-                        System.arraycopy(constructorArgs, 0, argsWithOuter, 1, constructorArgs.length);
-                        constructorArgs = argsWithOuter;
-                    }
-
-                    Object instance = commandClass.newInstance(constructorArgs);
-
-                    List<@Nullable Object> methodArguments = constructorParamCount < parsedArguments.size()
-                                                             ? new ArrayList<>(parsedArguments.subList(constructorParamCount, parsedArguments.size()))
-                                                             : new ArrayList<>();
-
-                    if (methodInfo.requiresContext()) methodArguments.addFirst(bitsCtx);
-
-                    methodInfo.getMethod().invoke(instance, methodArguments.toArray());
-
-                } catch (Exception e) {
-                    throw new CommandBuildException("Failed to execute command method: " + methodInfo.getMethod().getName() + " ", e);
-                }
-            };
-
-            commandManager.executeCommand(methodInfo.isAsync(), commandExecution);
+            commandManager.executeCommand(methodInfo.isAsync(), () -> invoker.invoke(parsedArguments, bitsCtx));
 
             return Command.SINGLE_SUCCESS;
         };
     }
 
 
-    private ArgumentBuilder<T, ?> buildBackward(List<ArgumentBuilder<T, ?>> toAdd) {
-        if (toAdd.isEmpty()) throw new CommandBuildException("No more branches to add.");
-        if (toAdd.size() == 1) return toAdd.getFirst();
+    // Links the branches into a single chain (each the child of the previous) and returns the head.
+    private ArgumentBuilder<T, ?> chain(List<ArgumentBuilder<T, ?>> branches) {
+        if (branches.isEmpty()) throw new CommandBuildException("No more branches to add.");
 
-        ArgumentBuilder<T, ?> first = toAdd.getFirst();
-        List<ArgumentBuilder<T, ?>> rest = toAdd.subList(1, toAdd.size());
-        first.then(buildBackward(new ArrayList<>(rest)));
-        return first;
+        for (int i = branches.size() - 2; i >= 0; i--) {
+            branches.get(i).then(branches.get(i + 1));
+        }
+        return branches.getFirst();
     }
 
     private <S> void mergeRequirement(ArgumentBuilder<S, ?> builder, Predicate<S> newRequirement) {

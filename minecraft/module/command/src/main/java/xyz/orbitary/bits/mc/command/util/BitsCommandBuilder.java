@@ -13,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import xyz.orbitary.bits.mc.command.BitsCommand;
 import xyz.orbitary.bits.mc.command.BitsCommandManager;
 import xyz.orbitary.bits.mc.command.annotation.Command;
-import xyz.orbitary.bits.mc.command.annotation.Permission;
-import xyz.orbitary.bits.mc.command.annotation.Requirement;
 import xyz.orbitary.bits.mc.command.exception.CommandBuildException;
 import xyz.orbitary.bits.mc.command.requirement.BitsCommandRequirement;
 import xyz.orbitary.bits.mc.command.requirement.impl.PermissionRequirement;
@@ -201,21 +199,7 @@ public final class BitsCommandBuilder {
         Set<BitsCommandRequirement> requirements = new HashSet<>();
         if (commandName.isEmpty()) requirements.add(PermissionRequirement.of(permissions));
 
-        // Gather permission strings and convert them to requirements.
-        Permission permissionAnnotation = commandClass.getAnnotation(Permission.class);
-        if (permissionAnnotation != null) {
-            requirements.addAll(Arrays.stream(permissionAnnotation.value())
-              .map(appended -> PermissionRequirement.of(xyz.orbitary.bits.mc.permission.Permission.of(corePermission + "." + appended)))
-              .toList());
-        }
-
-        // Gather requirement instances
-        Requirement requirementAnnotation = commandClass.getAnnotation(Requirement.class);
-        if (requirementAnnotation != null) {
-            requirements.addAll(Arrays.stream(requirementAnnotation.value())
-              .map(clazz -> BitsCommandManager.get().getRequirementRegistry().getRequirement(clazz))
-              .toList());
-        }
+        requirements.addAll(RequirementCollector.collect(commandClass, corePermission));
 
         if (commandInstance != null) requirements.addAll(commandInstance.getAddedRequirements());
         return requirements;

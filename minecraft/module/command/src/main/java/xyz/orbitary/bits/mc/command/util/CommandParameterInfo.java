@@ -9,15 +9,20 @@ package xyz.orbitary.bits.mc.command.util;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.mc.command.BitsCommandManager;
 import xyz.orbitary.bits.mc.command.argument.BrigadierArgumentMapping;
 import xyz.orbitary.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.orbitary.bits.wrapper.GreedyString;
 import xyz.orbitary.bits.wrapper.type.TypeSignature;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -102,6 +107,47 @@ public class CommandParameterInfo {
             brigadierArguments.add(argumentBuilder);
         }
         return brigadierArguments;
+    }
+
+    /**
+     * Reads this parameter's raw Brigadier arguments from the context and parses them into the parameter's type.
+     *
+     * @param ctx     the Brigadier context holding the raw arguments
+     * @param bitsCtx the command context passed to the parser
+     *
+     * @return the parsed value
+     *
+     * @throws CommandSyntaxException if the parser rejects the input
+     * @since 0.1.0
+     */
+    public @Nullable Object parse(CommandContext<?> ctx, BitsCommandContext<?> bitsCtx) throws CommandSyntaxException {
+        // Collect primitive objects for the parameter
+        List<@Nullable Object> primitiveObjects = new ArrayList<>();
+        for (int i = 0; i < parser.getInputTypes().size(); i++) {
+            BrigadierArgumentMapping holder = heldArguments.get(i);
+
+            Object primitiveValue;
+            try {
+                Class<?> checkType = holder.typeSignature().toRawType();
+                // GreedyString is a semantic marker only; Brigadier's greedyString() argument type
+                // physically stores and returns a plain String, so fetch it as one.
+                if (checkType == GreedyString.class) checkType = String.class;
+
+                primitiveValue = ctx.getArgument(holder.argumentName(), checkType);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Failed to get argument: " + this, e);
+            }
+
+            primitiveObjects.add(primitiveValue);
+        }
+
+        try {
+            if (primitiveObjects.stream().anyMatch(Objects::isNull)) throw new IllegalArgumentException("One or more primitive arguments are null.");
+
+            return BitsCommandManager.get().getArgumentRegistry().parseArguments(parser, primitiveObjects, bitsCtx);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Failed to get argument: " + this, e);
+        }
     }
 
     private boolean hasSuggestions(ArgumentParser<?, ?> parser) {

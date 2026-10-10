@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -65,6 +66,7 @@ public abstract class BitsArgumentRegistry<T> {
     private static final Predicate<Class<?>> CAN_AUTO_REGISTER = clazz -> clazz != GenericEnumParser.class;
 
     private final Map<TypeSignature<?>, ArgumentParser<?, ?>> parsers = new HashMap<>();
+    private final Map<TypeSignature<?>, ArgumentParser<?, ?>> resolvedParsers = new ConcurrentHashMap<>();
 
     public BitsArgumentRegistry() {
         List<ArgumentParser<?, ?>> initialParsers = new ArrayList<>(initialiseParsers().build());
@@ -129,8 +131,12 @@ public abstract class BitsArgumentRegistry<T> {
      *
      * @since 0.0.10
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public ArgumentParser<?, ?> getParser(TypeSignature<?> typeSignature) {
+        return resolvedParsers.computeIfAbsent(typeSignature, this::resolveParser);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private ArgumentParser<?, ?> resolveParser(TypeSignature<?> typeSignature) {
         // We could consider implementing some form of search for inherited types.
         // This probably shouldn't be implemented as it'll cause type inconsistencies with functions.
         // Developers should design their command functions accordingly to use the lowest available type.

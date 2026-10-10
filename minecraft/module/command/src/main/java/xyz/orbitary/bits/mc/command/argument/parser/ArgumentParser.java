@@ -53,6 +53,7 @@ public abstract class ArgumentParser<O, D> {
     private final String argumentName;             // The name of the argument, used while displaying suggestions
     private final Class<D> dataClass;              // The class of the input data type
     private final @Nullable Constructor<D> recordConstructor;
+    private final List<InputTypeContainer> inputTypes;
 
     /**
      * @param typeSignature the expected type this parser handles
@@ -66,6 +67,21 @@ public abstract class ArgumentParser<O, D> {
         this.argumentName = argumentName;
         this.dataClass = dataClass;
         this.recordConstructor = dataClass.isRecord() ? resolveCanonicalConstructor(dataClass) : null;
+        this.inputTypes = resolveInputTypes(dataClass, argumentName);
+    }
+
+    private static List<InputTypeContainer> resolveInputTypes(Class<?> dataClass, String argumentName) {
+        // Special case for non-record types: treat the entire data class the input.
+        if (!dataClass.isRecord()) return List.of(new InputTypeContainer(TypeSignature.of(dataClass), argumentName));
+
+        RecordComponent[] components = dataClass.getRecordComponents();
+        List<InputTypeContainer> resolved = new ArrayList<>(components.length);
+
+        for (RecordComponent component : components) {
+            resolved.add(new InputTypeContainer(TypeSignature.of(component.getType()), component.getName()));
+        }
+
+        return List.copyOf(resolved);
     }
 
 
@@ -111,23 +127,11 @@ public abstract class ArgumentParser<O, D> {
      * @since 0.0.20
      */
     public final List<InputTypeContainer> getInputTypes() {
-        // Special case for non-record types: treat the entire data class the input.
-        if (!dataClass.isRecord()) return List.of(new InputTypeContainer(TypeSignature.of(dataClass), argumentName));
-
-        RecordComponent[] components = dataClass.getRecordComponents();
-        List<InputTypeContainer> inputTypes = new ArrayList<>(components.length);
-
-        for (RecordComponent component : components) {
-            inputTypes.add(new InputTypeContainer(TypeSignature.of(component.getType()), component.getName()));
-        }
-
         return inputTypes;
     }
 
 
     public final D toData(List<Object> inputObjects) throws CommandSyntaxException {
-        List<InputTypeContainer> inputTypes = getInputTypes();
-
         if (inputObjects.size() != inputTypes.size()) throw ExceptionBuilder.createCommandException("Expected exactly " + inputTypes.size() + " input object" + (inputTypes.size() > 1 ? "s" : "") + ", got " + inputObjects.size() + ".");
         Object[] validated = new Object[inputTypes.size()];
 
@@ -168,10 +172,10 @@ public abstract class ArgumentParser<O, D> {
 
         return (ctx, builder) -> {
             List<String> suggestions = suggestionSupplier.getSuggestions(manager.createContext(ctx));
-            String remaining = builder.getRemaining();
+            String remaining = builder.getRemaining().toLowerCase();
 
             for (String suggestion : suggestions) {
-                if (suggestion.toLowerCase().startsWith(remaining.toLowerCase())) {
+                if (suggestion.toLowerCase().startsWith(remaining)) {
                     builder.suggest(suggestion);
                 }
             }
