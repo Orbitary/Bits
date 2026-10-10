@@ -34,7 +34,7 @@ repositories {
 dependencies {
     group = "xyz.orbitary.bits.fabric"
 
-    minecraft("com.mojang:minecraft:26.2")
+    minecraft("com.mojang:minecraft:26.3")
 
     shade(project(":minecraft"), transitive = true)
     shade(project(":minecraft:module:command"), transitive = true)
