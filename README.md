@@ -51,17 +51,17 @@ repositories {
 
 dependencies {
     // Core API (required)
-    implementation("xyz.orbitary.bits:api:0.0.25")
+    implementation("xyz.orbitary.bits:api:0.1.0")
 
     // Platform implementations
-    implementation("xyz.orbitary.bits.paper:paper:0.0.25")
-    implementation("xyz.orbitary.bits.velocity:velocity:0.0.25")
-    implementation("xyz.orbitary.bits.fabric:fabric:0.0.25")
+    implementation("xyz.orbitary.bits.paper:paper:0.1.0")
+    implementation("xyz.orbitary.bits.velocity:velocity:0.1.0")
+    implementation("xyz.orbitary.bits.fabric:fabric:0.1.0")
 
     // Optional: Platform-specific modules
-    implementation("xyz.orbitary.bits.paper:sendable:0.0.25")
-    implementation("xyz.orbitary.bits.paper:command:0.0.25")
-    implementation("xyz.orbitary.bits.velocity:command:0.0.25")
+    implementation("xyz.orbitary.bits.paper:sendable:0.1.0")
+    implementation("xyz.orbitary.bits.paper:command:0.1.0")
+    implementation("xyz.orbitary.bits.velocity:command:0.1.0")
 }
 ```
 
@@ -110,24 +110,24 @@ dependencies {
 <dependency>
     <groupId>xyz.orbitary.bits</groupId>
     <artifactId>api</artifactId>
-    <version>0.0.25</version>
+    <version>0.1.0</version>
 </dependency>
 
 <!-- Platform implementations -->
 <dependency>
     <groupId>xyz.orbitary.bits.paper</groupId>
     <artifactId>paper</artifactId>
-    <version>0.0.25</version>
+    <version>0.1.0</version>
 </dependency>
 <dependency>
     <groupId>xyz.orbitary.bits.velocity</groupId>
     <artifactId>velocity</artifactId>
-    <version>0.0.25</version>
+    <version>0.1.0</version>
 </dependency>
 <dependency>
     <groupId>xyz.orbitary.bits.fabric</groupId>
     <artifactId>fabric</artifactId>
-    <version>0.0.25</version>
+    <version>0.1.0</version>
 </dependency>
 </dependencies>
 ```
