@@ -14,14 +14,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.mc.command.BitsCommandManager;
+import xyz.orbitary.bits.mc.command.annotation.Suggest;
 import xyz.orbitary.bits.mc.command.argument.BrigadierArgumentMapping;
 import xyz.orbitary.bits.mc.command.argument.parser.ArgumentParser;
+import xyz.orbitary.bits.mc.command.exception.CommandBuildException;
 import xyz.orbitary.bits.wrapper.GreedyString;
 import xyz.orbitary.bits.wrapper.type.TypeSignature;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 
@@ -73,6 +76,10 @@ public class CommandParameterInfo {
 
         this.parser = BitsCommandManager.get().getArgumentRegistry().getParser(typeSignature);
         this.heldArguments.addAll(BitsCommandManager.get().getArgumentRegistry().getArgumentTypeContainer(parser, name));
+
+        if (parameter.isAnnotationPresent(Suggest.class) && heldArguments.size() != 1) {
+            throw new CommandBuildException("@Suggest requires exactly one Brigadier argument for parameter " + parameter + " in " + parameter.getDeclaringExecutable());
+        }
     }
 
     /**
@@ -88,12 +95,24 @@ public class CommandParameterInfo {
         List<ArgumentBuilder<T, ?>> brigadierArguments = new ArrayList<>();
 
         boolean useArgSuggestions = heldArguments.size() > 1; // We use the arg suggestions only if there are multiple held arguments
+        Suggest suggest = parameter.getAnnotation(Suggest.class);
 
         for (int i = 0; i < heldArguments.size(); i++) {
             BrigadierArgumentMapping arg = heldArguments.get(i);
             RequiredArgumentBuilder<T, ?> argumentBuilder = arg.toBrigadierArgument(BitsCommandManager.get());
 
-            if (useArgSuggestions) {
+            if (suggest != null) {
+                List<String> suggestions = List.of(suggest.value());
+                argumentBuilder.suggests((ctx, builder) -> {
+                    String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+                    for (String suggestion : suggestions) {
+                        if (suggestion.toLowerCase(Locale.ROOT).startsWith(remaining)) {
+                            builder.suggest(suggestion);
+                        }
+                    }
+                    return builder.buildFuture();
+                });
+            } else if (useArgSuggestions) {
                 TypeSignature<?> inputType = parser.getInputTypes().get(i).typeSignature();
                 ArgumentParser<?, ?> inputParser = BitsCommandManager.get().getArgumentRegistry().getParser(inputType);
 
