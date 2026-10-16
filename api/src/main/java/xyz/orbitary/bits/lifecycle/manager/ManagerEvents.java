@@ -49,7 +49,7 @@ public enum ManagerEvents {
     }
 
     /**
-     * Registers a callback after each manager successfully starts.
+     * Registers a callback after each manager's startup is attempted, even if it fails.
      *
      * @param callback the action to run on the lifecycle thread
      *
@@ -79,7 +79,7 @@ public enum ManagerEvents {
     }
 
     /**
-     * Registers a callback after each manager successfully shuts down.
+     * Registers a callback after each manager's shutdown is attempted, even if it fails.
      *
      * @param callback the action to run on the lifecycle thread
      *
@@ -151,7 +151,7 @@ public enum ManagerEvents {
     }
 
     /**
-     * Registers a callback after each manager successfully cleans up.
+     * Registers a callback after each manager's cleanup is attempted, even if it fails.
      *
      * @param callback the action to run on the lifecycle thread
      *
