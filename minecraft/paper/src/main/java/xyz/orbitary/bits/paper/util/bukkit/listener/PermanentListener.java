@@ -9,12 +9,10 @@ package xyz.orbitary.bits.paper.util.bukkit.listener;
 
 import org.bukkit.event.Listener;
 
-import xyz.orbitary.bits.paper.lifecycle.manager.PaperManagerOrchestrator;
-
 
 /**
- * A special {@link Listener Listener} that should never be cancelled.
- * By default all listeners should be cancelled on {@link PaperManagerOrchestrator#cleanup() PaperManagerContainer#cleanup()}.
+ * A {@link Listener} that remains registered during manager cleanup.
+ * Bits unregisters it when its manager shuts down.
  */
 public interface PermanentListener extends Listener {
 }

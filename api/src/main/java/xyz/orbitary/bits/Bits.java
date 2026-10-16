@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.orbitary.bits.exception.BitsException;
 import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.lifecycle.manager.ManagerContainer;
-import xyz.orbitary.bits.lifecycle.manager.ManagerOrchestrator;
+import xyz.orbitary.bits.lifecycle.manager.ManagerEvents;
 import xyz.orbitary.bits.wrapper.collection.AddableList;
 
 import java.util.Optional;
@@ -27,7 +27,23 @@ import java.util.Optional;
  *
  * @since 0.0.10
  */
-public abstract class Bits extends ManagerContainer {
+public abstract class Bits extends ManagerContainer.Default {
+    /**
+     * Global event subscription entrypoints, available before Bits is constructed.
+     *
+     * @since 0.1.1
+     */
+    public static final class Events {
+        private Events() {}
+
+        /**
+         * Manager lifecycle subscriptions shared by every platform and container.
+         *
+         * @since 0.1.1
+         */
+        public static final ManagerEvents MANAGER = ManagerEvents.INSTANCE;
+    }
+
     private static @Nullable Bits instance;
 
     protected boolean developmentMode = false;
@@ -39,8 +55,6 @@ public abstract class Bits extends ManagerContainer {
     protected Bits() {
         if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(Bits.class);
         instance = this;
-
-        createManagerOrchestrator();
 
         registerManagers(modules().build());
     }
@@ -99,11 +113,6 @@ public abstract class Bits extends ManagerContainer {
     public boolean isDevelopment() {
         return developmentMode;
     }
-
-    protected ManagerOrchestrator createManagerOrchestrator() {
-        return new ManagerOrchestrator();
-    }
-
 
     public abstract void runLater(Runnable runnable, long delayMs);
 

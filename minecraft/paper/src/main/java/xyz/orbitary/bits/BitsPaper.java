@@ -12,11 +12,13 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import xyz.orbitary.bits.mc.permission.Permission;
 import xyz.orbitary.bits.paper.format.CommonPaperFormatters;
-import xyz.orbitary.bits.paper.lifecycle.manager.PaperManagerOrchestrator;
+import xyz.orbitary.bits.paper.util.bukkit.listener.Listeners;
+import xyz.orbitary.bits.paper.util.bukkit.listener.PermanentListener;
 import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
 import xyz.orbitary.bits.util.reflection.ReflectionException;
 import xyz.orbitary.bits.util.reflection.ReflectionUtils;
@@ -39,6 +41,19 @@ public class BitsPaper extends BitsMinecraft {
         super(); // Before all super()
 
         this.plugin = Objects.requireNonNull(plugin, "Plugin instance cannot be null!");
+
+        Events.MANAGER.preStartup(manager -> {
+            if (manager instanceof Listener listener) Listeners.register(listener);
+        });
+        Events.MANAGER.preInitialise(manager -> {
+            if (manager instanceof Listener listener && !(manager instanceof PermanentListener)) Listeners.register(listener);
+        });
+        Events.MANAGER.postCleanup(manager -> {
+            if (manager instanceof Listener listener && !(manager instanceof PermanentListener)) Listeners.unregister(listener);
+        });
+        Events.MANAGER.postShutdown(manager -> {
+            if (manager instanceof Listener listener) Listeners.unregister(listener);
+        });
     }
 
 
@@ -74,11 +89,6 @@ public class BitsPaper extends BitsMinecraft {
 
     public final JavaPlugin plugin() {
         return plugin;
-    }
-
-    @Override
-    protected PaperManagerOrchestrator createManagerOrchestrator() {
-        return new PaperManagerOrchestrator();
     }
 
     @Override

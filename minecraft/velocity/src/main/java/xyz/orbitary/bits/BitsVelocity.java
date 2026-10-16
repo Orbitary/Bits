@@ -19,7 +19,9 @@ import org.bstats.velocity.Metrics;
 import xyz.orbitary.bits.log.Logger;
 import xyz.orbitary.bits.mc.permission.Permission;
 import xyz.orbitary.bits.util.reflection.ReflectionUtils;
-import xyz.orbitary.bits.velocity.lifecycle.manager.VelocityManagerOrchestrator;
+import xyz.orbitary.bits.velocity.util.velocity.listener.Listener;
+import xyz.orbitary.bits.velocity.util.velocity.listener.Listeners;
+import xyz.orbitary.bits.velocity.util.velocity.listener.PermanentListener;
 import xyz.orbitary.bits.velocity.util.velocity.runnable.Tasks;
 
 import java.nio.file.Path;
@@ -39,6 +41,19 @@ public class BitsVelocity extends BitsMinecraft {
         this.plugin = plugin;
         this.server = injector.getInstance(ProxyServer.class);
         this.dataDir = injector.getInstance(Key.get(Path.class, DataDirectory.class));
+
+        Events.MANAGER.preStartup(manager -> {
+            if (manager instanceof Listener listener) Listeners.register(listener);
+        });
+        Events.MANAGER.preInitialise(manager -> {
+            if (manager instanceof Listener listener && !(manager instanceof PermanentListener)) Listeners.register(listener);
+        });
+        Events.MANAGER.postCleanup(manager -> {
+            if (manager instanceof Listener listener && !(manager instanceof PermanentListener)) Listeners.unregister(listener);
+        });
+        Events.MANAGER.postShutdown(manager -> {
+            if (manager instanceof Listener listener) Listeners.unregister(listener);
+        });
     }
 
     public static BitsVelocity get() {
@@ -96,11 +111,6 @@ public class BitsVelocity extends BitsMinecraft {
     @Override
     public final void runLater(Runnable runnable, long delayMs) {
         Tasks.builder(runnable).delay(delayMs, TimeUnit.MILLISECONDS).schedule();
-    }
-
-    @Override
-    protected VelocityManagerOrchestrator createManagerOrchestrator() {
-        return new VelocityManagerOrchestrator();
     }
 
 }

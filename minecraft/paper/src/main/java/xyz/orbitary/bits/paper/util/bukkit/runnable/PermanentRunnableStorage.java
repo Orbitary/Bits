@@ -7,15 +7,13 @@
 
 package xyz.orbitary.bits.paper.util.bukkit.runnable;
 
-import xyz.orbitary.bits.paper.lifecycle.manager.PaperManagerOrchestrator;
-
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
  * A special storage for runnables that should never be cancelled.
- * By default all runnables should be cancelled on {@link PaperManagerOrchestrator#cleanup() PaperManagerContainer#cleanup()}.
+ * Tracks tasks exempt from routine cleanup cancellation.
  */
 public final class PermanentRunnableStorage {
     private PermanentRunnableStorage() {}

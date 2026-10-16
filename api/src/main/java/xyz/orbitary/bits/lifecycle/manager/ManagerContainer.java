@@ -23,7 +23,7 @@ import java.util.Set;
  * events (startup, initialise, etc.) are propagated to all registered members
  * in the order they were added.
  * <p>
- * Generic onStartup, onInitialise, etc. functionality should be implemented in the {@link Bits Bits} {@link ManagerOrchestrator}.
+ * Shared lifecycle behaviour can subscribe through {@link Bits.Events#MANAGER}.
  *
  * @since 0.0.10
  */
@@ -91,9 +91,9 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
         Safety.safeExecute(
           manager.getClass().getSimpleName(),
           () -> {
-              ManagerOrchestrator.get().preStartup(manager);
+              ManagerEvents.INSTANCE.dispatchPreStartup(manager);
               manager.startup();
-              ManagerOrchestrator.get().postStartup(manager);
+              ManagerEvents.INSTANCE.dispatchPostStartup(manager);
           }
         );
     }
@@ -107,9 +107,9 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
         Safety.safeExecute(
           manager.getClass().getSimpleName(),
           () -> {
-              ManagerOrchestrator.get().preInitialise(manager);
+              ManagerEvents.INSTANCE.dispatchPreInitialise(manager);
               manager.initialise();
-              ManagerOrchestrator.get().postInitialise(manager);
+              ManagerEvents.INSTANCE.dispatchPostInitialise(manager);
           }
         );
     }
@@ -123,9 +123,9 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
         Safety.safeExecute(
           manager.getClass().getSimpleName(),
           () -> {
-              ManagerOrchestrator.get().preCleanup(manager);
+              ManagerEvents.INSTANCE.dispatchPreCleanup(manager);
               manager.cleanup();
-              ManagerOrchestrator.get().postCleanup(manager);
+              ManagerEvents.INSTANCE.dispatchPostCleanup(manager);
           }
         );
     }
@@ -139,9 +139,9 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
         Safety.safeExecute(
           manager.getClass().getSimpleName(),
           () -> {
-              ManagerOrchestrator.get().preShutdown(manager);
+              ManagerEvents.INSTANCE.dispatchPreShutdown(manager);
               manager.shutdown();
-              ManagerOrchestrator.get().postShutdown(manager);
+              ManagerEvents.INSTANCE.dispatchPostShutdown(manager);
           }
         );
     }

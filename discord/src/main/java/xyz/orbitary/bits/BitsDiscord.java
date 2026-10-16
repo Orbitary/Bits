@@ -8,9 +8,9 @@
 package xyz.orbitary.bits;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import xyz.orbitary.bits.discord.command.JdaCommandManager;
-import xyz.orbitary.bits.discord.lifecycle.manager.DiscordManagerOrchestrator;
 import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.wrapper.collection.AddableList;
 
@@ -20,6 +20,19 @@ public class BitsDiscord extends Bits {
 
     public BitsDiscord(JDA jda) {
         this.jda = jda;
+
+        Events.MANAGER.preStartup(manager -> {
+            if (manager instanceof ListenerAdapter listener) jda.addEventListener(listener);
+        });
+        Events.MANAGER.preInitialise(manager -> {
+            if (manager instanceof ListenerAdapter listener) jda.addEventListener(listener);
+        });
+        Events.MANAGER.postCleanup(manager -> {
+            if (manager instanceof ListenerAdapter listener) jda.removeEventListener(listener);
+        });
+        Events.MANAGER.postShutdown(manager -> {
+            if (manager instanceof ListenerAdapter listener) jda.removeEventListener(listener);
+        });
     }
 
     public static BitsDiscord get() {
@@ -54,11 +67,6 @@ public class BitsDiscord extends Bits {
     protected AddableList<BitsModule> modules() {
         return super.modules()
           .add(new JdaCommandManager());
-    }
-
-    @Override
-    protected DiscordManagerOrchestrator createManagerOrchestrator() {
-        return new DiscordManagerOrchestrator();
     }
 
 }
