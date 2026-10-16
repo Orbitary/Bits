@@ -10,6 +10,7 @@ package xyz.orbitary.bits;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
 import net.minecraft.client.Minecraft;
@@ -42,7 +43,8 @@ public class ClientBitsFabric extends BitsFabric {
     @Override
     public void startup() {
         super.startup();
-        ClientTickEvents.END_CLIENT_TICK.register(client -> tickAll());
+        ClientTickEvents.END_CLIENT_TICK.register(_ -> tickAll());
+        ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> shutdown());
     }
 
     @Override
