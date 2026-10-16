@@ -8,6 +8,7 @@
 package xyz.orbitary.bits.lifecycle.manager;
 
 import xyz.orbitary.bits.lifecycle.Subscription;
+import xyz.orbitary.bits.util.Safety;
 
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -112,7 +113,7 @@ public enum ManagerEvents {
     }
 
     /**
-     * Registers a callback after each manager successfully initialises.
+     * Registers a callback after each manager's initialisation is attempted, even if it fails.
      *
      * @param callback the action to run on the lifecycle thread
      *
@@ -169,35 +170,46 @@ public enum ManagerEvents {
     }
 
     void dispatchPreInitialise(CoreManager manager) {
-        preInitialise.forEach(callback -> callback.accept(manager));
+        dispatch(preInitialise, manager, "preInitialise");
     }
 
     void dispatchPostInitialise(CoreManager manager) {
-        postInitialise.forEach(callback -> callback.accept(manager));
+        dispatch(postInitialise, manager, "postInitialise");
     }
 
     void dispatchPreCleanup(CoreManager manager) {
-        preCleanup.forEach(callback -> callback.accept(manager));
+        dispatch(preCleanup, manager, "preCleanup");
     }
 
     void dispatchPostCleanup(CoreManager manager) {
-        postCleanup.forEach(callback -> callback.accept(manager));
+        dispatch(postCleanup, manager, "postCleanup");
     }
 
     void dispatchPreStartup(CoreManager manager) {
-        preStartup.forEach(callback -> callback.accept(manager));
+        dispatch(preStartup, manager, "preStartup");
     }
 
     void dispatchPostStartup(CoreManager manager) {
-        postStartup.forEach(callback -> callback.accept(manager));
+        dispatch(postStartup, manager, "postStartup");
     }
 
     void dispatchPreShutdown(CoreManager manager) {
-        preShutdown.forEach(callback -> callback.accept(manager));
+        dispatch(preShutdown, manager, "preShutdown");
     }
 
     void dispatchPostShutdown(CoreManager manager) {
-        postShutdown.forEach(callback -> callback.accept(manager));
+        dispatch(postShutdown, manager, "postShutdown");
+    }
+
+    private static void dispatch(
+      CopyOnWriteArrayList<? extends Consumer<? super CoreManager>> callbacks,
+      CoreManager manager,
+      String phase
+    ) {
+        callbacks.forEach(callback -> Safety.safeExecute(
+            manager.getClass().getSimpleName() + " " + phase + " subscriber",
+            () -> callback.accept(manager)
+        ));
     }
 
     private static Subscription subscribe(

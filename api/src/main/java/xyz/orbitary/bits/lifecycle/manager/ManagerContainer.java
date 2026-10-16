@@ -88,14 +88,12 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
     }
 
     protected void startupManager(M manager) {
+        ManagerEvents.INSTANCE.dispatchPreStartup(manager);
         Safety.safeExecute(
-          manager.getClass().getSimpleName(),
-          () -> {
-              ManagerEvents.INSTANCE.dispatchPreStartup(manager);
-              manager.startup();
-              ManagerEvents.INSTANCE.dispatchPostStartup(manager);
-          }
+          manager.getClass().getSimpleName() + " startup",
+          manager::startup
         );
+        ManagerEvents.INSTANCE.dispatchPostStartup(manager);
     }
 
     @Override
@@ -104,14 +102,12 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
     }
 
     protected void initialiseManager(M manager) {
+        ManagerEvents.INSTANCE.dispatchPreInitialise(manager);
         Safety.safeExecute(
-          manager.getClass().getSimpleName(),
-          () -> {
-              ManagerEvents.INSTANCE.dispatchPreInitialise(manager);
-              manager.initialise();
-              ManagerEvents.INSTANCE.dispatchPostInitialise(manager);
-          }
+          manager.getClass().getSimpleName() + " initialise",
+          manager::initialise
         );
+        ManagerEvents.INSTANCE.dispatchPostInitialise(manager);
     }
 
     @Override
@@ -120,14 +116,12 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
     }
 
     protected void cleanupManager(M manager) {
+        ManagerEvents.INSTANCE.dispatchPreCleanup(manager);
         Safety.safeExecute(
-          manager.getClass().getSimpleName(),
-          () -> {
-              ManagerEvents.INSTANCE.dispatchPreCleanup(manager);
-              manager.cleanup();
-              ManagerEvents.INSTANCE.dispatchPostCleanup(manager);
-          }
+          manager.getClass().getSimpleName() + " cleanup",
+          manager::cleanup
         );
+        ManagerEvents.INSTANCE.dispatchPostCleanup(manager);
     }
 
     @Override
@@ -136,14 +130,12 @@ public abstract class ManagerContainer<M extends CoreManager> implements CoreMan
     }
 
     protected void shutdownManager(M manager) {
+        ManagerEvents.INSTANCE.dispatchPreShutdown(manager);
         Safety.safeExecute(
-          manager.getClass().getSimpleName(),
-          () -> {
-              ManagerEvents.INSTANCE.dispatchPreShutdown(manager);
-              manager.shutdown();
-              ManagerEvents.INSTANCE.dispatchPostShutdown(manager);
-          }
+          manager.getClass().getSimpleName() + " shutdown",
+          manager::shutdown
         );
+        ManagerEvents.INSTANCE.dispatchPostShutdown(manager);
     }
 
 }
