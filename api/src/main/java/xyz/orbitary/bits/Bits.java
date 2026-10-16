@@ -55,8 +55,6 @@ public abstract class Bits extends ManagerContainer.Default {
     protected Bits() {
         if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(Bits.class);
         instance = this;
-
-        registerManagers(modules().build());
     }
 
     public static Bits generic(String platformName) {
@@ -78,6 +76,7 @@ public abstract class Bits extends ManagerContainer.Default {
     }
 
     public static void init() {
+        get().registerManagers(get().modules().build());
         get().startup();
         get().initialise();
     }
