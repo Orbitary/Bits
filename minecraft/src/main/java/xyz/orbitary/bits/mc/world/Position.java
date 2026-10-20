@@ -7,14 +7,16 @@
 
 package xyz.orbitary.bits.mc.world;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import xyz.orbitary.bits.data.world.Relative;
 
 import java.util.Objects;
 
 
 public record Position(
-  Vec3 pos,
-  Rotation rot
+  @JsonProperty(required = true) Vec3 pos,
+  @JsonProperty(required = true) Rotation rot
 ) {
     public Position {
         Objects.requireNonNull(pos, "pos");

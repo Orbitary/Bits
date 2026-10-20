@@ -7,13 +7,15 @@
 
 package xyz.orbitary.bits.mc.world;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import xyz.orbitary.bits.util.math.Constants;
 
 
 public record Vec3(
-  double x,
-  double y,
-  double z
+  @JsonProperty(required = true) double x,
+  @JsonProperty(required = true) double y,
+  @JsonProperty(required = true) double z
 ) {
     public static final Vec3 ZERO = new Vec3(0, 0, 0);
 
@@ -75,11 +77,22 @@ public record Vec3(
     }
 
     public double distanceSquared(Vec3 other) {
-        return subtract(other).lengthSquared();
+        return distanceSquared(x, y, z, other.x, other.y, other.z);
     }
 
     public double distance(Vec3 other) {
-        return subtract(other).length();
+        return distance(x, y, z, other.x, other.y, other.z);
+    }
+
+    public static double distanceSquared(double x1, double y1, double z1, double x2, double y2, double z2) {
+        double dx = x1 - x2;
+        double dy = y1 - y2;
+        double dz = z1 - z2;
+        return dx * dx + dy * dy + dz * dz;
+    }
+
+    public static double distance(double x1, double y1, double z1, double x2, double y2, double z2) {
+        return Math.sqrt(distanceSquared(x1, y1, z1, x2, y2, z2));
     }
 
     public boolean isCloseTo(Vec3 other) {

@@ -7,15 +7,16 @@
 
 package xyz.orbitary.bits.mc.world;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import net.kyori.adventure.key.Key;
 
 import java.util.Objects;
 
 
 public record ChunkPos(
-  int x,
-  int z,
-  Key world
+  @JsonProperty(required = true) int x,
+  @JsonProperty(required = true) int z,
+  @JsonProperty(required = true) Key world
 ) {
     public ChunkPos {
         Objects.requireNonNull(world, "world");
@@ -30,11 +31,36 @@ public record ChunkPos(
 
     public int euclideanDistance(ChunkPos other) throws IllegalArgumentException {
         requireSameWorld(other);
-        return (int)Math.hypot(this.x - other.x, this.z - other.z);
+        double dx = this.x - other.x;
+        double dz = this.z - other.z;
+        return (int)Math.sqrt(dx * dx + dz * dz);
     }
 
     private void requireSameWorld(ChunkPos other) throws IllegalArgumentException {
         if (!world.equals(other.world)) throw new IllegalArgumentException("Cannot calculate distance between chunks in different worlds");
+    }
+    //endregion
+
+
+    //region Packing
+    public long asLong() {
+        return asLong(x, z);
+    }
+
+    public static long asLong(int x, int z) {
+        return (x & 0xFFFFFFFFL) | ((long)z << 32);
+    }
+
+    public static int xFromLong(long packed) {
+        return (int)packed;
+    }
+
+    public static int zFromLong(long packed) {
+        return (int)(packed >>> 32);
+    }
+
+    public static ChunkPos fromLong(long packed, Key world) {
+        return new ChunkPos(xFromLong(packed), zFromLong(packed), world);
     }
     //endregion
 

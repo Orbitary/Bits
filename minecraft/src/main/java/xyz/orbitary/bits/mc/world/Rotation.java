@@ -7,6 +7,7 @@
 
 package xyz.orbitary.bits.mc.world;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -15,8 +16,8 @@ import xyz.orbitary.bits.data.world.Relative;
 
 
 public record Rotation(
-  float yaw,
-  float pitch
+  @JsonProperty(required = true) float yaw,
+  @JsonProperty(required = true) float pitch
 ) {
     public static final Rotation ZERO = new Rotation(0f, 0f);
 
@@ -24,7 +25,8 @@ public record Rotation(
     // Yaw is normalized to [-180, 180), pitch is clamped to [-90, 90].
     public Rotation {
         if (!Float.isFinite(yaw) || !Float.isFinite(pitch)) throw new IllegalArgumentException("Rotation must be finite: " + yaw + "," + pitch);
-        yaw = yaw - 360f * (float)Math.floor((yaw + 180f) / 360f) + 0.0f;
+        if (yaw < -180f || yaw >= 180f) yaw -= 360f * (float)Math.floor((yaw + 180f) / 360f);
+        yaw += 0.0f;
         pitch = Math.clamp(pitch, -90f, 90f) + 0.0f;
     }
 
@@ -155,7 +157,10 @@ public record Rotation(
 
     //region Direction Vectors
     public Vec3 forward() {
-        return direction(yaw, pitch);
+        double yawRad = Math.toRadians(yaw);
+        double pitchRad = Math.toRadians(pitch);
+        double horizontal = Math.cos(pitchRad);
+        return new Vec3(-horizontal * Math.sin(yawRad), -Math.sin(pitchRad), horizontal * Math.cos(yawRad));
     }
 
     public Vec3 backward() {
@@ -163,7 +168,8 @@ public record Rotation(
     }
 
     public Vec3 left() {
-        return direction(yaw - 90f, 0f);
+        double yawRad = Math.toRadians(yaw);
+        return new Vec3(Math.cos(yawRad), 0, Math.sin(yawRad));
     }
 
     public Vec3 right() {
@@ -171,7 +177,10 @@ public record Rotation(
     }
 
     public Vec3 up() {
-        return direction(yaw, pitch - 90f);
+        double yawRad = Math.toRadians(yaw);
+        double pitchRad = Math.toRadians(pitch);
+        double sinPitch = Math.sin(pitchRad);
+        return new Vec3(-sinPitch * Math.sin(yawRad), Math.cos(pitchRad), sinPitch * Math.cos(yawRad));
     }
 
     public Vec3 down() {
@@ -187,13 +196,6 @@ public record Rotation(
             case UP -> up();
             case DOWN -> down();
         };
-    }
-
-    private static Vec3 direction(float yaw, float pitch) {
-        double yawRad = Math.toRadians(yaw);
-        double pitchRad = Math.toRadians(pitch);
-        double horizontal = Math.cos(pitchRad);
-        return new Vec3(-horizontal * Math.sin(yawRad), -Math.sin(pitchRad), horizontal * Math.cos(yawRad));
     }
     //endregion
 

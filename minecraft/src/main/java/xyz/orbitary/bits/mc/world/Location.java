@@ -7,6 +7,7 @@
 
 package xyz.orbitary.bits.mc.world;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import net.kyori.adventure.key.Key;
 
 import xyz.orbitary.bits.data.world.Relative;
@@ -16,8 +17,8 @@ import java.util.function.UnaryOperator;
 
 
 public record Location(
-  Key world,
-  Position position
+  @JsonProperty(required = true) Key world,
+  @JsonProperty(required = true) Position position
 ) {
     public Location {
         Objects.requireNonNull(world, "world");

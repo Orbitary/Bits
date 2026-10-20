@@ -17,38 +17,46 @@ package xyz.orbitary.bits.data.world;
  * @since 0.0.11
  */
 public enum Cardinal {
-    NORTH(new int[]{0, 0, -1}),
-    EAST(new int[]{1, 0, 0}),
-    SOUTH(new int[]{0, 0, 1}),
-    WEST(new int[]{-1, 0, 0}),
-    UP(new int[]{0, 1, 0}),
-    DOWN(new int[]{0, -1, 0}),
+    NORTH(0, 0, -1),
+    EAST(1, 0, 0),
+    SOUTH(0, 0, 1),
+    WEST(-1, 0, 0),
+    UP(0, 1, 0),
+    DOWN(0, -1, 0),
     ;
 
-    public final int[] unitVector;
+    private static final Cardinal[] HORIZONTAL_BY_QUADRANT = {SOUTH, WEST, NORTH, EAST}; // Indexed by yaw / 90, starting at yaw 0.
 
-    Cardinal(int[] unitVector) {
-        this.unitVector = unitVector;
+    private final int dx;
+    private final int dy;
+    private final int dz;
+
+    Cardinal(int dx, int dy, int dz) {
+        this.dx = dx;
+        this.dy = dy;
+        this.dz = dz;
+    }
+
+    public int dx() {
+        return dx;
+    }
+
+    public int dy() {
+        return dy;
+    }
+
+    public int dz() {
+        return dz;
+    }
+
+    public int[] unitVector() {
+        return new int[]{dx, dy, dz};
     }
 
     //region Static Constructors
-    /**
-     * Resolves horizontal-plane {@code yaw} (in degrees) to a {@link Cardinal}.
-     * Only returns {@link #NORTH}, {@link #EAST}, {@link #SOUTH}, or {@link #WEST} — pitch is not considered.
-     */
     public static Cardinal fromYaw(float yaw) {
         // Minecraft convention: yaw 0 faces south (+Z), 90 west, 180 north, 270 east.
-        float normalizedYaw = ((yaw % 360) + 360) % 360;
-
-        if (normalizedYaw >= 315 || normalizedYaw < 45) {
-            return SOUTH;
-        } else if (normalizedYaw < 135) {
-            return WEST;
-        } else if (normalizedYaw < 225) {
-            return NORTH;
-        } else {
-            return EAST;
-        }
+        return HORIZONTAL_BY_QUADRANT[(int)Math.floor(yaw / 90f + 0.5f) & 3];
     }
     //endregion
 
