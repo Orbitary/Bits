@@ -7,7 +7,7 @@
 
 package xyz.orbitary.bits.paper.effect.data.impl;
 
-import org.bukkit.potion.PotionEffectTypeCategory;
+import org.bukkit.potion.PotionEffectType;
 
 import xyz.orbitary.bits.Bits;
 import xyz.orbitary.bits.paper.effect.data.EffectData;
@@ -21,8 +21,8 @@ import java.util.Optional;
  *
  * @since 0.0.22
  */
-public final class CategoryEffectData extends EffectData<PotionEffectTypeCategory> {
-    public static final PotionEffectTypeCategory DEFAULT_CATEGORY = PotionEffectTypeCategory.NEUTRAL;
+public final class CategoryEffectData extends EffectData<PotionEffectType.Category> {
+    public static final PotionEffectType.Category DEFAULT_CATEGORY = PotionEffectType.Category.NEUTRAL;
 
     CategoryEffectData() {
         super(Bits.key("effect_category"));
@@ -30,7 +30,7 @@ public final class CategoryEffectData extends EffectData<PotionEffectTypeCategor
 
 
     @Override
-    public PotionEffectTypeCategory mergeStrategy(Optional<PotionEffectTypeCategory> parent, List<PotionEffectTypeCategory> children) {
+    public PotionEffectType.Category mergeStrategy(Optional<PotionEffectType.Category> parent, List<PotionEffectType.Category> children) {
         return parent.orElse(children.isEmpty() ? DEFAULT_CATEGORY : children.getFirst());
     }
 
