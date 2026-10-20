@@ -37,16 +37,17 @@ public enum Cardinal {
      * Only returns {@link #NORTH}, {@link #EAST}, {@link #SOUTH}, or {@link #WEST} — pitch is not considered.
      */
     public static Cardinal fromYaw(float yaw) {
+        // Minecraft convention: yaw 0 faces south (+Z), 90 west, 180 north, 270 east.
         float normalizedYaw = ((yaw % 360) + 360) % 360;
 
         if (normalizedYaw >= 315 || normalizedYaw < 45) {
-            return NORTH;
-        } else if (normalizedYaw < 135) {
-            return EAST;
-        } else if (normalizedYaw < 225) {
             return SOUTH;
-        } else {
+        } else if (normalizedYaw < 135) {
             return WEST;
+        } else if (normalizedYaw < 225) {
+            return NORTH;
+        } else {
+            return EAST;
         }
     }
     //endregion
