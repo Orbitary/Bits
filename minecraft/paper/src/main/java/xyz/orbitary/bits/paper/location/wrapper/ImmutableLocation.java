@@ -15,7 +15,9 @@ import org.bukkit.World;
  * Immutable representation of a Bukkit {@link Location}.
  *
  * @since 0.0.11
+ * @deprecated Use {@link xyz.orbitary.bits.mc.world.Location}, converted with {@link xyz.orbitary.bits.paper.location.Locations}.
  */
+@Deprecated(forRemoval = true, since = "0.1.1")
 public record ImmutableLocation(
   World world,
   double x,

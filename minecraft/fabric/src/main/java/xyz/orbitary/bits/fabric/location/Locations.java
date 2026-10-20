@@ -26,24 +26,24 @@ import xyz.orbitary.bits.mc.world.Rotation;
 import xyz.orbitary.bits.mc.world.Vec3;
 
 
-public final class FabricLocations {
-    private FabricLocations() {}
+public final class Locations {
+    private Locations() {}
 
 
-    //region Minecraft -> Bits
-    public static Vec3 fromMojang(net.minecraft.world.phys.Vec3 vec) {
+    //region Fabric -> Bits
+    public static Vec3 fromFabric(net.minecraft.world.phys.Vec3 vec) {
         return new Vec3(vec.x(), vec.y(), vec.z());
     }
 
-    public static BlockPos fromMojang(net.minecraft.core.BlockPos pos) {
+    public static BlockPos fromFabric(net.minecraft.core.BlockPos pos) {
         return new BlockPos(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static ChunkPos fromMojang(net.minecraft.world.level.ChunkPos pos, Key world) {
+    public static ChunkPos fromFabric(net.minecraft.world.level.ChunkPos pos, Key world) {
         return new ChunkPos(pos.x(), pos.z(), world);
     }
 
-    public static Cardinal fromMojang(Direction direction) {
+    public static Cardinal fromFabric(Direction direction) {
         return switch (direction) {
             case NORTH -> Cardinal.NORTH;
             case EAST -> Cardinal.EAST;
@@ -60,29 +60,29 @@ public final class FabricLocations {
     }
 
     public static Position toPosition(Entity entity) {
-        return new Position(fromMojang(entity.position()), Rotation.of(entity.getYRot(), entity.getXRot()));
+        return new Position(fromFabric(entity.position()), Rotation.of(entity.getYRot(), entity.getXRot()));
     }
 
-    public static Location fromEntity(Entity entity) {
+    public static Location fromFabric(Entity entity) {
         return new Location(worldKey(entity.level()), toPosition(entity));
     }
     //endregion
 
 
-    //region Bits -> Minecraft
-    public static net.minecraft.world.phys.Vec3 toMojang(Vec3 vec) {
+    //region Bits -> Fabric
+    public static net.minecraft.world.phys.Vec3 toFabric(Vec3 vec) {
         return new net.minecraft.world.phys.Vec3(vec.x(), vec.y(), vec.z());
     }
 
-    public static net.minecraft.core.BlockPos toMojang(BlockPos pos) {
+    public static net.minecraft.core.BlockPos toFabric(BlockPos pos) {
         return new net.minecraft.core.BlockPos(pos.x(), pos.y(), pos.z());
     }
 
-    public static net.minecraft.world.level.ChunkPos toMojang(ChunkPos pos) {
+    public static net.minecraft.world.level.ChunkPos toFabric(ChunkPos pos) {
         return new net.minecraft.world.level.ChunkPos(pos.x(), pos.z());
     }
 
-    public static Direction toMojang(Cardinal cardinal) {
+    public static Direction toFabric(Cardinal cardinal) {
         return switch (cardinal) {
             case NORTH -> Direction.NORTH;
             case EAST -> Direction.EAST;

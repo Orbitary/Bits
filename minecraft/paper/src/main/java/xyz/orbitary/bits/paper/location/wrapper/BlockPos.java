@@ -21,7 +21,10 @@ import java.util.Objects;
 
 /**
  * Immutable class representing a position in the world with x, y, z coordinates and yaw, pitch rotation.
+ *
+ * @deprecated Use {@link xyz.orbitary.bits.mc.world.Position}.
  */
+@Deprecated(forRemoval = true, since = "0.1.1")
 public final class BlockPos implements Locatable {
     public final double x;
     public final double y;

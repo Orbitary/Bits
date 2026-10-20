@@ -14,7 +14,9 @@ import org.bukkit.util.Vector;
  * Immutable representation of a Bukkit {@link Vector}.
  *
  * @since 0.0.22
+ * @deprecated Use {@link xyz.orbitary.bits.mc.world.Vec3}, converted with {@link xyz.orbitary.bits.paper.location.Locations}.
  */
+@Deprecated(forRemoval = true, since = "0.1.1")
 public record ImmutableVector(
   double x,
   double y,

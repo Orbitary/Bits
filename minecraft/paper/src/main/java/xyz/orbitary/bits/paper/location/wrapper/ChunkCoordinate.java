@@ -21,7 +21,9 @@ import java.util.Objects;
  * Immutable record representing the coordinates of a chunk in a specific world.
  *
  * @since 0.0.13
+ * @deprecated Use {@link xyz.orbitary.bits.mc.world.ChunkPos}.
  */
+@Deprecated(forRemoval = true, since = "0.1.1")
 public record ChunkCoordinate(
   int x,
   int z,

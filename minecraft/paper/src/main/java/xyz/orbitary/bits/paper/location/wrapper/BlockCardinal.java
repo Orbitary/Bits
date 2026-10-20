@@ -26,7 +26,9 @@ import java.util.Objects;
  * @param cardinal The cardinal direction associated with this block position.
  *
  * @since 0.0.11
+ * @deprecated Use {@link xyz.orbitary.bits.mc.world.BlockCardinal}.
  */
+@Deprecated(forRemoval = true, since = "0.1.1")
 public record BlockCardinal(
   int x,
   int y,

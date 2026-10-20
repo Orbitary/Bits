@@ -7,10 +7,23 @@
 
 package xyz.orbitary.bits.paper.location;
 
+import net.kyori.adventure.key.Key;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
+import xyz.orbitary.bits.data.world.Cardinal;
+import xyz.orbitary.bits.mc.world.ChunkPos;
+import xyz.orbitary.bits.mc.world.Position;
+import xyz.orbitary.bits.mc.world.Rotation;
+import xyz.orbitary.bits.mc.world.Vec3;
 import xyz.orbitary.bits.paper.location.wrapper.BlockPos;
 import xyz.orbitary.bits.paper.location.wrapper.Locatable;
 
@@ -91,7 +104,9 @@ public final class Locations {
      * Calculates the midpoint BlockPos coordinates from a collection of {@link Locatable}s.
      *
      * @since 0.0.13
+     * @deprecated Use {@link xyz.orbitary.bits.mc.world.Vec3#midpoint(Collection)}.
      */
+    @Deprecated(forRemoval = true, since = "0.1.1")
     public static BlockPos getMidpoint(Collection<? extends Locatable> locatables) {
         if (locatables.isEmpty()) throw new IllegalArgumentException("Locatables cannot be empty");
 
@@ -107,7 +122,9 @@ public final class Locations {
      * Calculates the minimum BlockPos coordinates from a collection of {@link Locatable}s.
      *
      * @since 0.0.13
+     * @deprecated Use {@link xyz.orbitary.bits.mc.world.Vec3#min(Collection)}.
      */
+    @Deprecated(forRemoval = true, since = "0.1.1")
     public static BlockPos getMinLocation(Collection<? extends Locatable> locatables) {
         if (locatables.isEmpty()) throw new IllegalArgumentException("Locatables cannot be empty");
 
@@ -122,7 +139,9 @@ public final class Locations {
      * Calculates the maximum BlockPos coordinates from a collection of {@link Locatable}s.
      *
      * @since 0.0.13
+     * @deprecated Use {@link xyz.orbitary.bits.mc.world.Vec3#max(Collection)}.
      */
+    @Deprecated(forRemoval = true, since = "0.1.1")
     public static BlockPos getMaxLocation(Collection<? extends Locatable> locatables) {
         if (locatables.isEmpty()) throw new IllegalArgumentException("Locatables cannot be empty");
 
@@ -131,6 +150,129 @@ public final class Locations {
           locatables.stream().mapToDouble(l -> l.asVector().getY()).max().orElseThrow(() -> new IllegalArgumentException("Error computing max y")),
           locatables.stream().mapToDouble(l -> l.asVector().getZ()).max().orElseThrow(() -> new IllegalArgumentException("Error computing max z"))
         );
+    }
+    //endregion
+
+
+    //region Bukkit -> Bits
+    public static Vec3 fromBukkit(Vector vector) {
+        return new Vec3(vector.getX(), vector.getY(), vector.getZ());
+    }
+
+    public static xyz.orbitary.bits.mc.world.BlockPos fromBukkit(Block block) {
+        return new xyz.orbitary.bits.mc.world.BlockPos(block.getX(), block.getY(), block.getZ());
+    }
+
+    public static ChunkPos fromBukkit(Chunk chunk) {
+        return new ChunkPos(chunk.getX(), chunk.getZ(), chunk.getWorld().key());
+    }
+
+    public static xyz.orbitary.bits.mc.world.Location fromBukkit(Location location) throws IllegalArgumentException {
+        return new xyz.orbitary.bits.mc.world.Location(requireWorld(location).key(), toPosition(location));
+    }
+
+    public static xyz.orbitary.bits.mc.world.Location fromBukkit(Entity entity) {
+        return fromBukkit(entity.getLocation());
+    }
+
+    public static Cardinal fromBukkit(BlockFace face) throws IllegalArgumentException {
+        return switch (face) {
+            case NORTH -> Cardinal.NORTH;
+            case EAST -> Cardinal.EAST;
+            case SOUTH -> Cardinal.SOUTH;
+            case WEST -> Cardinal.WEST;
+            case UP -> Cardinal.UP;
+            case DOWN -> Cardinal.DOWN;
+            default -> throw new IllegalArgumentException("Not a cardinal direction: " + face);
+        };
+    }
+
+    public static Position toPosition(Location location) {
+        return new Position(
+          new Vec3(location.getX(), location.getY(), location.getZ()),
+          Rotation.of(location.getYaw(), location.getPitch())
+        );
+    }
+
+    public static Position toPosition(Entity entity) {
+        return toPosition(entity.getLocation());
+    }
+
+    public static xyz.orbitary.bits.mc.world.BlockPos toBlockPos(Location location) {
+        return new xyz.orbitary.bits.mc.world.BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+    }
+
+    public static Rotation rotationOf(Location location) {
+        return Rotation.of(location.getYaw(), location.getPitch());
+    }
+
+    public static Rotation rotationOf(Entity entity) {
+        return rotationOf(entity.getLocation());
+    }
+    //endregion
+
+
+    //region Bits -> Bukkit
+    public static Vector toBukkit(Vec3 vec) {
+        return new Vector(vec.x(), vec.y(), vec.z());
+    }
+
+    public static Block toBlock(World world, xyz.orbitary.bits.mc.world.BlockPos pos) {
+        return world.getBlockAt(pos.x(), pos.y(), pos.z());
+    }
+
+    public static Location toBukkit(xyz.orbitary.bits.mc.world.BlockPos pos, World world) {
+        return new Location(world, pos.x() + 0.5, pos.y() + 0.5, pos.z() + 0.5);
+    }
+
+    public static Location toBukkit(Position position, World world) {
+        Vec3 pos = position.pos();
+        Rotation rot = position.rot();
+        return new Location(world, pos.x(), pos.y(), pos.z(), rot.yaw(), rot.pitch());
+    }
+
+    public static Location toBukkit(xyz.orbitary.bits.mc.world.Location location, World world) throws IllegalArgumentException {
+        if (!world.key().equals(location.world())) throw new IllegalArgumentException("Location is in " + location.world() + " but world is " + world.key());
+        return toBukkit(location.position(), world);
+    }
+
+    public static Location toBukkit(xyz.orbitary.bits.mc.world.Location location) throws IllegalStateException {
+        return toBukkit(location.position(), resolveWorld(location.world()));
+    }
+
+    public static BlockFace toBukkit(Cardinal cardinal) {
+        return switch (cardinal) {
+            case NORTH -> BlockFace.NORTH;
+            case EAST -> BlockFace.EAST;
+            case SOUTH -> BlockFace.SOUTH;
+            case WEST -> BlockFace.WEST;
+            case UP -> BlockFace.UP;
+            case DOWN -> BlockFace.DOWN;
+        };
+    }
+
+    public static Location applyRotation(Location location, Rotation rotation) {
+        location.setRotation(rotation.yaw(), rotation.pitch());
+        return location;
+    }
+
+    public static Location clearRotation(Location location) {
+        return applyRotation(location, Rotation.ZERO);
+    }
+    //endregion
+
+
+    //region Worlds
+    public static World resolveWorld(Key key) throws IllegalStateException {
+        World world = Bukkit.getWorld(new NamespacedKey(key.namespace(), key.value()));
+        if (world == null) throw new IllegalStateException("World is not loaded: " + key);
+        return world;
+    }
+
+    private static World requireWorld(Location location) {
+        World world = location.getWorld();
+        if (world == null) throw new IllegalArgumentException("Location has no world");
+        return world;
     }
     //endregion
 

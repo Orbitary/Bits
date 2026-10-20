@@ -23,7 +23,10 @@ import java.util.Objects;
 
 /**
  * Immutable class representing yaw and pitch angles.
+ *
+ * @deprecated Use {@link xyz.orbitary.bits.mc.world.Rotation}.
  */
+@Deprecated(forRemoval = true, since = "0.1.1")
 public final class YawAndPitch {
     public final float yaw;
     public final float pitch;
