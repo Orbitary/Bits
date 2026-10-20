@@ -48,6 +48,10 @@ public record Position(
         return withPos(pos.add(offset));
     }
 
+    public Position translate(double dx, double dy, double dz) {
+        return withPos(pos.add(dx, dy, dz));
+    }
+
     public Position translate(double amount, Relative relative) {
         return translate(rot.relative(relative).scale(amount));
     }

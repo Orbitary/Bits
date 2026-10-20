@@ -26,8 +26,16 @@ public record BlockPos(
         return new BlockPos(x + other.x, y + other.y, z + other.z);
     }
 
+    public BlockPos add(int dx, int dy, int dz) {
+        return new BlockPos(x + dx, y + dy, z + dz);
+    }
+
     public BlockPos subtract(BlockPos other) {
         return new BlockPos(x - other.x, y - other.y, z - other.z);
+    }
+
+    public BlockPos scale(int scalar) {
+        return new BlockPos(x * scalar, y * scalar, z * scalar);
     }
 
     public BlockPos offset(Cardinal cardinal) {

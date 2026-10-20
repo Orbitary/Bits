@@ -11,6 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import xyz.orbitary.bits.util.math.Constants;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.function.DoubleBinaryOperator;
+
 
 public record Vec3(
   @JsonProperty(required = true) double x,
@@ -41,8 +45,57 @@ public record Vec3(
         return new Vec3(x * scalar, y * scalar, z * scalar);
     }
 
+    public Vec3 add(double dx, double dy, double dz) {
+        return new Vec3(x + dx, y + dy, z + dz);
+    }
+
     public Vec3 negate() {
         return scale(-1);
+    }
+    //endregion
+
+
+    //region Aggregates
+    public static Vec3 midpoint(Collection<Vec3> vectors) {
+        requireNotEmpty(vectors);
+        double sumX = 0;
+        double sumY = 0;
+        double sumZ = 0;
+        for (Vec3 vector : vectors) {
+            sumX += vector.x;
+            sumY += vector.y;
+            sumZ += vector.z;
+        }
+        int count = vectors.size();
+        return new Vec3(sumX / count, sumY / count, sumZ / count);
+    }
+
+    public static Vec3 min(Collection<Vec3> vectors) {
+        return reduce(vectors, Math::min);
+    }
+
+    public static Vec3 max(Collection<Vec3> vectors) {
+        return reduce(vectors, Math::max);
+    }
+
+    private static Vec3 reduce(Collection<Vec3> vectors, DoubleBinaryOperator operator) {
+        requireNotEmpty(vectors);
+        Iterator<Vec3> iterator = vectors.iterator();
+        Vec3 first = iterator.next();
+        double x = first.x;
+        double y = first.y;
+        double z = first.z;
+        while (iterator.hasNext()) {
+            Vec3 vector = iterator.next();
+            x = operator.applyAsDouble(x, vector.x);
+            y = operator.applyAsDouble(y, vector.y);
+            z = operator.applyAsDouble(z, vector.z);
+        }
+        return new Vec3(x, y, z);
+    }
+
+    private static void requireNotEmpty(Collection<Vec3> vectors) {
+        if (vectors.isEmpty()) throw new IllegalArgumentException("Vectors cannot be empty");
     }
     //endregion
 
@@ -97,6 +150,10 @@ public record Vec3(
 
     public boolean isCloseTo(Vec3 other) {
         return distanceSquared(other) <= Constants.EPSILON * Constants.EPSILON;
+    }
+
+    public boolean isWithinDistance(Vec3 other, double distance) {
+        return distanceSquared(other) <= distance * distance;
     }
     //endregion
 

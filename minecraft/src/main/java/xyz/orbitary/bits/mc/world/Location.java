@@ -35,6 +35,14 @@ public record Location(
         return new Location(world, position);
     }
 
+    public Location withPos(Vec3 pos) {
+        return mapPosition(p -> p.withPos(pos));
+    }
+
+    public Location withRot(Rotation rot) {
+        return mapPosition(p -> p.withRot(rot));
+    }
+
     private Location mapPosition(UnaryOperator<Position> mapper) {
         return withPosition(mapper.apply(position));
     }
@@ -44,6 +52,10 @@ public record Location(
     //region Translation & Rotation
     public Location translate(Vec3 offset) {
         return mapPosition(p -> p.translate(offset));
+    }
+
+    public Location translate(double dx, double dy, double dz) {
+        return mapPosition(p -> p.translate(dx, dy, dz));
     }
 
     public Location translate(double amount, Relative relative) {
@@ -65,6 +77,13 @@ public record Location(
     public double distance(Location other) throws IllegalArgumentException {
         requireSameWorld(other);
         return position.distance(other.position);
+    }
+
+    /**
+     * @return whether {@code other} is within {@code distance}. Locations in different worlds are never within distance.
+     */
+    public boolean isWithinDistance(Location other, double distance) {
+        return world.equals(other.world) && position.pos().isWithinDistance(other.position.pos(), distance);
     }
 
     private void requireSameWorld(Location other) {
