@@ -14,9 +14,9 @@ The Bits command framework provides an **annotation-driven, reflection-based** A
 Commands are declared using two key annotations:
 
 - **`@Command`**: Marks a class or method as a command. When applied to a class, creates a command group. When applied to a method, creates an executable command.
-  - `value`: Command name
-  - `aliases`: Alternative command names
-  - `description`: Human-readable description
+- `value`: Command name
+- `aliases`: Alternative command names
+- `description`: Human-readable description
 
 - **`@Parameter`**: Customizes the argument name for method parameters (optional).
 
@@ -140,13 +140,13 @@ See platform-specific requirement implementations for available options.
 
 ## Key Differences from Raw Brigadier
 
-| Aspect | Bits Framework | Raw Brigadier |
-|--------|---|---|
-| **Discovery** | Automatic via reflection | Manual registration |
-| **Argument Types** | Unified registry across platforms | Per-platform setup |
-| **Method Signatures** | Type-safe, idiomatic Java | Generic CommandContext parsing |
-| **Permissions** | Built-in via annotations | Manual implementation |
-| **Async Support** | `@Async` annotation | Manual thread scheduling |
+| Aspect                | Bits Framework                    | Raw Brigadier                  |
+|-----------------------|-----------------------------------|--------------------------------|
+| **Discovery**         | Automatic via reflection          | Manual registration            |
+| **Argument Types**    | Unified registry across platforms | Per-platform setup             |
+| **Method Signatures** | Type-safe, idiomatic Java         | Generic CommandContext parsing |
+| **Permissions**       | Built-in via annotations          | Manual implementation          |
+| **Async Support**     | `@Async` annotation               | Manual thread scheduling       |
 
 ## Version Info
 

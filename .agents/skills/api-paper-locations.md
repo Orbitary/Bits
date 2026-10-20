@@ -16,8 +16,8 @@ Bits provides immutable wrappers for different coordinate systems:
 - **`BlockPos`**: Double-precision block coordinates (x, y, z as double)
 - **`BlockLoc`**: Integer block coordinates (x, y, z as int)
 - **`Locatable`**: Interface for any object with a position
-- **`ImmutableLocation`**: Immutable Bukkit Location wrapper
-- **`YawAndPitch`**: Rotation (yaw, pitch in degrees)
+- **`Location`**: Immutable Bukkit Location wrapper
+- **`Rotation`**: Rotation (yaw, pitch in degrees)
 
 All are **immutable** and designed for safe passing between methods.
 
@@ -95,9 +95,9 @@ Region cylinder = new CylinderRegion(world, centerX, centerZ, radius, minY, maxY
 
 ```java
 Region ellipsoid = new EllipsoidRegion(
-    world,
-    centerX, centerY, centerZ,
-    radiusX, radiusY, radiusZ
+  world,
+  centerX, centerY, centerZ,
+  radiusX, radiusY, radiusZ
 );
 ```
 
