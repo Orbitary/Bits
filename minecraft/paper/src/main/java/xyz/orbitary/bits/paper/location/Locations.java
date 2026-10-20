@@ -8,6 +8,7 @@
 package xyz.orbitary.bits.paper.location;
 
 import net.kyori.adventure.key.Key;
+import net.minecraft.core.Vec3i;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -217,12 +218,20 @@ public final class Locations {
         return new Vector(vec.x(), vec.y(), vec.z());
     }
 
+    public static net.minecraft.world.phys.Vec3 toNMS(Vec3 vec) {
+        return new net.minecraft.world.phys.Vec3(vec.x(), vec.y(), vec.z());
+    }
+
     public static Block toBlock(World world, xyz.orbitary.bits.mc.world.BlockPos pos) {
         return world.getBlockAt(pos.x(), pos.y(), pos.z());
     }
 
     public static Location toBukkit(xyz.orbitary.bits.mc.world.BlockPos pos, World world) {
         return new Location(world, pos.x() + 0.5, pos.y() + 0.5, pos.z() + 0.5);
+    }
+
+    public static Vec3i toNMS(xyz.orbitary.bits.mc.world.BlockPos pos) {
+        return new Vec3i(pos.x(), pos.y(), pos.z());
     }
 
     public static Location toBukkit(Position position, World world) {
@@ -240,11 +249,11 @@ public final class Locations {
 
     public static Location toBukkit(xyz.orbitary.bits.mc.world.Location location, World world) throws IllegalArgumentException {
         if (!world.key().equals(location.world())) throw new IllegalArgumentException("Location is in " + location.world() + " but world is " + world.key());
-        return toBukkit(location.position(), world);
+        return toBukkit(location.pos(), world);
     }
 
     public static Location toBukkit(xyz.orbitary.bits.mc.world.Location location) throws IllegalStateException {
-        return toBukkit(location.position(), resolveWorld(location.world()));
+        return toBukkit(location.pos(), resolveWorld(location.world()));
     }
 
     public static BlockFace toBukkit(Cardinal cardinal) {

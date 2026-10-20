@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Objects;
 
+
 /**
  * A basic implementation of an integer position in a 3D space.
  *

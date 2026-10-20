@@ -7,14 +7,13 @@
 
 package xyz.orbitary.bits.mc.sendable.impl.waypoint;
 
-import org.joml.Vector3i;
-
 import xyz.orbitary.bits.mc.sendable.impl.SendableState;
+import xyz.orbitary.bits.mc.world.BlockPos;
 
 
 public non-sealed abstract class AbstractLocationWaypoint extends AbstractWaypoint {
 
-    public abstract Vector3i getPosition(SendableState state);
+    public abstract BlockPos getPosition(SendableState state);
 
 
 }

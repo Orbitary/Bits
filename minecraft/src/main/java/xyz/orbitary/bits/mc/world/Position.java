@@ -23,6 +23,28 @@ public record Position(
         Objects.requireNonNull(rot, "rot");
     }
 
+
+    public double x() {
+        return pos.x();
+    }
+
+    public double y() {
+        return pos.y();
+    }
+
+    public double z() {
+        return pos.z();
+    }
+
+    public float yaw() {
+        return rot.yaw();
+    }
+
+    public float pitch() {
+        return rot.pitch();
+    }
+
+
     /**
      * @return the position at {@code pos} facing {@link Rotation#ZERO}.
      */

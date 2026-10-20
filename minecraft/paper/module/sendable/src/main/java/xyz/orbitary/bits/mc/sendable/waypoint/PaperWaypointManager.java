@@ -26,7 +26,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3i;
 
 import xyz.orbitary.bits.mc.sendable.PaperReceiver;
 import xyz.orbitary.bits.mc.sendable.Receiver;
@@ -37,6 +36,7 @@ import xyz.orbitary.bits.mc.sendable.impl.waypoint.AbstractLocationWaypoint;
 import xyz.orbitary.bits.mc.sendable.impl.waypoint.AbstractTransmittingWaypoint;
 import xyz.orbitary.bits.mc.sendable.impl.waypoint.AbstractWaypoint;
 import xyz.orbitary.bits.mc.sendable.impl.waypoint.WaypointManager;
+import xyz.orbitary.bits.paper.location.Locations;
 import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
 import xyz.orbitary.bits.util.reflection.ReflectionUtils;
 
@@ -78,10 +78,8 @@ public class PaperWaypointManager extends WaypointManager {
             UUID handleUUID = handle.uuid();
 
             if (waypointDefinition instanceof AbstractLocationWaypoint locationalWaypoint) {
-                Vector3i position = locationalWaypoint.getPosition(state);
-
                 waypointPackets.add(ClientboundTrackedWaypointPacket.addWaypointPosition(
-                  handleUUID, icon, new Vec3i(position.x, position.y, position.z)
+                  handleUUID, icon, Locations.toNMS(locationalWaypoint.getPosition(state))
                 ));
 
                 tracked.computeIfAbsent(receiver.getUniqueId(), _ -> ConcurrentHashMap.newKeySet()).add(handleUUID);

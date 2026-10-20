@@ -18,11 +18,36 @@ import java.util.function.UnaryOperator;
 
 public record Location(
   @JsonProperty(required = true) Key world,
-  @JsonProperty(required = true) Position position
+  @JsonProperty(required = true) Position pos
 ) {
     public Location {
         Objects.requireNonNull(world, "world");
-        Objects.requireNonNull(position, "position");
+        Objects.requireNonNull(pos, "pos");
+    }
+
+
+    public double x() {
+        return pos.x();
+    }
+
+    public double y() {
+        return pos.y();
+    }
+
+    public double z() {
+        return pos.z();
+    }
+
+    public float yaw() {
+        return pos.yaw();
+    }
+
+    public float pitch() {
+        return pos.pitch();
+    }
+
+    public Rotation rotation() {
+        return pos.rot();
     }
 
 
@@ -32,7 +57,7 @@ public record Location(
     }
 
     public Location withWorld(Key world) {
-        return new Location(world, position);
+        return new Location(world, pos);
     }
 
     public Location withPos(Vec3 pos) {
@@ -44,7 +69,7 @@ public record Location(
     }
 
     private Location mapPosition(UnaryOperator<Position> mapper) {
-        return withPosition(mapper.apply(position));
+        return withPosition(mapper.apply(pos));
     }
     //endregion
 
@@ -71,19 +96,19 @@ public record Location(
     //region Distance
     public double distanceSquared(Location other) throws IllegalArgumentException {
         requireSameWorld(other);
-        return position.distanceSquared(other.position);
+        return pos.distanceSquared(other.pos);
     }
 
     public double distance(Location other) throws IllegalArgumentException {
         requireSameWorld(other);
-        return position.distance(other.position);
+        return pos.distance(other.pos);
     }
 
     /**
      * @return whether {@code other} is within {@code distance}. Locations in different worlds are never within distance.
      */
     public boolean isWithinDistance(Location other, double distance) {
-        return world.equals(other.world) && position.pos().isWithinDistance(other.position.pos(), distance);
+        return world.equals(other.world) && pos.pos().isWithinDistance(other.pos.pos(), distance);
     }
 
     private void requireSameWorld(Location other) {
@@ -94,7 +119,7 @@ public record Location(
 
     //region Conversions
     public BlockPos toBlockPos() {
-        return position.toBlockPos();
+        return pos.toBlockPos();
     }
 
     public ChunkPos toChunkPos() {

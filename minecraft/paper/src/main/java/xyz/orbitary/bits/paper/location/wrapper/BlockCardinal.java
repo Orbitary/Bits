@@ -17,6 +17,7 @@ import xyz.orbitary.bits.data.world.Cardinal;
 
 import java.util.Objects;
 
+
 /**
  * Represents an integer block position with an associated cardinal direction.
  *

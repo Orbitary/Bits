@@ -8,23 +8,22 @@
 package xyz.orbitary.bits.mc.sendable.waypoint;
 
 import net.kyori.adventure.key.Key;
-import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-import org.joml.Vector3i;
 
 import xyz.orbitary.bits.mc.sendable.impl.SendableState;
 import xyz.orbitary.bits.mc.sendable.impl.waypoint.AbstractLocationWaypoint;
 import xyz.orbitary.bits.mc.sendable.waypoint.impl.PaperEntityTransmittingWaypoint;
+import xyz.orbitary.bits.mc.world.BlockPos;
 
 
 public final class Waypoints {
     private Waypoints() {}
 
-    public static AbstractLocationWaypoint location(Location location, Key key) {
+    public static AbstractLocationWaypoint location(BlockPos pos, Key key) {
         return new AbstractLocationWaypoint() {
             @Override
-            public Vector3i getPosition(SendableState state) {
-                return new Vector3i((int)location.x(), (int)location.y(), (int)location.z());
+            public BlockPos getPosition(SendableState state) {
+                return pos;
             }
 
             @Override
