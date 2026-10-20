@@ -7,6 +7,8 @@
 
 package xyz.orbitary.bits.mc.world;
 
+import xyz.orbitary.bits.data.world.Relative;
+
 import java.util.Objects;
 
 
@@ -18,4 +20,64 @@ public record Position(
         Objects.requireNonNull(pos, "pos");
         Objects.requireNonNull(rot, "rot");
     }
+
+
+    //region With
+    public Position withPos(Vec3 pos) {
+        return new Position(pos, rot);
+    }
+
+    public Position withRot(Rotation rot) {
+        return new Position(pos, rot);
+    }
+
+    public Position withYaw(float yaw) {
+        return withRot(rot.withYaw(yaw));
+    }
+
+    public Position withPitch(float pitch) {
+        return withRot(rot.withPitch(pitch));
+    }
+    //endregion
+
+
+    //region Translation
+    public Position translate(Vec3 offset) {
+        return withPos(pos.add(offset));
+    }
+
+    public Position translate(double amount, Relative relative) {
+        return translate(rot.relative(relative).scale(amount));
+    }
+    //endregion
+
+
+    //region Rotation
+    public Position lookTowards(Vec3 target) {
+        return withRot(Rotation.lookingAt(pos, target));
+    }
+
+    public Vec3 forward() {
+        return rot.forward();
+    }
+    //endregion
+
+
+    //region Distance
+    public double distanceSquared(Position other) {
+        return pos.distanceSquared(other.pos);
+    }
+
+    public double distance(Position other) {
+        return pos.distance(other.pos);
+    }
+    //endregion
+
+
+    //region Conversions
+    public BlockPos toBlockPos() {
+        return pos.toBlockPos();
+    }
+    //endregion
+
 }

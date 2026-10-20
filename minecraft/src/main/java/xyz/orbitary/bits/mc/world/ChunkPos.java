@@ -21,15 +21,22 @@ public record ChunkPos(
         Objects.requireNonNull(world, "world");
     }
 
-    public int manhattanDistance(ChunkPos other) {
-        if (!Objects.equals(this.world, other.world)) throw new IllegalArgumentException("Cannot calculate distance between chunks in different worlds");
+
+    //region Distance
+    public int manhattanDistance(ChunkPos other) throws IllegalArgumentException {
+        requireSameWorld(other);
         return Math.abs(this.x - other.x) + Math.abs(this.z - other.z);
     }
 
-    public int euclideanDistance(ChunkPos other) {
-        if (!Objects.equals(this.world, other.world)) throw new IllegalArgumentException("Cannot calculate distance between chunks in different worlds");
-        return (int)Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.z - other.z, 2));
+    public int euclideanDistance(ChunkPos other) throws IllegalArgumentException {
+        requireSameWorld(other);
+        return (int)Math.hypot(this.x - other.x, this.z - other.z);
     }
+
+    private void requireSameWorld(ChunkPos other) throws IllegalArgumentException {
+        if (!world.equals(other.world)) throw new IllegalArgumentException("Cannot calculate distance between chunks in different worlds");
+    }
+    //endregion
 
 
     //region Java Overrides

@@ -11,6 +11,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import xyz.orbitary.bits.data.world.Cardinal;
+import xyz.orbitary.bits.data.world.Relative;
 
 
 public record Rotation(
@@ -47,6 +48,20 @@ public record Rotation(
         Vector3f euler = new Vector3f();
         quaternion.getEulerAnglesYXZ(euler);
         return new Rotation((float)Math.toDegrees(-euler.y), (float)Math.toDegrees(euler.x));
+    }
+
+    public static Rotation facing(Vec3 direction) {
+        double length = direction.length();
+        if (length == 0) return ZERO;
+
+        return new Rotation(
+          (float)Math.toDegrees(Math.atan2(-direction.x(), direction.z())),
+          (float)Math.toDegrees(-Math.asin(Math.clamp(direction.y() / length, -1.0, 1.0)))
+        );
+    }
+
+    public static Rotation lookingAt(Vec3 from, Vec3 to) {
+        return facing(to.subtract(from));
     }
     //endregion
 
@@ -115,25 +130,72 @@ public record Rotation(
     }
 
 
+    //region Turning
     public Rotation inverse() {
         return new Rotation(yaw + 180, -pitch);
     }
 
-    public Rotation left() {
+    public Rotation turnLeft() {
         return new Rotation(yaw - 90, pitch);
     }
 
-    public Rotation right() {
+    public Rotation turnRight() {
         return new Rotation(yaw + 90, pitch);
     }
 
-    public Rotation up() {
+    public Rotation lookUp() {
         return new Rotation(yaw, pitch - 90);
     }
 
-    public Rotation down() {
+    public Rotation lookDown() {
         return new Rotation(yaw, pitch + 90);
     }
+    //endregion
+
+
+    //region Direction Vectors
+    public Vec3 forward() {
+        return direction(yaw, pitch);
+    }
+
+    public Vec3 backward() {
+        return forward().negate();
+    }
+
+    public Vec3 left() {
+        return direction(yaw - 90f, 0f);
+    }
+
+    public Vec3 right() {
+        return left().negate();
+    }
+
+    public Vec3 up() {
+        return direction(yaw, pitch - 90f);
+    }
+
+    public Vec3 down() {
+        return up().negate();
+    }
+
+    public Vec3 relative(Relative relative) {
+        return switch (relative) {
+            case FORWARD -> forward();
+            case BACKWARD -> backward();
+            case LEFT -> left();
+            case RIGHT -> right();
+            case UP -> up();
+            case DOWN -> down();
+        };
+    }
+
+    private static Vec3 direction(float yaw, float pitch) {
+        double yawRad = Math.toRadians(yaw);
+        double pitchRad = Math.toRadians(pitch);
+        double horizontal = Math.cos(pitchRad);
+        return new Vec3(-horizontal * Math.sin(yawRad), -Math.sin(pitchRad), horizontal * Math.cos(yawRad));
+    }
+    //endregion
 
 
     public Quaternionf addTo(Quaternionf quaternion) {
