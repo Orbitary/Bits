@@ -13,6 +13,7 @@ import xyz.orbitary.bits.util.math.Constants;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.DoubleBinaryOperator;
 
 
@@ -74,8 +75,16 @@ public record Vec3(
         return reduce(vectors, Math::min);
     }
 
+    public static Vec3 min(Vec3... vectors) {
+        return min(List.of(vectors));
+    }
+
     public static Vec3 max(Collection<Vec3> vectors) {
         return reduce(vectors, Math::max);
+    }
+
+    public static Vec3 max(Vec3... vectors) {
+        return max(List.of(vectors));
     }
 
     private static Vec3 reduce(Collection<Vec3> vectors, DoubleBinaryOperator operator) {

@@ -31,4 +31,14 @@ public record Bounds(
           && point.y() >= min.y() && point.y() <= max.y()
           && point.z() >= min.z() && point.z() <= max.z();
     }
+
+    /**
+     * @return the smallest box enclosing both this box and {@code other}.
+     */
+    public Bounds merge(Bounds other) {
+        return new Bounds(
+          new Vec3(Math.min(min.x(), other.min.x()), Math.min(min.y(), other.min.y()), Math.min(min.z(), other.min.z())),
+          new Vec3(Math.max(max.x(), other.max.x()), Math.max(max.y(), other.max.y()), Math.max(max.z(), other.max.z()))
+        );
+    }
 }
