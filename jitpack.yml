@@ -1,5 +1,0 @@
-jdk:
-    - openjdk21
-build:
-    commands:
-        - ./gradlew clean -x test assemble publishToMavenLocal
