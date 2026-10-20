@@ -23,6 +23,13 @@ public record Position(
         Objects.requireNonNull(rot, "rot");
     }
 
+    /**
+     * @return the position at {@code pos} facing {@link Rotation#ZERO}.
+     */
+    public static Position of(Vec3 pos) {
+        return new Position(pos, Rotation.ZERO);
+    }
+
 
     //region With
     public Position withPos(Vec3 pos) {

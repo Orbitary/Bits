@@ -231,6 +231,13 @@ public final class Locations {
         return new Location(world, pos.x(), pos.y(), pos.z(), rot.yaw(), rot.pitch());
     }
 
+    /**
+     * @return the location at {@code vec} facing {@link Rotation#ZERO}.
+     */
+    public static Location toBukkit(Vec3 vec, World world) {
+        return new Location(world, vec.x(), vec.y(), vec.z());
+    }
+
     public static Location toBukkit(xyz.orbitary.bits.mc.world.Location location, World world) throws IllegalArgumentException {
         if (!world.key().equals(location.world())) throw new IllegalArgumentException("Location is in " + location.world() + " but world is " + world.key());
         return toBukkit(location.position(), world);
