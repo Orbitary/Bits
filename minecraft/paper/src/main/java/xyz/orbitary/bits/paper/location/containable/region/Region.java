@@ -15,7 +15,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
 import xyz.orbitary.bits.paper.location.containable.Containable;
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.impl.RegionVisualiser;
 import xyz.orbitary.bits.paper.location.wrapper.BlockPos;
 import xyz.orbitary.bits.paper.location.wrapper.ChunkCoordinate;
 
@@ -125,10 +124,5 @@ public abstract class Region implements Containable {
         return chunks;
     }
     //endregion
-
-
-    // Implementations should be done yourself, not a good fit for raw regions.
-    @Deprecated(forRemoval = true)
-    protected abstract Set<RegionVisualiser> createVisualiser();
 
 }

@@ -15,17 +15,11 @@ import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.Center;
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.Corner;
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.Edge;
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.impl.RegionVisualiser;
 import xyz.orbitary.bits.paper.location.wrapper.BlockPos;
 import xyz.orbitary.bits.paper.location.wrapper.Locatable;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 
 public final class CylinderRegion extends Region {
@@ -175,30 +169,5 @@ public final class CylinderRegion extends Region {
         return height;
     }
 
-
-    // TODO: Not rotation-aware
-    @Override
-    protected Set<RegionVisualiser> createVisualiser() {
-        Set<RegionVisualiser> visualisers = new HashSet<>();
-
-        int edges = 8;
-        BlockPos c = center();
-
-        for (int i = 0; i < edges; i++) {
-            double angle = 2 * Math.PI * i / edges;
-            double x = c.x + radiusX * Math.cos(angle);
-            double z = c.z + radiusZ * Math.sin(angle);
-            visualisers.add(Edge.straight(
-              BlockPos.of(x, min().y, z),
-              BlockPos.of(x, max().y, z)
-            ));
-        }
-
-        visualisers.add(Corner.of(BlockPos.of(c.x, min().y, c.z)));
-        visualisers.add(Corner.of(BlockPos.of(c.x, max().y, c.z)));
-        visualisers.add(Center.of(c));
-
-        return visualisers;
-    }
 
 }

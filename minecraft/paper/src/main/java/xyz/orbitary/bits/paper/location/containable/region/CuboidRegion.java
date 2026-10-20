@@ -16,17 +16,12 @@ import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
 import xyz.orbitary.bits.paper.location.Locations;
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.Center;
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.Corner;
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.Edge;
-import xyz.orbitary.bits.paper.location.containable.area.visualisation.impl.RegionVisualiser;
 import xyz.orbitary.bits.paper.location.wrapper.BlockPos;
 import xyz.orbitary.bits.paper.location.wrapper.Locatable;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 
 public final class CuboidRegion extends Region {
@@ -155,37 +150,6 @@ public final class CuboidRegion extends Region {
           BlockPos.of(minX + x, minY + y, minZ + z),
           BlockPos.of(maxX + x, maxY + y, maxZ + z),
           rotation
-        );
-    }
-
-
-    // TODO: Not rotation-aware.
-    @Override
-    protected Set<RegionVisualiser> createVisualiser() {
-        return Set.of(
-          Edge.straight(BlockPos.of(min.x, min.y, min.z), BlockPos.of(max.x, min.y, min.z)),
-          Edge.straight(BlockPos.of(min.x, min.y, min.z), BlockPos.of(min.x, max.y, min.z)),
-          Edge.straight(BlockPos.of(min.x, min.y, min.z), BlockPos.of(min.x, min.y, max.z)),
-          Edge.straight(BlockPos.of(max.x, max.y, max.z), BlockPos.of(min.x, max.y, max.z)),
-          Edge.straight(BlockPos.of(max.x, max.y, max.z), BlockPos.of(max.x, min.y, max.z)),
-          Edge.straight(BlockPos.of(max.x, max.y, max.z), BlockPos.of(max.x, max.y, min.z)),
-          Edge.straight(BlockPos.of(min.x, max.y, min.z), BlockPos.of(min.x, max.y, max.z)),
-          Edge.straight(BlockPos.of(min.x, max.y, min.z), BlockPos.of(max.x, max.y, min.z)),
-          Edge.straight(BlockPos.of(max.x, min.y, min.z), BlockPos.of(max.x, min.y, max.z)),
-          Edge.straight(BlockPos.of(max.x, min.y, min.z), BlockPos.of(max.x, max.y, min.z)),
-          Edge.straight(BlockPos.of(min.x, min.y, max.z), BlockPos.of(max.x, min.y, max.z)),
-          Edge.straight(BlockPos.of(min.x, min.y, max.z), BlockPos.of(min.x, max.y, max.z)),
-
-          Corner.of(BlockPos.of(min.x, min.y, min.z)),
-          Corner.of(BlockPos.of(min.x, min.y, max.z)),
-          Corner.of(BlockPos.of(min.x, max.y, min.z)),
-          Corner.of(BlockPos.of(min.x, max.y, max.z)),
-          Corner.of(BlockPos.of(max.x, min.y, min.z)),
-          Corner.of(BlockPos.of(max.x, min.y, max.z)),
-          Corner.of(BlockPos.of(max.x, max.y, min.z)),
-          Corner.of(BlockPos.of(max.x, max.y, max.z)),
-
-          Center.of(center())
         );
     }
 
