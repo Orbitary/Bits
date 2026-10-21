@@ -29,6 +29,8 @@ import xyz.orbitary.bits.paper.location.wrapper.BlockPos;
 import xyz.orbitary.bits.paper.location.wrapper.Locatable;
 
 import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 
 /**
@@ -274,6 +276,56 @@ public final class Locations {
 
     public static Location clearRotation(Location location) {
         return applyRotation(location, Rotation.ZERO);
+    }
+    //endregion
+
+
+    //region Vertical Search
+
+    /**
+     * Searches upwards from {@code location} for the first block that passes {@code filter} and has a collision shape.
+     *
+     * @return the location on the bottom of that block's bounding box, or empty if none is found.
+     * @since 0.1.5
+     */
+    public static Optional<Location> getCeilingLocation(Location location, Predicate<Block> filter) {
+        Location temp = location.clone();
+        temp.setY(Math.max(temp.getY(), location.getWorld().getMinHeight()));
+        clearRotation(temp);
+
+        while (temp.getY() <= location.getWorld().getMaxHeight()) {
+            if (isValidForVerticalSearch(temp.getBlock(), filter)) {
+                return Optional.of(new Location(temp.getWorld(), temp.getX(), temp.getBlock().getBoundingBox().getMinY(), temp.getZ(), temp.getYaw(), temp.getPitch()));
+            }
+            temp.add(0, 1, 0);
+        }
+
+        return Optional.empty();
+    }
+
+    /**
+     * Searches downwards from {@code location} for the first block that passes {@code filter} and has a collision shape.
+     *
+     * @return the location on the top of that block's bounding box, or empty if none is found.
+     * @since 0.1.5
+     */
+    public static Optional<Location> getGroundLocation(Location location, Predicate<Block> filter) {
+        Location temp = location.clone();
+        temp.setY(Math.min(temp.getY(), location.getWorld().getMaxHeight()));
+        clearRotation(temp);
+
+        while (temp.getY() >= location.getWorld().getMinHeight()) {
+            if (isValidForVerticalSearch(temp.getBlock(), filter)) {
+                return Optional.of(new Location(temp.getWorld(), temp.getX(), temp.getBlock().getBoundingBox().getMaxY(), temp.getZ(), temp.getYaw(), temp.getPitch()));
+            }
+            temp.add(0, -1, 0);
+        }
+
+        return Optional.empty();
+    }
+
+    private static boolean isValidForVerticalSearch(Block block, Predicate<Block> filter) {
+        return filter.test(block) && !block.getCollisionShape().getBoundingBoxes().isEmpty();
     }
     //endregion
 
