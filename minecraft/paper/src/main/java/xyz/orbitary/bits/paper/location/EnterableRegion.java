@@ -23,6 +23,7 @@ import xyz.orbitary.bits.paper.util.bukkit.listener.Listeners;
 import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -81,7 +82,7 @@ public final class EnterableRegion implements Listener {
     private void detectPresence() {
         Set<UUID> current = new HashSet<>();
         for (Player player : world.getPlayers()) {
-            if (handler.canEnter(player) && contains(player.getLocation())) current.add(player.getUniqueId());
+            if (handler.canEnter(player) && contains(Objects.requireNonNull(player.getLocation()))) current.add(player.getUniqueId());
         }
 
         Set<UUID> exited = new HashSet<>(playersInside);
