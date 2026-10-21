@@ -7,7 +7,7 @@
 
 package xyz.orbitary.bits.wrapper;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.Bits;
 
