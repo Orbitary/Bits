@@ -271,7 +271,7 @@ public final class Effect {
                 case PotionEffect potionEffect -> {
                     convenience.merge(CommonEffectData.NAME, Component.translatable(potionEffect.bukkitEffect().translationKey()));
                     convenience.merge(CommonEffectData.COLOR, PotionColorRegistry.getEffectiveColor(potionEffect.bukkitEffect()));
-                    convenience.merge(CommonEffectData.CATEGORY, potionEffect.bukkitEffect().getCategory());
+                    convenience.merge(CommonEffectData.CATEGORY, potionEffect.bukkitEffect().getEffectCategory());
                 }
                 case AttributeEffect attributeEffect -> {
                     convenience.merge(CommonEffectData.NAME, Component.translatable(attributeEffect.attribute().translationKey()));
