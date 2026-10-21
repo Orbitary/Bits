@@ -27,6 +27,10 @@ public record Difference(
         Objects.requireNonNull(cut, "cut");
     }
 
+    public static Difference of(Volume base, Volume cut) {
+        return new Difference(base, cut);
+    }
+
     @Override
     public boolean contains(Vec3 point) {
         return base.contains(point) && !cut.contains(point);

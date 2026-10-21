@@ -27,6 +27,10 @@ public record Union(
         if (parts.isEmpty()) throw new IllegalArgumentException("Union needs at least one part");
     }
 
+    public static Union of(Volume... parts) {
+        return new Union(List.of(parts));
+    }
+
     @Override
     public boolean contains(Vec3 point) {
         for (Volume part : parts) {

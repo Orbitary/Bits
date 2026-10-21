@@ -30,8 +30,8 @@ public record Ellipsoid(
         Objects.requireNonNull(center, "center");
         Objects.requireNonNull(rotation, "rotation");
         Objects.requireNonNull(radius, "radius");
-        Cuboid.requirePositive("radius", radius);
-        rotation = new Quaternionf(rotation);
+        VolumeUtils.requirePositive("radius", radius.x(), radius.y(), radius.z());
+        rotation = VolumeUtils.requireRotation(rotation);
     }
 
     public static Ellipsoid of(Vec3 center, Quaternionf rotation, Vec3 radius) {

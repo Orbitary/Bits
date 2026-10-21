@@ -7,7 +7,10 @@
 
 package xyz.orbitary.bits.mc.world.volume;
 
+import org.joml.Quaternionf;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -19,6 +22,20 @@ public final class VolumeUtils {
         List<Volume> leaves = new ArrayList<>();
         collectLeaves(volume, leaves);
         return leaves;
+    }
+
+    static void requirePositive(String name, double... values) {
+        for (double value : values) {
+            if (!(value > 0)) throw new IllegalArgumentException(name + " must be positive: " + Arrays.toString(values));
+        }
+    }
+
+    static Quaternionf requireRotation(Quaternionf rotation) {
+        double lengthSquared = rotation.lengthSquared();
+        if (!(Double.isFinite(lengthSquared) && lengthSquared > 0)) {
+            throw new IllegalArgumentException("rotation must be a non-zero finite quaternion: " + rotation);
+        }
+        return new Quaternionf(rotation);
     }
 
     private static void collectLeaves(Volume volume, List<Volume> leaves) {

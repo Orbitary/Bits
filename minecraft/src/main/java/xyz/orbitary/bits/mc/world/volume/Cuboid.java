@@ -30,8 +30,8 @@ public record Cuboid(
         Objects.requireNonNull(center, "center");
         Objects.requireNonNull(rotation, "rotation");
         Objects.requireNonNull(size, "size");
-        requirePositive("size", size);
-        rotation = new Quaternionf(rotation);
+        VolumeUtils.requirePositive("size", size.x(), size.y(), size.z());
+        rotation = VolumeUtils.requireRotation(rotation);
     }
 
     public static Cuboid of(Vec3 center, Quaternionf rotation, Vec3 size) {
@@ -76,10 +76,6 @@ public record Cuboid(
         double hy = frame.boxHalfExtent(1, size.x() / 2, size.y() / 2, size.z() / 2);
         double hz = frame.boxHalfExtent(2, size.x() / 2, size.y() / 2, size.z() / 2);
         return Bounds.around(center, hx, hy, hz);
-    }
-
-    static void requirePositive(String name, Vec3 value) {
-        if (!(value.x() > 0 && value.y() > 0 && value.z() > 0)) throw new IllegalArgumentException(name + " must be positive: " + value);
     }
 
 }

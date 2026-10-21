@@ -33,12 +33,16 @@ public record Cylinder(
     public Cylinder {
         Objects.requireNonNull(center, "center");
         Objects.requireNonNull(rotation, "rotation");
-        if (!(radiusX > 0 && radiusZ > 0 && height > 0)) throw new IllegalArgumentException("Cylinder radii and height must be positive");
-        rotation = new Quaternionf(rotation);
+        VolumeUtils.requirePositive("radii and height", radiusX, radiusZ, height);
+        rotation = VolumeUtils.requireRotation(rotation);
     }
 
     public static Cylinder of(Vec3 center, Quaternionf rotation, double radiusX, double radiusZ, double height) {
         return new Cylinder(center, rotation, radiusX, radiusZ, height);
+    }
+
+    public static Cylinder of(Vec3 center, double radiusX, double radiusZ, double height) {
+        return new Cylinder(center, new Quaternionf(), radiusX, radiusZ, height);
     }
 
     @Override

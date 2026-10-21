@@ -24,6 +24,10 @@ public record WorldVolume(
         Objects.requireNonNull(volume, "volume");
     }
 
+    public static WorldVolume of(Key world, Volume volume) {
+        return new WorldVolume(world, volume);
+    }
+
     public boolean contains(Location location) {
         return world.equals(location.world()) && volume.contains(location.pos().vec());
     }
