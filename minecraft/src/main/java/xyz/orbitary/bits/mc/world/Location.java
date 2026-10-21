@@ -60,8 +60,8 @@ public record Location(
         return new Location(world, pos);
     }
 
-    public Location withPos(Vec3 pos) {
-        return mapPosition(p -> p.withPos(pos));
+    public Location withVec(Vec3 vec) {
+        return mapPosition(p -> p.withVec(vec));
     }
 
     public Location withRot(Rotation rot) {

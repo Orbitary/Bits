@@ -54,7 +54,7 @@ public record Position(
 
 
     //region With
-    public Position withPos(Vec3 vec) {
+    public Position withVec(Vec3 vec) {
         return new Position(vec, rot);
     }
 
@@ -74,11 +74,11 @@ public record Position(
 
     //region Translation
     public Position translate(Vec3 offset) {
-        return withPos(vec.add(offset));
+        return withVec(vec.add(offset));
     }
 
     public Position translate(double dx, double dy, double dz) {
-        return withPos(vec.add(dx, dy, dz));
+        return withVec(vec.add(dx, dy, dz));
     }
 
     public Position translate(double amount, Relative relative) {
