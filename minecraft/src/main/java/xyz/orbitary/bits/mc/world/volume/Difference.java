@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import xyz.orbitary.bits.mc.world.Vec3;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 
 /**
@@ -29,6 +30,12 @@ public record Difference(
     @Override
     public boolean contains(Vec3 point) {
         return base.contains(point) && !cut.contains(point);
+    }
+
+    @Override
+    public Predicate<Vec3> tester() {
+        Predicate<Vec3> inBase = base.tester(), inCut = cut.tester();
+        return point -> inBase.test(point) && !inCut.test(point);
     }
 
     /**

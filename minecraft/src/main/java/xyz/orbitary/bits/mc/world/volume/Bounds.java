@@ -33,6 +33,16 @@ public record Bounds(
     }
 
     /**
+     * @return the box centred on {@code center}, extending {@code hx}, {@code hy} and {@code hz} from it on each axis.
+     */
+    static Bounds around(Vec3 center, double hx, double hy, double hz) {
+        return new Bounds(
+          new Vec3(center.x() - hx, center.y() - hy, center.z() - hz),
+          new Vec3(center.x() + hx, center.y() + hy, center.z() + hz)
+        );
+    }
+
+    /**
      * @return the smallest box enclosing both this box and {@code other}.
      */
     public Bounds merge(Bounds other) {

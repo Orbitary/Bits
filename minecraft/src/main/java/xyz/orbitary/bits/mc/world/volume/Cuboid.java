@@ -13,6 +13,7 @@ import org.joml.Quaternionf;
 import xyz.orbitary.bits.mc.world.Vec3;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 
 /**
@@ -55,10 +56,17 @@ public record Cuboid(
 
     @Override
     public boolean contains(Vec3 point) {
-        Vec3 local = new Frame(center, rotation).toLocal(point);
-        return Math.abs(local.x()) <= size.x() / 2
-          && Math.abs(local.y()) <= size.y() / 2
-          && Math.abs(local.z()) <= size.z() / 2;
+        return tester().test(point);
+    }
+
+    @Override
+    public Predicate<Vec3> tester() {
+        Frame frame = new Frame(center, rotation);
+        double hx = size.x() / 2, hy = size.y() / 2, hz = size.z() / 2;
+        return point -> {
+            Vec3 local = frame.toLocal(point);
+            return Math.abs(local.x()) <= hx && Math.abs(local.y()) <= hy && Math.abs(local.z()) <= hz;
+        };
     }
 
     @Override
@@ -67,10 +75,7 @@ public record Cuboid(
         double hx = frame.boxHalfExtent(0, size.x() / 2, size.y() / 2, size.z() / 2);
         double hy = frame.boxHalfExtent(1, size.x() / 2, size.y() / 2, size.z() / 2);
         double hz = frame.boxHalfExtent(2, size.x() / 2, size.y() / 2, size.z() / 2);
-        return new Bounds(
-          new Vec3(center.x() - hx, center.y() - hy, center.z() - hz),
-          new Vec3(center.x() + hx, center.y() + hy, center.z() + hz)
-        );
+        return Bounds.around(center, hx, hy, hz);
     }
 
     static void requirePositive(String name, Vec3 value) {

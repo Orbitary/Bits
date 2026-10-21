@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import xyz.orbitary.bits.mc.world.Vec3;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -29,6 +30,10 @@ public sealed interface Volume permits Cuboid, Cylinder, Ellipsoid, Union, Diffe
      * @return whether {@code point} lies inside or on the surface of this volume.
      */
     boolean contains(Vec3 point);
+
+    default Predicate<Vec3> tester() {
+        return this::contains;
+    }
 
     /**
      * @return the axis-aligned box that encloses this volume.

@@ -13,6 +13,7 @@ import org.joml.Quaternionf;
 import xyz.orbitary.bits.mc.world.Vec3;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 
 /**
@@ -42,10 +43,19 @@ public record Cylinder(
 
     @Override
     public boolean contains(Vec3 point) {
-        Vec3 local = new Frame(center, rotation).toLocal(point);
-        if (Math.abs(local.y()) > height / 2) return false;
-        double nx = local.x() / radiusX, nz = local.z() / radiusZ;
-        return nx * nx + nz * nz <= 1.0;
+        return tester().test(point);
+    }
+
+    @Override
+    public Predicate<Vec3> tester() {
+        Frame frame = new Frame(center, rotation);
+        double halfHeight = height / 2;
+        return point -> {
+            Vec3 local = frame.toLocal(point);
+            if (Math.abs(local.y()) > halfHeight) return false;
+            double nx = local.x() / radiusX, nz = local.z() / radiusZ;
+            return nx * nx + nz * nz <= 1.0;
+        };
     }
 
     @Override
@@ -55,10 +65,7 @@ public record Cylinder(
         double hx = frame.cylinderHalfExtent(0, radiusX, radiusZ, halfHeight);
         double hy = frame.cylinderHalfExtent(1, radiusX, radiusZ, halfHeight);
         double hz = frame.cylinderHalfExtent(2, radiusX, radiusZ, halfHeight);
-        return new Bounds(
-          new Vec3(center.x() - hx, center.y() - hy, center.z() - hz),
-          new Vec3(center.x() + hx, center.y() + hy, center.z() + hz)
-        );
+        return Bounds.around(center, hx, hy, hz);
     }
 
 }

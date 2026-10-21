@@ -13,6 +13,7 @@ import xyz.orbitary.bits.mc.world.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 
 /**
@@ -35,6 +36,17 @@ public record Union(
     }
 
     @Override
+    public Predicate<Vec3> tester() {
+        List<Predicate<Vec3>> testers = parts.stream().map(Volume::tester).toList();
+        return point -> {
+            for (Predicate<Vec3> test : testers) {
+                if (test.test(point)) return true;
+            }
+            return false;
+        };
+    }
+
+    @Override
     public Bounds bounds() {
         Bounds merged = parts.getFirst().bounds();
         for (int i = 1; i < parts.size(); i++) {
@@ -45,9 +57,9 @@ public record Union(
 
     @Override
     public Volume union(Volume other) {
-        return new Union(new ArrayList<>(parts) {{
-            add(other);
-        }});
+        List<Volume> all = new ArrayList<>(parts);
+        all.add(other);
+        return new Union(all);
     }
 
 }

@@ -13,6 +13,7 @@ import org.joml.Quaternionf;
 import xyz.orbitary.bits.mc.world.Vec3;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 
 /**
@@ -44,9 +45,18 @@ public record Ellipsoid(
 
     @Override
     public boolean contains(Vec3 point) {
-        Vec3 local = new Frame(center, rotation).toLocal(point);
-        double nx = local.x() / radius.x(), ny = local.y() / radius.y(), nz = local.z() / radius.z();
-        return nx * nx + ny * ny + nz * nz <= 1.0;
+        return tester().test(point);
+    }
+
+    @Override
+    public Predicate<Vec3> tester() {
+        Frame frame = new Frame(center, rotation);
+        double rx = radius.x(), ry = radius.y(), rz = radius.z();
+        return point -> {
+            Vec3 local = frame.toLocal(point);
+            double nx = local.x() / rx, ny = local.y() / ry, nz = local.z() / rz;
+            return nx * nx + ny * ny + nz * nz <= 1.0;
+        };
     }
 
     @Override
@@ -55,10 +65,7 @@ public record Ellipsoid(
         double hx = frame.ellipsoidHalfExtent(0, radius.x(), radius.y(), radius.z());
         double hy = frame.ellipsoidHalfExtent(1, radius.x(), radius.y(), radius.z());
         double hz = frame.ellipsoidHalfExtent(2, radius.x(), radius.y(), radius.z());
-        return new Bounds(
-          new Vec3(center.x() - hx, center.y() - hy, center.z() - hz),
-          new Vec3(center.x() + hx, center.y() + hy, center.z() + hz)
-        );
+        return Bounds.around(center, hx, hy, hz);
     }
 
 }
