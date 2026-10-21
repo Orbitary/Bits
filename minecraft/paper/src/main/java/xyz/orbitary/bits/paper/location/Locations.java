@@ -235,7 +235,7 @@ public final class Locations {
     }
 
     public static Location toBukkit(Position position, World world) {
-        Vec3 pos = position.pos();
+        Vec3 pos = position.vec();
         Rotation rot = position.rot();
         return new Location(world, pos.x(), pos.y(), pos.z(), rot.yaw(), rot.pitch());
     }

@@ -108,7 +108,7 @@ public record Location(
      * @return whether {@code other} is within {@code distance}. Locations in different worlds are never within distance.
      */
     public boolean isWithinDistance(Location other, double distance) {
-        return world.equals(other.world) && pos.pos().isWithinDistance(other.pos.pos(), distance);
+        return world.equals(other.world) && pos.vec().isWithinDistance(other.pos.vec(), distance);
     }
 
     private void requireSameWorld(Location other) {

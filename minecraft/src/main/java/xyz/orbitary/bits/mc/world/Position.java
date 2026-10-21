@@ -15,25 +15,25 @@ import java.util.Objects;
 
 
 public record Position(
-  @JsonProperty(required = true) Vec3 pos,
+  @JsonProperty(required = true) Vec3 vec,
   @JsonProperty(required = true) Rotation rot
 ) {
     public Position {
-        Objects.requireNonNull(pos, "pos");
+        Objects.requireNonNull(vec, "vec");
         Objects.requireNonNull(rot, "rot");
     }
 
 
     public double x() {
-        return pos.x();
+        return vec.x();
     }
 
     public double y() {
-        return pos.y();
+        return vec.y();
     }
 
     public double z() {
-        return pos.z();
+        return vec.z();
     }
 
     public float yaw() {
@@ -54,12 +54,12 @@ public record Position(
 
 
     //region With
-    public Position withPos(Vec3 pos) {
-        return new Position(pos, rot);
+    public Position withPos(Vec3 vec) {
+        return new Position(vec, rot);
     }
 
     public Position withRot(Rotation rot) {
-        return new Position(pos, rot);
+        return new Position(vec, rot);
     }
 
     public Position withYaw(float yaw) {
@@ -74,11 +74,11 @@ public record Position(
 
     //region Translation
     public Position translate(Vec3 offset) {
-        return withPos(pos.add(offset));
+        return withPos(vec.add(offset));
     }
 
     public Position translate(double dx, double dy, double dz) {
-        return withPos(pos.add(dx, dy, dz));
+        return withPos(vec.add(dx, dy, dz));
     }
 
     public Position translate(double amount, Relative relative) {
@@ -89,7 +89,7 @@ public record Position(
 
     //region Rotation
     public Position lookTowards(Vec3 target) {
-        return withRot(Rotation.lookingAt(pos, target));
+        return withRot(Rotation.lookingAt(vec, target));
     }
 
     public Vec3 forward() {
@@ -100,18 +100,18 @@ public record Position(
 
     //region Distance
     public double distanceSquared(Position other) {
-        return pos.distanceSquared(other.pos);
+        return vec.distanceSquared(other.vec);
     }
 
     public double distance(Position other) {
-        return pos.distance(other.pos);
+        return vec.distance(other.vec);
     }
     //endregion
 
 
     //region Conversions
     public BlockPos toBlockPos() {
-        return pos.toBlockPos();
+        return vec.toBlockPos();
     }
     //endregion
 
