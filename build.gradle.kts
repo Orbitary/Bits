@@ -25,8 +25,8 @@ allprojects {
             maven {
                 url = uri("https://repo.bitsquidd.xyz/repository/bit/")
                 credentials {
-                    username = System.getenv("MAVEN_USERNAME")
-                    password = System.getenv("MAVEN_PASSWORD")
+                    username = System.getenv("BITS_REPO_USERNAME")
+                    password = System.getenv("BITS_REPO_PASSWORD")
                 }
             }
         }
