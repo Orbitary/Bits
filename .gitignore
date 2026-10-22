@@ -101,6 +101,5 @@ pnpm-debug.log*
 *.rar
 out/
 temp/
-test/
 
 !libs/**
