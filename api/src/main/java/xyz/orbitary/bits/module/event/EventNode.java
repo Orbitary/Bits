@@ -20,9 +20,11 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 
 /**
@@ -38,9 +40,13 @@ import java.util.function.Predicate;
  * @since 0.1.6
  */
 public final class EventNode<T extends Event> {
-    private static final Object LOCK = new Object();
+    private static final AtomicLong NEXT_ID = new AtomicLong();
     private static final BiConsumer<Event, Throwable> DEFAULT_ERROR_HANDLER = (e, ex) -> Logger.exception("Event listener failed for " + e.getClass().getName(), ex);
 
+    // Structural changes lock the root of the tree they touch, so unrelated trees never contend.
+    private final Object lock = new Object();
+    // Gives joining two trees a lock order, so concurrent joins cannot deadlock.
+    private final long id = NEXT_ID.getAndIncrement();
     private final String name;
     private final Class<T> type;
     private final @Nullable Predicate<Event> gate;
@@ -146,21 +152,30 @@ public final class EventNode<T extends Event> {
      */
     public EventNode<T> addChild(final EventNode<? extends T> child) {
         Objects.requireNonNull(child, "child");
-        synchronized (LOCK) {
-            if (child == this) throw new IllegalArgumentException("A node cannot be its own child: " + name);
-            if (child.parent != null) throw new IllegalStateException("Node already has a parent: " + child.name);
+        if (child == this) throw new IllegalArgumentException("A node cannot be its own child: " + name);
 
-            for (EventNode<?> ancestor = this; ancestor != null; ancestor = ancestor.parent) {
-                if (ancestor == child) throw new IllegalArgumentException("Adding " + child.name + " under " + name + " would create a cycle");
-            }
+        boolean added = false;
+        while (!added) {
+            final EventNode<?> root = root();
+            added = lockBoth(
+              root, child, () -> {
+                  if (root() != root) return false;
+                  if (child.parent != null) throw new IllegalStateException("Node already has a parent: " + child.name);
 
-            for (final EventNode<?> sibling : children) {
-                if (sibling.name.equals(child.name)) throw new IllegalArgumentException("Duplicate child name under " + name + ": " + child.name);
-            }
+                  for (EventNode<?> ancestor = this; ancestor != null; ancestor = ancestor.parent) {
+                      if (ancestor == child) throw new IllegalArgumentException("Adding " + child.name + " under " + name + " would create a cycle");
+                  }
 
-            child.parent = this;
-            children.add(child);
-            invalidate();
+                  for (final EventNode<?> sibling : children) {
+                      if (sibling.name.equals(child.name)) throw new IllegalArgumentException("Duplicate child name under " + name + ": " + child.name);
+                  }
+
+                  child.parent = this;
+                  children.add(child);
+                  invalidate(null);
+                  return true;
+              }
+            );
         }
         return this;
     }
@@ -174,12 +189,14 @@ public final class EventNode<T extends Event> {
      */
     public boolean removeChild(final EventNode<? extends T> child) {
         Objects.requireNonNull(child, "child");
-        synchronized (LOCK) {
-            if (child.parent != this || !children.remove(child)) return false;
-            child.parent = null;
-            invalidate();
-            return true;
-        }
+        return underRoot(
+          () -> {
+              if (child.parent != this || !children.remove(child)) return false;
+              child.parent = null;
+              invalidate(null);
+              return true;
+          }
+        );
     }
 
     /**
@@ -193,22 +210,24 @@ public final class EventNode<T extends Event> {
      */
     public int removeChildren(final String name) {
         Objects.requireNonNull(name, "name");
-        synchronized (LOCK) {
-            int removed = 0;
-            boolean changed = false;
-            for (final EventNode<?> child : children) {
-                if (child.name.equals(name)) {
-                    child.parent = null;
-                    children.remove(child);
-                    removed++;
-                    changed = true;
-                } else {
-                    removed += child.removeChildren(name);
-                }
+        return underRoot(() -> detachNamed(name));
+    }
+
+    private int detachNamed(final String wanted) {
+        int removed = 0;
+        boolean changed = false;
+        for (final EventNode<?> child : children) {
+            if (child.name.equals(wanted)) {
+                child.parent = null;
+                children.remove(child);
+                removed++;
+                changed = true;
+            } else {
+                removed += child.detachNamed(wanted);
             }
-            if (changed) invalidate();
-            return removed;
         }
+        if (changed) invalidate(null);
+        return removed;
     }
 
     /**
@@ -412,14 +431,22 @@ public final class EventNode<T extends Event> {
          */
         public EventSubscription handle(final Consumer<? super E> handler) {
             Objects.requireNonNull(handler, "handler");
+
+            @Nullable Predicate<E> filter = null;
+            for (final Predicate<? super E> next : filters) {
+                filter = filter == null ? next::test : filter.and(next);
+            }
+
             final var registration = new Registration<>(
-              EventNode.this, type, priority, ignoreCancelled, List.copyOf(filters), expireWhen,
+              EventNode.this, type, priority, ignoreCancelled, filter, expireWhen,
               expireCount > 0 ? new AtomicInteger(expireCount) : null, handler
             );
-            synchronized (LOCK) {
-                registrations.add(registration);
-                invalidate();
-            }
+            locked(
+              () -> {
+                  registrations.add(registration);
+                  invalidate(type);
+              }
+            );
             return registration;
         }
 
@@ -464,12 +491,65 @@ public final class EventNode<T extends Event> {
         return dispatchers.computeIfAbsent(type, key -> new Dispatcher(key));
     }
 
-    private void invalidate() {
+    /**
+     * Drops cached plans on this node and every ancestor. Must hold the root lock.
+     *
+     * @param changed the listener type that changed, so only plans that can include it are dropped. Null drops all.
+     */
+    private void invalidate(final @Nullable Class<?> changed) {
         for (final Dispatcher<?> dispatcher : dispatchers.values()) {
-            dispatcher.plan = null;
+            if (changed == null || changed.isAssignableFrom(dispatcher.type)) dispatcher.plan = null;
         }
         final EventNode<?> p = parent;
-        if (p != null) p.invalidate();
+        if (p != null) p.invalidate(changed);
+    }
+
+    private EventNode<?> root() {
+        EventNode<?> node = this;
+        for (EventNode<?> p = node.parent; p != null; p = node.parent) {
+            node = p;
+        }
+        return node;
+    }
+
+    /**
+     * Runs an action holding the lock of this node's root. The root is re-checked under its lock, because the node may
+     * have been moved to another tree in between.
+     */
+    private <R> R underRoot(final Supplier<R> action) {
+        while (true) {
+            final EventNode<?> root = root();
+            synchronized (root.lock) {
+                if (root() == root) return action.get();
+            }
+        }
+    }
+
+    private void locked(final Runnable action) {
+        underRoot(
+          () -> {
+              action.run();
+              return Boolean.TRUE;
+          }
+        );
+    }
+
+    /**
+     * Runs an action holding two locks, always taken in id order.
+     */
+    private static boolean lockBoth(final EventNode<?> a, final EventNode<?> b, final Supplier<Boolean> action) {
+        if (a == b) {
+            synchronized (a.lock) {
+                return action.get();
+            }
+        }
+        final EventNode<?> first = a.id < b.id ? a : b;
+        final EventNode<?> second = first == a ? b : a;
+        synchronized (first.lock) {
+            synchronized (second.lock) {
+                return action.get();
+            }
+        }
     }
 
     private Plan compile(final Class<?> eventType) {
@@ -519,14 +599,16 @@ public final class EventNode<T extends Event> {
         private Plan plan() {
             final Plan cached = plan;
             if (cached != null) return cached;
-            synchronized (LOCK) {
-                Plan current = plan;
-                if (current == null) {
-                    current = compile(type);
-                    plan = current;
-                }
-                return current;
-            }
+            return underRoot(
+              () -> {
+                  Plan current = plan;
+                  if (current == null) {
+                      current = compile(type);
+                      plan = current;
+                  }
+                  return current;
+              }
+            );
         }
 
         private void dispatch(final Event event) {
@@ -557,7 +639,7 @@ public final class EventNode<T extends Event> {
         private final Class<E> type;
         private final int priority;
         private final boolean ignoreCancelled;
-        private final List<Predicate<? super E>> filters;
+        private final @Nullable Predicate<? super E> filter;
         private final @Nullable Predicate<? super E> expireWhen;
         private final @Nullable AtomicInteger remaining;
         private final Consumer<? super E> body;
@@ -565,14 +647,14 @@ public final class EventNode<T extends Event> {
 
         private Registration(
           final EventNode<?> node, final Class<E> type, final int priority, final boolean ignoreCancelled,
-          final List<Predicate<? super E>> filters, final @Nullable Predicate<? super E> expireWhen,
+          final @Nullable Predicate<? super E> filter, final @Nullable Predicate<? super E> expireWhen,
           final @Nullable AtomicInteger remaining, final Consumer<? super E> body
         ) {
             this.node = node;
             this.type = type;
             this.priority = priority;
             this.ignoreCancelled = ignoreCancelled;
-            this.filters = filters;
+            this.filter = filter;
             this.expireWhen = expireWhen;
             this.remaining = remaining;
             this.body = body;
@@ -593,9 +675,7 @@ public final class EventNode<T extends Event> {
                     unsubscribe();
                     return;
                 }
-                for (final Predicate<? super E> filter : filters) {
-                    if (!filter.test(event)) return;
-                }
+                if (filter != null && !filter.test(event)) return;
 
                 boolean last = false;
                 if (remaining != null) {
@@ -621,12 +701,15 @@ public final class EventNode<T extends Event> {
 
         @Override
         public void unsubscribe() {
-            synchronized (LOCK) {
-                if (!active) return;
-                active = false;
-                node.registrations.remove(this);
-                node.invalidate();
-            }
+            if (!active) return;
+            node.locked(
+              () -> {
+                  if (!active) return;
+                  active = false;
+                  node.registrations.remove(this);
+                  node.invalidate(type);
+              }
+            );
         }
 
         @Override

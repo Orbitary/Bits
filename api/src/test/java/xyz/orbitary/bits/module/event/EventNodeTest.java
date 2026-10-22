@@ -628,6 +628,73 @@ class EventNodeTest {
     //endregion
 
 
+    //region Targeted invalidation and tree locks
+    @Test
+    void unsubscribingASupertypeListenerInvalidatesSubtypePlans() {
+        final EventSubscription subscription = root.handle(Named.class, e -> log.add("named"));
+        final EventDispatcher<Ping> dispatcher = root.dispatcher(Ping.class);
+        dispatcher.call(new Ping(1));
+        subscription.unsubscribe();
+        dispatcher.call(new Ping(2));
+        assertEquals(List.of("named"), log);
+        assertFalse(dispatcher.hasListener());
+    }
+
+    @Test
+    void changingAListenerLeavesUnrelatedTypesWorking() {
+        root.handle(Pong.class, e -> log.add("pong"));
+        final EventDispatcher<Pong> pongs = root.dispatcher(Pong.class);
+        pongs.call(new Pong(1));
+        root.handle(Ping.class, e -> {}).unsubscribe();
+        pongs.call(new Pong(2));
+        assertEquals(List.of("pong", "pong"), log);
+    }
+
+    @Test
+    void nodeMovedToAnotherTreeDispatchesInTheNewTree() {
+        final var other = EventNode.all("other");
+        final var kid = child(root, "kid");
+        kid.handle(Ping.class, e -> log.add("kid"));
+        root.call(new Ping(1));
+
+        root.removeChild(kid);
+        other.addChild(kid);
+        root.call(new Ping(2));
+        other.call(new Ping(3));
+
+        assertEquals(List.of("kid", "kid"), log);
+    }
+
+    @Test
+    void joiningTreesInOppositeOrdersDoesNotDeadlock() throws Exception {
+        final var a = EventNode.all("a");
+        final var b = EventNode.all("b");
+        final var start = new CountDownLatch(1);
+        final ExecutorService pool = Executors.newFixedThreadPool(2);
+        final List<Future<?>> futures = new ArrayList<>();
+        for (final boolean forward : new boolean[]{true, false}) {
+            futures.add(pool.submit(() -> {
+                start.await();
+                for (int i = 0; i < 20_000; i++) {
+                    final var parent = forward ? a : b;
+                    final var kid = forward ? b : a;
+                    try {
+                        parent.addChild(kid);
+                    } catch (final IllegalArgumentException | IllegalStateException expected) {
+                        // The other thread won this round.
+                    }
+                    parent.removeChild(kid);
+                }
+                return null;
+            }));
+        }
+        start.countDown();
+        for (final Future<?> future : futures) future.get(60, TimeUnit.SECONDS);
+        pool.shutdown();
+    }
+    //endregion
+
+
     //region Concurrency
     @Test
     void dispatchSurvivesConcurrentStructuralChanges() throws Exception {

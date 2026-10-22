@@ -9,8 +9,9 @@ package xyz.orbitary.bits.module.event;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Base class for anything dispatched through an {@link EventNode}.
@@ -21,7 +22,17 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 0.1.6
  */
 public abstract class Event {
-    private final AtomicReference<@Nullable String> cancelReason = new AtomicReference<>();
+    private static final VarHandle CANCEL_REASON;
+
+    static {
+        try {
+            CANCEL_REASON = MethodHandles.lookup().findVarHandle(Event.class, "cancelReason", String.class);
+        } catch (final ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    private volatile @Nullable String cancelReason;
 
     /**
      * @return true if a listener has cancelled the event
@@ -29,7 +40,7 @@ public abstract class Event {
      * @since 0.1.6
      */
     public final boolean cancelled() {
-        return cancelReason.get() != null;
+        return cancelReason != null;
     }
 
     /**
@@ -38,7 +49,7 @@ public abstract class Event {
      * @since 0.1.6
      */
     public final @Nullable String cancelReason() {
-        return cancelReason.get();
+        return cancelReason;
     }
 
     /**
@@ -49,7 +60,7 @@ public abstract class Event {
      * @since 0.1.6
      */
     public final void cancel(final String reason) {
-        cancelReason.compareAndSet(null, Objects.requireNonNull(reason, "reason"));
+        CANCEL_REASON.compareAndSet(this, (String)null, Objects.requireNonNull(reason, "reason"));
     }
 
 }
