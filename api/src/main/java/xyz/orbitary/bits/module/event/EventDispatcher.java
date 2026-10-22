@@ -23,10 +23,9 @@ public interface EventDispatcher<E extends Event> {
      *
      * @return the same event, so a caller can check whether it was cancelled
      *
-     * @throws IllegalArgumentException if the event's class is not the dispatcher's type
      * @since 0.1.6
      */
-    E call(E event);
+    E call(E event) throws IllegalArgumentException;
 
     /**
      * Allows callers to skip building events nobody listens to.

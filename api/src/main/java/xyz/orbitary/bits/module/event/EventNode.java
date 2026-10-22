@@ -29,13 +29,6 @@ import java.util.function.Supplier;
 
 /**
  * A node in an event graph.
- * <p>
- * An event reaches every listener in the node's subtree in one pass, lowest {@linkplain ListenerBuilder#priority(int)
- * priority} first. Listeners of equal priority run in tree order: a node's own listeners, then its children in the
- * order they were added.
- * <p>
- * Listeners deny an event by {@linkplain Event#cancel(String) cancelling} it. Later listeners skip a cancelled
- * event unless they opt out with {@link ListenerBuilder#ignoreCancelled(boolean)}.
  *
  * @since 0.1.6
  */
@@ -43,10 +36,9 @@ public final class EventNode<T extends Event> {
     private static final AtomicLong NEXT_ID = new AtomicLong();
     private static final BiConsumer<Event, Throwable> DEFAULT_ERROR_HANDLER = (e, ex) -> Logger.exception("Event listener failed for " + e.getClass().getName(), ex);
 
-    // Structural changes lock the root of the tree they touch, so unrelated trees never contend.
     private final Object lock = new Object();
-    // Gives joining two trees a lock order, so concurrent joins cannot deadlock.
     private final long id = NEXT_ID.getAndIncrement();
+
     private final String name;
     private final Class<T> type;
     private final @Nullable Predicate<Event> gate;
@@ -441,6 +433,7 @@ public final class EventNode<T extends Event> {
               EventNode.this, type, priority, ignoreCancelled, filter, expireWhen,
               expireCount > 0 ? new AtomicInteger(expireCount) : null, handler
             );
+
             locked(
               () -> {
                   registrations.add(registration);
@@ -512,10 +505,6 @@ public final class EventNode<T extends Event> {
         return node;
     }
 
-    /**
-     * Runs an action holding the lock of this node's root. The root is re-checked under its lock, because the node may
-     * have been moved to another tree in between.
-     */
     private <R> R underRoot(final Supplier<R> action) {
         while (true) {
             final EventNode<?> root = root();
@@ -534,17 +523,16 @@ public final class EventNode<T extends Event> {
         );
     }
 
-    /**
-     * Runs an action holding two locks, always taken in id order.
-     */
     private static boolean lockBoth(final EventNode<?> a, final EventNode<?> b, final Supplier<Boolean> action) {
         if (a == b) {
             synchronized (a.lock) {
                 return action.get();
             }
         }
+
         final EventNode<?> first = a.id < b.id ? a : b;
         final EventNode<?> second = first == a ? b : a;
+
         synchronized (first.lock) {
             synchronized (second.lock) {
                 return action.get();
@@ -580,7 +568,10 @@ public final class EventNode<T extends Event> {
     /**
      * A listener with the node filters between it and the node the plan belongs to, outermost first.
      */
-    private record Entry(Registration<?> registration, @Nullable Predicate<Event> gate) {
+    private record Entry(
+      Registration<?> registration,
+      @Nullable Predicate<Event> gate
+    ) {
         Entry under(final @Nullable Predicate<Event> outer) {
             if (outer == null) return this;
             return new Entry(registration, gate == null ? outer : outer.and(gate));
@@ -636,7 +627,7 @@ public final class EventNode<T extends Event> {
 
     private static final class Registration<E extends Event> implements EventSubscription {
         private final EventNode<?> node;
-        private final Class<E> type;
+        private final Class<? extends E> type;
         private final int priority;
         private final boolean ignoreCancelled;
         private final @Nullable Predicate<? super E> filter;
@@ -646,7 +637,7 @@ public final class EventNode<T extends Event> {
         private volatile boolean active = true;
 
         private Registration(
-          final EventNode<?> node, final Class<E> type, final int priority, final boolean ignoreCancelled,
+          final EventNode<?> node, final Class<? extends E> type, final int priority, final boolean ignoreCancelled,
           final @Nullable Predicate<? super E> filter, final @Nullable Predicate<? super E> expireWhen,
           final @Nullable AtomicInteger remaining, final Consumer<? super E> body
         ) {
@@ -660,11 +651,7 @@ public final class EventNode<T extends Event> {
             this.body = body;
         }
 
-        /**
-         * Runs the listener against an event. A failure is reported and cancels the event, so a broken guard never
-         * lets an event through.
-         */
-        private void run(final Event raw, final @Nullable Predicate<Event> gate) {
+        private void run(final Event raw, final @Nullable Predicate<? super Event> gate) {
             if (!active) return;
             try {
                 if (gate != null && !gate.test(raw)) return;
@@ -692,9 +679,7 @@ public final class EventNode<T extends Event> {
             } catch (final Throwable error) {
                 try {
                     node.resolveErrorHandler().accept(raw, error);
-                } catch (final Throwable ignored) {
-                    // An error handler must never break dispatch.
-                }
+                } catch (final Throwable ignored) {}
                 raw.cancel("Listener failed: " + error);
             }
         }
