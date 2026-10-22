@@ -21,7 +21,8 @@ public class BitsClientInitializer implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientBitsFabric.generic();
-        Bits.init();
+        Bits.get().startup();
+        Bits.get().initialise();
     }
 
 }
