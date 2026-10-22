@@ -42,6 +42,7 @@ public abstract class Bits extends ManagerContainer.Default {
          * @since 0.1.1
          */
         public static final ManagerEvents MANAGER = ManagerEvents.INSTANCE;
+
     }
 
     private static @Nullable Bits instance;
@@ -55,6 +56,8 @@ public abstract class Bits extends ManagerContainer.Default {
     protected Bits() {
         if (instance != null) throw BitsException.INSTANCE_ALREADY_EXISTS(Bits.class);
         instance = this;
+
+        get().registerManagers(get().modules().build());
     }
 
     public static Bits generic(String platformName) {
@@ -73,12 +76,6 @@ public abstract class Bits extends ManagerContainer.Default {
     public static Bits get() {
         if (instance == null) throw BitsException.INSTANCE_NOT_FOUND(Bits.class);
         return instance;
-    }
-
-    public static void init() {
-        get().registerManagers(get().modules().build());
-        get().startup();
-        get().initialise();
     }
 
     public static <M extends BitsModule> Optional<M> getModule(Class<M> clazz) {
