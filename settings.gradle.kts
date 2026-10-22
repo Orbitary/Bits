@@ -39,6 +39,7 @@ dependencyResolutionManagement {
 rootProject.name = "Bits"
 
 include("api")
+include("api:module:command")
 include("api:module:event")
 
 include("minecraft")
