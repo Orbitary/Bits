@@ -13,18 +13,32 @@ import java.util.List;
 /**
  * A command read from a {@link Command} method, independent of any platform.
  *
- * @param name        the command name
- * @param description the description, or empty for none
- * @param owner       the class declaring the command method
- * @param method      the command method
- * @param parameters  the arguments, in method declaration order
+ * @param path       the command's segments from the outermost group to the command itself
+ * @param owner      the class declaring the command method
+ * @param method     the command method
+ * @param parameters the arguments, excluding injected parameters
+ * @param async      whether the command runs off the main thread
+ * @param conditions the conditions that must pass before the command runs
  *
  * @since 0.1.6
  */
 public record CommandDefinition(
-  String name,
-  String description,
+  List<Segment> path,
   Class<?> owner,
   Method method,
-  List<ParameterDefinition> parameters
-) {}
+  List<ParameterDefinition> parameters,
+  boolean async,
+  List<Class<? extends Condition<?>>> conditions
+) {
+
+    /**
+     * One name in a command path, with the description of that group or command.
+     *
+     * @param name        the name
+     * @param description the description, or empty for none
+     *
+     * @since 0.1.6
+     */
+    public record Segment(String name, String description) {}
+
+}

@@ -10,6 +10,7 @@ package xyz.orbitary.bits.module.command;
 /**
  * A command argument read from a {@link Command} method parameter.
  *
+ * @param index       the position of the parameter in the method signature
  * @param name        the normalised argument name
  * @param description the description, or empty for none
  * @param required    whether the argument must be supplied
@@ -17,4 +18,4 @@ package xyz.orbitary.bits.module.command;
  *
  * @since 0.1.6
  */
-public record ParameterDefinition(String name, String description, boolean required, Class<?> type) {}
+public record ParameterDefinition(int index, String name, String description, boolean required, Class<?> type) {}

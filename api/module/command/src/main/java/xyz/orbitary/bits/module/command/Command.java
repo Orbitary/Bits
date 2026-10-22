@@ -13,16 +13,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a public method as a command. The method's parameters become the command's arguments.
+ * Marks a command. On a method it defines a command whose parameters become its arguments. On a class it
+ * defines a command group, and the {@link Command} methods and nested classes inside it become its subcommands.
+ * A method in a {@link Command} class with a blank name is the group's own handler.
  *
  * @since 0.1.6
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Command {
 
     /**
-     * @return the command name
+     * @return the command or group name
      *
      * @since 0.1.6
      */
