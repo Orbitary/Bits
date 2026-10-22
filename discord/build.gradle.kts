@@ -1,5 +1,6 @@
 dependencies {
     api(project(":api"))
+    api(project(":discord:module:command"))
     api(discordLibs.jda)
 }
 

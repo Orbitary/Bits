@@ -62,4 +62,5 @@ include("minecraft:fabric")
 
 
 
+include("discord:module:command")
 include("discord")

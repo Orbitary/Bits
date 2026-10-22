@@ -10,7 +10,7 @@ package xyz.orbitary.bits;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import xyz.orbitary.bits.discord.command.JdaCommandManager;
+import xyz.orbitary.bits.discord.module.command.JdaCommandManager;
 import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.wrapper.collection.AddableList;
 
@@ -66,7 +66,7 @@ public class BitsDiscord extends Bits {
     @Override
     protected AddableList<BitsModule> modules() {
         return super.modules()
-          .add(new JdaCommandManager());
+          .add(new JdaCommandManager(BitsDiscord::jda));
     }
 
 }
