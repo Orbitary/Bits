@@ -9,6 +9,7 @@ package xyz.orbitary.bits.module.command;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A command read from a {@link Command} method, independent of any platform.
@@ -30,6 +31,15 @@ public record CommandDefinition(
   boolean async,
   List<Class<? extends Condition<?>>> conditions
 ) {
+
+    /**
+     * @return the path joined by spaces, such as {@code admin ban}
+     *
+     * @since 0.1.6
+     */
+    public String fullName() {
+        return path.stream().map(Segment::name).collect(Collectors.joining(" "));
+    }
 
     /**
      * One name in a command path, with the description of that group or command.
