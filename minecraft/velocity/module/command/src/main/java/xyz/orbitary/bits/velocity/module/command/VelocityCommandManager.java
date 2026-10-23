@@ -60,6 +60,7 @@ public final class VelocityCommandManager implements BitsModule {
           arguments,
           context -> new VelocityCommandContext(context.getSource()),
           (source, error) -> source.sendMessage(Component.text(CommandErrors.message(error), NamedTextColor.RED)),
+          (source, node) -> source.hasPermission(node),
           runnable -> Bits.get().runLaterAsync(runnable, 0)
         );
 

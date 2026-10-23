@@ -86,6 +86,7 @@ public class ClientBitsFabric extends BitsFabric {
         return super.modules().add(new FabricCommandManager<FabricClientCommandSource>(
           arguments -> {},
           (source, error) -> source.sendError(Component.literal(CommandErrors.message(error))),
+          (source, node) -> true,
           dispatcherCallback -> ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcherCallback.accept(dispatcher))
         ));
     }

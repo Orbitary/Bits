@@ -121,6 +121,7 @@ class VelocityCommandManagerTest {
           new Class<?>[]{type},
           (proxy, method, args) -> {
               if (method.getName().equals("sendMessage")) messages.add((Component) args[0]);
+              if (method.getName().equals("hasPermission")) return true;
               return null;
           }
         );

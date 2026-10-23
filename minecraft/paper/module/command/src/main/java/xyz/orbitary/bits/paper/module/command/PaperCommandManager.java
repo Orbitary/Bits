@@ -55,6 +55,7 @@ public final class PaperCommandManager implements BitsModule {
           arguments,
           context -> new PaperCommandContext(context.getSource()),
           (source, error) -> source.getBukkitSender().sendMessage(Component.text(CommandErrors.message(error), NamedTextColor.RED)),
+          (source, node) -> source.getBukkitSender().hasPermission(node),
           runnable -> Bits.get().runLaterAsync(runnable, 0)
         );
 

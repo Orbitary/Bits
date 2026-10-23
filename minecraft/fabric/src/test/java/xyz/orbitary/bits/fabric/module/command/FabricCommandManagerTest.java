@@ -108,6 +108,7 @@ class FabricCommandManagerTest {
         return new FabricCommandManager<>(
           custom,
           (source, error) -> errors.add(error),
+          (source, node) -> true,
           callbacks::add
         );
     }
