@@ -9,7 +9,6 @@ package xyz.orbitary.bits.paper.module.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.CommandSourceStack;
@@ -19,7 +18,7 @@ import xyz.orbitary.bits.Bits;
 import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.log.Logger;
 import xyz.orbitary.bits.mc.module.command.BrigadierArguments;
-import xyz.orbitary.bits.mc.module.command.ConditionFailedException;
+import xyz.orbitary.bits.mc.module.command.CommandErrors;
 import xyz.orbitary.bits.mc.module.command.BrigadierCommandBuilder;
 import xyz.orbitary.bits.module.command.CommandDefinition;
 import xyz.orbitary.bits.module.command.CommandScanner;
@@ -45,12 +44,6 @@ public final class PaperCommandManager implements BitsModule {
         this.customArguments = customArguments;
     }
 
-    private static String message(Throwable error) {
-        if (error instanceof ConditionFailedException) return "You cannot use this command.";
-        if (error instanceof CommandSyntaxException syntax && syntax.getMessage() != null) return syntax.getMessage();
-        return "An error occurred while running this command.";
-    }
-
     @Override
     public void startup() {
         BrigadierArguments<CommandSourceStack> arguments = BrigadierArguments.withDefaults();
@@ -61,7 +54,7 @@ public final class PaperCommandManager implements BitsModule {
         BrigadierCommandBuilder<CommandSourceStack> builder = new BrigadierCommandBuilder<>(
           arguments,
           context -> new PaperCommandContext(context.getSource()),
-          (source, error) -> source.getBukkitSender().sendMessage(Component.text(message(error), NamedTextColor.RED)),
+          (source, error) -> source.getBukkitSender().sendMessage(Component.text(CommandErrors.message(error), NamedTextColor.RED)),
           runnable -> Bits.get().runLaterAsync(runnable, 0)
         );
 
