@@ -12,8 +12,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.RandomAccess;
 import java.util.SplittableRandom;
 import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
@@ -50,6 +52,8 @@ public final class Randomness {
         if (collection.isEmpty()) throw new IllegalArgumentException("Collection is empty, cannot get random element.");
 
         int index = random.nextInt(collection.size());
+        if (collection instanceof List<T> list && collection instanceof RandomAccess) return Objects.requireNonNull(list.get(index));
+
         return collection.stream()
           .skip(index)
           .findFirst()
