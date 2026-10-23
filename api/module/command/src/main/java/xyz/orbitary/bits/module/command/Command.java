@@ -37,4 +37,11 @@ public @interface Command {
      */
     String description() default "";
 
+    /**
+     * @return other names the command or group can be run with, or none
+     *
+     * @since 0.1.6
+     */
+    String[] aliases() default {};
+
 }
