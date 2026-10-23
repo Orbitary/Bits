@@ -286,6 +286,7 @@ public final class Locations {
      * Searches upwards from {@code location} for the first block that passes {@code filter} and has a collision shape.
      *
      * @return the location on the bottom of that block's bounding box, or empty if none is found.
+     *
      * @since 0.1.5
      */
     public static Optional<Location> getCeilingLocation(Location location, Predicate<Block> filter) {
@@ -307,6 +308,7 @@ public final class Locations {
      * Searches downwards from {@code location} for the first block that passes {@code filter} and has a collision shape.
      *
      * @return the location on the top of that block's bounding box, or empty if none is found.
+     *
      * @since 0.1.5
      */
     public static Optional<Location> getGroundLocation(Location location, Predicate<Block> filter) {
@@ -322,6 +324,18 @@ public final class Locations {
         }
 
         return Optional.empty();
+    }
+
+    public static boolean isGroundLocation(Location location) {
+        Location moved = location.clone().add(0, -0.01, 0);
+
+        return moved.getBlock().getBoundingBox().contains(moved.toVector());
+    }
+
+    public static boolean isCeilingLocation(Location location) {
+        Location moved = location.clone().add(0, 0.01, 0);
+
+        return moved.getBlock().getBoundingBox().contains(moved.toVector());
     }
 
     private static boolean isValidForVerticalSearch(Block block, Predicate<Block> filter) {
