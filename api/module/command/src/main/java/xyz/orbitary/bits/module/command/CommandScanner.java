@@ -17,10 +17,12 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.function.Predicate;
 
 
@@ -88,7 +90,7 @@ public final class CommandScanner {
      */
     public static List<CommandDefinition> scan(Class<?> owner, Predicate<Class<?>> injected) {
         List<CommandDefinition> commands = new ArrayList<>();
-        collect(owner, List.of(), injected, commands);
+        collect(owner, List.of(), List.of(), injected, commands);
 
         checkUniquePaths(commands, owner.getName());
         return commands;
@@ -121,22 +123,23 @@ public final class CommandScanner {
         return false;
     }
 
-    private static void collect(Class<?> owner, List<Segment> prefix, Predicate<Class<?>> injected, List<CommandDefinition> out) {
+    private static void collect(Class<?> owner, List<Segment> prefix, List<PermissionClause> inherited, Predicate<Class<?>> injected, List<CommandDefinition> out) {
         Command group = owner.getAnnotation(Command.class);
         List<Segment> base = group == null
                              ? prefix
                              : append(prefix, segment(group, owner, parameters(constructor(owner), injected, true)));
 
+        List<PermissionClause> clauses = concat(inherited, permissionsOf(owner));
         for (Method method : owner.getDeclaredMethods()) {
             Command command = method.getAnnotation(Command.class);
-            if (command != null) out.add(define(owner, method, command, base, injected));
+            if (command != null) out.add(define(owner, method, command, base, clauses, injected));
         }
         for (Class<?> nested : owner.getDeclaredClasses()) {
-            if (nested.isAnnotationPresent(Command.class)) collect(nested, base, injected, out);
+            if (nested.isAnnotationPresent(Command.class)) collect(nested, base, clauses, injected, out);
         }
     }
 
-    private static CommandDefinition define(Class<?> owner, Method method, Command command, List<Segment> base, Predicate<Class<?>> injected) {
+    private static CommandDefinition define(Class<?> owner, Method method, Command command, List<Segment> base, List<PermissionClause> inherited, Predicate<Class<?>> injected) {
         if (!Modifier.isPublic(method.getModifiers())) {
             throw new IllegalArgumentException("Command method " + method + " must be public");
         }
@@ -158,6 +161,10 @@ public final class CommandScanner {
         List<ParameterDefinition> parameters = parameters(method, injected, false);
         checkArgumentNames(base, parameters, method);
 
+        String defaultNode = "bits.command." + path.stream()
+          .map(segment -> normalise(segment.name()))
+          .collect(Collectors.joining("."));
+
         return new CommandDefinition(
           path,
           owner,
@@ -165,6 +172,7 @@ public final class CommandScanner {
           parameters,
           method.isAnnotationPresent(Async.class) || owner.isAnnotationPresent(Async.class),
           conditions(owner, method),
+          new PermissionRule(defaultNode, concat(inherited, permissionsOf(method))),
           constructor,
           constructorParameters
         );
@@ -230,6 +238,18 @@ public final class CommandScanner {
         List<String> suggestions = suggest == null ? List.of() : List.of(suggest.value());
 
         return new ParameterDefinition(index, normalise(name), description, required, param.getParameterizedType(), suggestions);
+    }
+
+    private static List<PermissionClause> permissionsOf(AnnotatedElement element) {
+        return Arrays.stream(element.getAnnotationsByType(Permission.class))
+          .map(permission -> new PermissionClause(List.of(permission.value()), permission.type()))
+          .toList();
+    }
+
+    private static <T> List<T> concat(List<T> first, List<T> second) {
+        List<T> joined = new ArrayList<>(first);
+        joined.addAll(second);
+        return List.copyOf(joined);
     }
 
     private static List<Class<? extends Condition<?>>> conditions(Class<?> owner, Method method) {

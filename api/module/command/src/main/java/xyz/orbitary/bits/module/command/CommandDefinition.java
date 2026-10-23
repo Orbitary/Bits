@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * @param parameters           the command's arguments, excluding injected parameters
  * @param async                whether the command runs off the main thread
  * @param conditions           the conditions that must pass before the command runs
+ * @param permissions          the permission nodes the actor needs to run the command
  * @param constructor          the constructor of {@code owner}, which creates the instance that runs the command
  * @param constructorParameters the arguments the constructor needs, which the path supplies before the command
  *
@@ -33,6 +34,7 @@ public record CommandDefinition(
   List<ParameterDefinition> parameters,
   boolean async,
   List<Class<? extends Condition<?>>> conditions,
+  PermissionRule permissions,
   Constructor<?> constructor,
   List<ParameterDefinition> constructorParameters
 ) {
