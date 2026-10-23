@@ -9,6 +9,14 @@ dependencies {
     api(project(":api"))
 
     compileOnly(rootProject.libs.log4j.core)
+
+    testImplementation(platform(rootProject.libs.junit.bom))
+    testImplementation(rootProject.libs.junit.jupiter)
+    testRuntimeOnly(rootProject.libs.junit.launcher)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 allprojects {

@@ -11,7 +11,6 @@ import org.joml.Quaternionf;
 
 import xyz.orbitary.bits.lifecycle.builder.Buildable;
 import xyz.orbitary.bits.util.math.easing.Easing;
-import xyz.orbitary.bits.wrapper.collection.pair.Pair;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,16 +53,18 @@ public sealed interface Animation {
 
 
     final class Basic implements Animation {
-        private record KeyframeRecord(
-          // Keyframe and its proportion
-          List<Pair<AnimationKeyframe, Float>> keyframes
+        private record BakedFrame(
+          AnimationKeyframe from,
+          AnimationKeyframe to,
+          float proportion,
+          boolean crossfade
         ) {}
 
-        private final List<KeyframeRecord> baked;
+        private final List<BakedFrame> baked;
         private final long loops;
         private final AnimationLoopMode loopMode;
 
-        private Basic(List<KeyframeRecord> baked, long loops, AnimationLoopMode loopMode) {
+        private Basic(List<BakedFrame> baked, long loops, AnimationLoopMode loopMode) {
             this.baked = baked;
             this.loops = loops;
             this.loopMode = loopMode;
@@ -80,17 +81,13 @@ public sealed interface Animation {
 
             int effectiveIndex = loopMode.effectiveIndex(tick, size);
 
-            KeyframeRecord record = baked.get(effectiveIndex);
-            List<Pair<AnimationKeyframe, Float>> keyframes = record.keyframes();
+            BakedFrame frame = baked.get(effectiveIndex);
 
             // Crossfade tick: blend the two active keyframes directly rather than composing two independently-faded values, which is not equivalent for rotation.
-            if (keyframes.size() == 2) {
-                AnimationKeyframe from = keyframes.get(0).getFirst();
-                AnimationKeyframe to = keyframes.get(1).getFirst();
-                float proportion = keyframes.get(1).getSecond();
-                from.applyBlended(pose, data, to, proportion);
+            if (frame.crossfade()) {
+                frame.from().applyBlended(pose, data, frame.to(), frame.proportion());
             } else {
-                keyframes.forEach(pair -> pair.getFirst().applyTo(pose, data, pair.getSecond()));
+                frame.from().applyTo(pose, data, 1f);
             }
         }
 
@@ -144,16 +141,16 @@ public sealed interface Animation {
                 TimelineEntry first = sorted.getFirst();
                 TimelineEntry last = sorted.getLast();
 
-                List<KeyframeRecord> baked = new ArrayList<>((int)ticks);
+                List<BakedFrame> baked = new ArrayList<>((int)ticks);
                 int segment = 0;
 
                 for (long t = 0; t < ticks; t++) {
                     if (t <= first.effectiveTick()) {
-                        baked.add(new KeyframeRecord(List.of(Pair.immutable(first.frame(), 1f))));
+                        baked.add(new BakedFrame(first.frame(), first.frame(), 1f, false));
                         continue;
                     }
                     if (t >= last.effectiveTick()) {
-                        baked.add(new KeyframeRecord(List.of(Pair.immutable(last.frame(), 1f))));
+                        baked.add(new BakedFrame(last.frame(), last.frame(), 1f, false));
                         continue;
                     }
 
@@ -167,10 +164,7 @@ public sealed interface Animation {
                     float local = span == 0 ? 1f : (t - from.effectiveTick()) / (float)span;
                     float eased = to.easing().progress(local);
 
-                    baked.add(new KeyframeRecord(List.of(
-                      Pair.immutable(from.frame(), 1f - eased),
-                      Pair.immutable(to.frame(), eased)
-                    )));
+                    baked.add(new BakedFrame(from.frame(), to.frame(), eased, true));
                 }
 
                 return new Basic(baked, loops, loopMode);
