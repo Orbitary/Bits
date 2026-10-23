@@ -37,7 +37,7 @@ import xyz.orbitary.bits.mc.sendable.impl.waypoint.AbstractTransmittingWaypoint;
 import xyz.orbitary.bits.mc.sendable.impl.waypoint.AbstractWaypoint;
 import xyz.orbitary.bits.mc.sendable.impl.waypoint.WaypointManager;
 import xyz.orbitary.bits.paper.location.Locations;
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 import xyz.orbitary.bits.util.reflection.ReflectionUtils;
 
 import java.util.ArrayList;

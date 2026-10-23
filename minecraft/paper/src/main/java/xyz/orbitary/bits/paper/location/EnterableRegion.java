@@ -19,8 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.mc.world.Vec3;
 import xyz.orbitary.bits.mc.world.volume.Volume;
-import xyz.orbitary.bits.paper.util.bukkit.listener.Listeners;
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.listener.Listeners;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 
 import java.util.HashSet;
 import java.util.Objects;

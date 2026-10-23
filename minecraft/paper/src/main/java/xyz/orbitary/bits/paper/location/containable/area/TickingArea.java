@@ -16,8 +16,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.paper.location.wrapper.BlockPos;
-import xyz.orbitary.bits.paper.util.bukkit.listener.Listeners;
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.listener.Listeners;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
 
 /**
  * Wrapper for an {@link Area Area} that detects when players enter or leave it.

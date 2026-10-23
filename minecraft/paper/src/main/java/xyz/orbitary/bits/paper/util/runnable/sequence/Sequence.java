@@ -5,13 +5,13 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.orbitary.bits.paper.util.bukkit.runnable.sequence;
+package xyz.orbitary.bits.paper.util.runnable.sequence;
 
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.lifecycle.builder.Buildable;
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 import xyz.orbitary.bits.wrapper.Callback;
 
 import java.util.ArrayList;

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 
 import java.util.function.Consumer;
 

@@ -18,7 +18,7 @@ import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.lifecycle.manager.CoreManager;
 import xyz.orbitary.bits.paper.effect.state.EffectInstance;
 import xyz.orbitary.bits.paper.effect.state.EffectModifier;
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 
 import java.util.Collections;
 import java.util.HashMap;

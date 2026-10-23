@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.orbitary.bits.paper.util.bukkit.runnable;
+package xyz.orbitary.bits.paper.util.runnable;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

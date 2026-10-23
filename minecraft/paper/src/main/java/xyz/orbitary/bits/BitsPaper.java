@@ -17,9 +17,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import xyz.orbitary.bits.mc.permission.Permission;
 import xyz.orbitary.bits.paper.format.CommonPaperFormatters;
-import xyz.orbitary.bits.paper.util.bukkit.listener.Listeners;
-import xyz.orbitary.bits.paper.util.bukkit.listener.PermanentListener;
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.listener.Listeners;
+import xyz.orbitary.bits.paper.util.listener.PermanentListener;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 import xyz.orbitary.bits.util.reflection.ReflectionException;
 import xyz.orbitary.bits.util.reflection.ReflectionUtils;
 

@@ -5,7 +5,7 @@
  * Copyright (c) 2023-2026 ImBit
  */
 
-package xyz.orbitary.bits.paper.util.bukkit.listener;
+package xyz.orbitary.bits.paper.util.listener;
 
 import org.bukkit.event.Listener;
 

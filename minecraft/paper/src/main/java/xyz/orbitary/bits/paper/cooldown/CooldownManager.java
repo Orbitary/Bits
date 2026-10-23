@@ -12,7 +12,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.lifecycle.manager.CoreManager;
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 
 import java.time.Duration;
 import java.util.Iterator;

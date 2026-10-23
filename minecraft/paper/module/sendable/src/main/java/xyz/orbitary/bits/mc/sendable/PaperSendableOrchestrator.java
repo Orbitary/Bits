@@ -27,8 +27,8 @@ import xyz.orbitary.bits.mc.sendable.sidebar.PaperSidebarManager;
 import xyz.orbitary.bits.mc.sendable.tablist.PaperTablistManager;
 import xyz.orbitary.bits.mc.sendable.title.PaperTitleManager;
 import xyz.orbitary.bits.mc.sendable.waypoint.PaperWaypointManager;
-import xyz.orbitary.bits.paper.util.bukkit.listener.PermanentListener;
-import xyz.orbitary.bits.paper.util.bukkit.runnable.Runnables;
+import xyz.orbitary.bits.paper.util.listener.PermanentListener;
+import xyz.orbitary.bits.paper.util.runnable.Runnables;
 
 import java.util.Collection;
 
