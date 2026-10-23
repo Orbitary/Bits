@@ -8,11 +8,13 @@
 package xyz.orbitary.bits.mc.world;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.With;
 import net.kyori.adventure.key.Key;
 
 import xyz.orbitary.bits.data.world.Cardinal;
 
 
+@With
 public record BlockPos(
   @JsonProperty(required = true) int x,
   @JsonProperty(required = true) int y,
@@ -104,12 +106,12 @@ public record BlockPos(
         return new Vec3(x + 0.5, y + 0.5, z + 0.5);
     }
 
-    public ChunkPos toChunkPos(Key world) {
-        return new ChunkPos(x >> 4, z >> 4, world);
+    public ChunkPos toChunkPos() {
+        return new ChunkPos(x >> 4, z >> 4);
     }
 
-    public Location toLocation(Key world) {
-        return new Location(world, new Position(center(), Rotation.ZERO));
+    public Coord toCoords(Key world) {
+        return new Coord.Record(world, new Pos(center(), Rotation.ZERO));
     }
     //endregion
 

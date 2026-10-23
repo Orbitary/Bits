@@ -10,7 +10,7 @@ package xyz.orbitary.bits.mc.world.volume;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.kyori.adventure.key.Key;
 
-import xyz.orbitary.bits.mc.world.Location;
+import xyz.orbitary.bits.mc.world.Coord;
 
 import java.util.Objects;
 
@@ -28,7 +28,7 @@ public record WorldVolume(
         return new WorldVolume(world, volume);
     }
 
-    public boolean contains(Location location) {
+    public boolean contains(Coord location) {
         return world.equals(location.world()) && volume.contains(location.pos().vec());
     }
 

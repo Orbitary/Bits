@@ -15,6 +15,7 @@ import org.bukkit.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.mc.world.BlockPos;
+import xyz.orbitary.bits.mc.world.ChunkCoord;
 import xyz.orbitary.bits.mc.world.ChunkPos;
 import xyz.orbitary.bits.mc.world.Vec3;
 import xyz.orbitary.bits.mc.world.volume.Volume;
@@ -89,8 +90,8 @@ public final class Volumes {
     /**
      * @return the chunk coordinates, in the volume's world, of every chunk it touches.
      */
-    public static Set<ChunkPos> chunkLocs(WorldVolume worldVolume) {
-        Set<ChunkPos> chunks = new HashSet<>();
+    public static Set<ChunkCoord> chunkLocs(WorldVolume worldVolume) {
+        Set<ChunkCoord> chunks = new HashSet<>();
         Volume volume = worldVolume.volume();
         Predicate<Vec3> inside = volume.tester();
         for (Volume leaf : leaves(volume)) {
@@ -107,7 +108,7 @@ public final class Volumes {
                         for (int y = minY; y <= maxY; y++) {
                             for (int z = fromZ; z <= toZ; z++) {
                                 if (!inside.test(new Vec3(x + 0.5, y + 0.5, z + 0.5))) continue;
-                                chunks.add(new ChunkPos(chunkX, chunkZ, worldVolume.world()));
+                                chunks.add(new ChunkCoord.Record(worldVolume.world(), new ChunkPos(chunkX, chunkZ)));
                                 break search;
                             }
                         }
@@ -126,7 +127,7 @@ public final class Volumes {
         if (world == null) return Set.of();
 
         return chunkLocs(worldVolume).stream()
-          .map(chunk -> world.getChunkAt(chunk.x(), chunk.z()))
+          .map(chunk -> world.getChunkAt(chunk.pos().x(), chunk.pos().z()))
           .collect(Collectors.toSet());
     }
 
@@ -162,18 +163,18 @@ public final class Volumes {
     /**
      * @return the chunks touched by {@code locs}, in the world with key {@code world}.
      */
-    private static Set<ChunkPos> chunkLocsOf(Set<BlockPos> locs, Key world) {
-        Set<ChunkPos> chunks = new HashSet<>();
+    private static Set<ChunkCoord> chunkLocsOf(Set<BlockPos> locs, Key world) {
+        Set<ChunkCoord> chunks = new HashSet<>();
         for (BlockPos loc : locs) {
-            chunks.add(new ChunkPos(loc.x() >> 4, loc.z() >> 4, world));
+            chunks.add(new ChunkCoord.Record(world, loc.toChunkPos()));
         }
         return chunks;
     }
 
-    private static CompletableFuture<Set<Chunk>> loadChunks(World world, Set<ChunkPos> chunks) {
+    private static CompletableFuture<Set<Chunk>> loadChunks(World world, Set<ChunkCoord> chunks) {
         List<CompletableFuture<Chunk>> futures = new ArrayList<>();
-        for (ChunkPos chunk : chunks) {
-            futures.add(world.getChunkAtAsync(chunk.x(), chunk.z()));
+        for (ChunkCoord chunk : chunks) {
+            futures.add(world.getChunkAtAsync(chunk.pos().x(), chunk.pos().z()));
         }
 
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))

@@ -12,6 +12,7 @@ import org.joml.Quaternionf;
 import org.junit.jupiter.api.Test;
 
 import xyz.orbitary.bits.mc.world.BlockPos;
+import xyz.orbitary.bits.mc.world.ChunkCoord;
 import xyz.orbitary.bits.mc.world.ChunkPos;
 import xyz.orbitary.bits.mc.world.Vec3;
 import xyz.orbitary.bits.mc.world.volume.Cuboid;
@@ -35,26 +36,32 @@ class VolumesTest {
     @Test
     void blockCentersOnTheSurfaceAreIncludedAndOverlapsAreDeduplicated() {
         Volume cube = Cuboid.of(Vec3.ZERO, new Vec3(1, 1, 1));
-        assertEquals(Set.of(
-          new BlockPos(-1, -1, -1), new BlockPos(-1, -1, 0),
-          new BlockPos(-1, 0, -1), new BlockPos(-1, 0, 0),
-          new BlockPos(0, -1, -1), new BlockPos(0, -1, 0),
-          new BlockPos(0, 0, -1), new BlockPos(0, 0, 0)
-        ), Volumes.blockLocs(cube.union(cube)));
-        assertEquals(Set.of(
-          new ChunkPos(-1, -1, WORLD), new ChunkPos(-1, 0, WORLD),
-          new ChunkPos(0, -1, WORLD), new ChunkPos(0, 0, WORLD)
-        ), Volumes.chunkLocs(WorldVolume.of(WORLD, cube.union(cube))));
+        assertEquals(
+          Set.of(
+            new BlockPos(-1, -1, -1), new BlockPos(-1, -1, 0),
+            new BlockPos(-1, 0, -1), new BlockPos(-1, 0, 0),
+            new BlockPos(0, -1, -1), new BlockPos(0, -1, 0),
+            new BlockPos(0, 0, -1), new BlockPos(0, 0, 0)
+          ), Volumes.blockLocs(cube.union(cube))
+        );
+        assertEquals(
+          Set.of(
+            chunk(-1, -1), chunk(-1, 0),
+            chunk(0, -1), chunk(0, 0)
+          ), Volumes.chunkLocs(WorldVolume.of(WORLD, cube.union(cube)))
+        );
     }
 
     @Test
     void negativeCoordinatesUseFloorDivisionAtChunkBoundaries() {
         Volume cube = Cuboid.corners(new Vec3(-17, 0, -1), new Vec3(1, 2, 17));
-        assertEquals(Set.of(
-          new ChunkPos(-2, -1, WORLD), new ChunkPos(-2, 0, WORLD), new ChunkPos(-2, 1, WORLD),
-          new ChunkPos(-1, -1, WORLD), new ChunkPos(-1, 0, WORLD), new ChunkPos(-1, 1, WORLD),
-          new ChunkPos(0, -1, WORLD), new ChunkPos(0, 0, WORLD), new ChunkPos(0, 1, WORLD)
-        ), Volumes.chunkLocs(WorldVolume.of(WORLD, cube)));
+        assertEquals(
+          Set.of(
+            chunk(-2, -1), chunk(-2, 0), chunk(-2, 1),
+            chunk(-1, -1), chunk(-1, 0), chunk(-1, 1),
+            chunk(0, -1), chunk(0, 0), chunk(0, 1)
+          ), Volumes.chunkLocs(WorldVolume.of(WORLD, cube))
+        );
     }
 
     @Test
@@ -62,11 +69,11 @@ class VolumesTest {
         Volume cube = Cuboid.of(Vec3.ZERO, new Vec3(2, 2, 2));
         Volume empty = cube.cut(cube);
         Set<BlockPos> blocks = Volumes.blockLocs(empty);
-        Set<ChunkPos> chunks = Volumes.chunkLocs(WorldVolume.of(WORLD, empty));
+        Set<ChunkCoord> chunks = Volumes.chunkLocs(WorldVolume.of(WORLD, empty));
         assertTrue(blocks.isEmpty());
         assertTrue(chunks.isEmpty());
         blocks.add(BlockPos.ZERO);
-        chunks.add(new ChunkPos(0, 0, WORLD));
+        chunks.add(chunk(0, 0));
         assertTrue(Volumes.blockLocs(empty).isEmpty());
         assertTrue(Volumes.chunkLocs(WorldVolume.of(WORLD, empty)).isEmpty());
     }
@@ -83,11 +90,16 @@ class VolumesTest {
                 default -> Ellipsoid.of(center, rotation, new Vec3(4, 2, 3));
             };
             for (Volume volume : List.of(shape, shape.union(shape).cut(Cuboid.of(center, new Vec3(2, 3, 2))))) {
-                Set<ChunkPos> expected = Volumes.blockLocs(volume).stream()
-                  .map(block -> block.toChunkPos(WORLD))
+                Set<ChunkCoord> expected = Volumes.blockLocs(volume).stream()
+                  .map(block -> new ChunkCoord.Record(WORLD, block.toChunkPos()))
                   .collect(Collectors.toSet());
                 assertEquals(expected, Volumes.chunkLocs(WorldVolume.of(WORLD, volume)));
             }
         }
     }
+
+    private static ChunkCoord chunk(int x, int z) {
+        return new ChunkCoord.Record(WORLD, new ChunkPos(x, z));
+    }
+
 }

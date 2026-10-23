@@ -16,13 +16,15 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
+import xyz.orbitary.bits.mc.world.Pos;
+
 import java.util.Objects;
 
 
 /**
  * Immutable class representing a position in the world with x, y, z coordinates and yaw, pitch rotation.
  *
- * @deprecated Use {@link xyz.orbitary.bits.mc.world.Position}.
+ * @deprecated Use {@link Pos}.
  */
 @Deprecated(forRemoval = true, since = "0.1.1")
 public final class BlockPos implements Locatable {

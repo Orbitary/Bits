@@ -9,6 +9,8 @@ package xyz.orbitary.bits.mc.world;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.With;
+
 import xyz.orbitary.bits.data.world.Cardinal;
 
 import java.util.Objects;
@@ -17,6 +19,7 @@ import java.util.Objects;
 /**
  * A block position together with the direction it faces.
  */
+@With
 public record BlockCardinal(
   @JsonProperty(required = true) int x,
   @JsonProperty(required = true) int y,

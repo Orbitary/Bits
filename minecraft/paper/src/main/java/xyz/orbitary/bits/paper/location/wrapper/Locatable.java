@@ -14,12 +14,13 @@ import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
 import xyz.orbitary.bits.data.world.Relative;
+import xyz.orbitary.bits.mc.world.Pos;
 
 import java.text.DecimalFormat;
 
 
 /**
- * @deprecated Use {@link xyz.orbitary.bits.mc.world.Position}, {@link xyz.orbitary.bits.mc.world.Vec3} and {@link xyz.orbitary.bits.mc.world.BlockPos}.
+ * @deprecated Use {@link Pos}, {@link xyz.orbitary.bits.mc.world.Vec3} and {@link xyz.orbitary.bits.mc.world.BlockPos}.
  */
 @Deprecated(forRemoval = true, since = "0.1.1")
 public interface Locatable {

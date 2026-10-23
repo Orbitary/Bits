@@ -8,6 +8,7 @@
 package xyz.orbitary.bits.mc.world;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.With;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -15,6 +16,7 @@ import xyz.orbitary.bits.data.world.Cardinal;
 import xyz.orbitary.bits.data.world.Relative;
 
 
+@With
 public record Rotation(
   @JsonProperty(required = true) float yaw,
   @JsonProperty(required = true) float pitch
@@ -99,14 +101,6 @@ public record Rotation(
         return of(this.toQuaternion().mul(rotation.toQuaternion().invert()));
     }
 
-
-    public Rotation withYaw(float yaw) {
-        return new Rotation(yaw, this.pitch);
-    }
-
-    public Rotation withPitch(float pitch) {
-        return new Rotation(this.yaw, pitch);
-    }
 
     public Rotation withInvertedYaw() {
         return new Rotation(-this.yaw, this.pitch);

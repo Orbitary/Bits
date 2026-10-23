@@ -20,8 +20,8 @@ import net.minecraft.world.level.Level;
 import xyz.orbitary.bits.data.world.Cardinal;
 import xyz.orbitary.bits.mc.world.BlockPos;
 import xyz.orbitary.bits.mc.world.ChunkPos;
-import xyz.orbitary.bits.mc.world.Location;
-import xyz.orbitary.bits.mc.world.Position;
+import xyz.orbitary.bits.mc.world.Coord;
+import xyz.orbitary.bits.mc.world.Pos;
 import xyz.orbitary.bits.mc.world.Rotation;
 import xyz.orbitary.bits.mc.world.Vec3;
 
@@ -39,8 +39,8 @@ public final class Locations {
         return new BlockPos(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static ChunkPos fromFabric(net.minecraft.world.level.ChunkPos pos, Key world) {
-        return new ChunkPos(pos.x(), pos.z(), world);
+    public static ChunkPos fromFabric(net.minecraft.world.level.ChunkPos pos) {
+        return new ChunkPos(pos.x(), pos.z());
     }
 
     public static Cardinal fromFabric(Direction direction) {
@@ -59,12 +59,12 @@ public final class Locations {
         return Key.key(id.getNamespace(), id.getPath());
     }
 
-    public static Position toPosition(Entity entity) {
-        return new Position(fromFabric(entity.position()), Rotation.of(entity.getYRot(), entity.getXRot()));
+    public static Pos toPosition(Entity entity) {
+        return new Pos(fromFabric(entity.position()), Rotation.of(entity.getYRot(), entity.getXRot()));
     }
 
-    public static Location fromFabric(Entity entity) {
-        return new Location(worldKey(entity.level()), toPosition(entity));
+    public static Coord fromFabric(Entity entity) {
+        return new Coord.Record(worldKey(entity.level()), toPosition(entity));
     }
     //endregion
 

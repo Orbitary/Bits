@@ -9,6 +9,8 @@ package xyz.orbitary.bits.mc.world;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.With;
+
 import xyz.orbitary.bits.util.math.Constants;
 
 import java.util.Collection;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.function.DoubleBinaryOperator;
 
 
+@With
 public record Vec3(
   @JsonProperty(required = true) double x,
   @JsonProperty(required = true) double y,

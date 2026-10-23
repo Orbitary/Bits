@@ -9,16 +9,19 @@ package xyz.orbitary.bits.mc.world;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.With;
+
 import xyz.orbitary.bits.data.world.Relative;
 
 import java.util.Objects;
 
 
-public record Position(
+@With
+public record Pos(
   @JsonProperty(required = true) Vec3 vec,
   @JsonProperty(required = true) Rotation rot
 ) {
-    public Position {
+    public Pos {
         Objects.requireNonNull(vec, "vec");
         Objects.requireNonNull(rot, "rot");
     }
@@ -48,47 +51,39 @@ public record Position(
     /**
      * @return the position at {@code pos} facing {@link Rotation#ZERO}.
      */
-    public static Position of(Vec3 pos) {
-        return new Position(pos, Rotation.ZERO);
+    public static Pos of(Vec3 pos) {
+        return new Pos(pos, Rotation.ZERO);
     }
 
 
     //region With
-    public Position withVec(Vec3 vec) {
-        return new Position(vec, rot);
-    }
-
-    public Position withRot(Rotation rot) {
-        return new Position(vec, rot);
-    }
-
-    public Position withYaw(float yaw) {
+    public Pos withYaw(float yaw) {
         return withRot(rot.withYaw(yaw));
     }
 
-    public Position withPitch(float pitch) {
+    public Pos withPitch(float pitch) {
         return withRot(rot.withPitch(pitch));
     }
     //endregion
 
 
     //region Translation
-    public Position translate(Vec3 offset) {
+    public Pos translate(Vec3 offset) {
         return withVec(vec.add(offset));
     }
 
-    public Position translate(double dx, double dy, double dz) {
+    public Pos translate(double dx, double dy, double dz) {
         return withVec(vec.add(dx, dy, dz));
     }
 
-    public Position translate(double amount, Relative relative) {
+    public Pos translate(double amount, Relative relative) {
         return translate(rot.relative(relative).scale(amount));
     }
     //endregion
 
 
     //region Rotation
-    public Position lookTowards(Vec3 target) {
+    public Pos lookTowards(Vec3 target) {
         return withRot(Rotation.lookingAt(vec, target));
     }
 
@@ -99,11 +94,11 @@ public record Position(
 
 
     //region Distance
-    public double distanceSquared(Position other) {
+    public double distanceSquared(Pos other) {
         return vec.distanceSquared(other.vec);
     }
 
-    public double distance(Position other) {
+    public double distance(Pos other) {
         return vec.distance(other.vec);
     }
     //endregion

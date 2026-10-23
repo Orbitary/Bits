@@ -10,19 +10,18 @@ package xyz.orbitary.bits.paper.location;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.Vec3i;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.orbitary.bits.data.world.Cardinal;
-import xyz.orbitary.bits.mc.world.ChunkPos;
-import xyz.orbitary.bits.mc.world.Position;
+import xyz.orbitary.bits.mc.world.BlockCoord;
+import xyz.orbitary.bits.mc.world.Coord;
+import xyz.orbitary.bits.mc.world.Pos;
 import xyz.orbitary.bits.mc.world.Rotation;
 import xyz.orbitary.bits.mc.world.Vec3;
 import xyz.orbitary.bits.paper.location.wrapper.BlockPos;
@@ -158,26 +157,6 @@ public final class Locations {
 
 
     //region Bukkit -> Bits
-    public static Vec3 fromBukkit(Vector vector) {
-        return new Vec3(vector.getX(), vector.getY(), vector.getZ());
-    }
-
-    public static xyz.orbitary.bits.mc.world.BlockPos fromBukkit(Block block) {
-        return new xyz.orbitary.bits.mc.world.BlockPos(block.getX(), block.getY(), block.getZ());
-    }
-
-    public static ChunkPos fromBukkit(Chunk chunk) {
-        return new ChunkPos(chunk.getX(), chunk.getZ(), chunk.getWorld().key());
-    }
-
-    public static xyz.orbitary.bits.mc.world.Location fromBukkit(Location location) throws IllegalArgumentException {
-        return new xyz.orbitary.bits.mc.world.Location(requireWorld(location).key(), toPosition(location));
-    }
-
-    public static xyz.orbitary.bits.mc.world.Location fromBukkit(Entity entity) {
-        return fromBukkit(entity.getLocation());
-    }
-
     public static Cardinal fromBukkit(BlockFace face) throws IllegalArgumentException {
         return switch (face) {
             case NORTH -> Cardinal.NORTH;
@@ -188,31 +167,7 @@ public final class Locations {
             case DOWN -> Cardinal.DOWN;
             default -> throw new IllegalArgumentException("Not a cardinal direction: " + face);
         };
-    }
-
-    public static Position toPosition(Location location) {
-        return new Position(
-          new Vec3(location.getX(), location.getY(), location.getZ()),
-          Rotation.of(location.getYaw(), location.getPitch())
-        );
-    }
-
-    public static Position toPosition(Entity entity) {
-        return toPosition(entity.getLocation());
-    }
-
-    public static xyz.orbitary.bits.mc.world.BlockPos toBlockPos(Location location) {
-        return new xyz.orbitary.bits.mc.world.BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-    }
-
-    public static Rotation rotationOf(Location location) {
-        return Rotation.of(location.getYaw(), location.getPitch());
-    }
-
-    public static Rotation rotationOf(Entity entity) {
-        return rotationOf(entity.getLocation());
-    }
-    //endregion
+    }    //endregion
 
 
     //region Bits -> Bukkit
@@ -236,7 +191,7 @@ public final class Locations {
         return new Vec3i(pos.x(), pos.y(), pos.z());
     }
 
-    public static Location toBukkit(Position position, World world) {
+    public static Location toBukkit(Pos position, World world) {
         Vec3 pos = position.vec();
         Rotation rot = position.rot();
         return new Location(world, pos.x(), pos.y(), pos.z(), rot.yaw(), rot.pitch());
@@ -249,12 +204,16 @@ public final class Locations {
         return new Location(world, vec.x(), vec.y(), vec.z());
     }
 
-    public static Location toBukkit(xyz.orbitary.bits.mc.world.Location location, World world) throws IllegalArgumentException {
+    public static Location toBukkit(Coord location, World world) throws IllegalArgumentException {
         if (!world.key().equals(location.world())) throw new IllegalArgumentException("Location is in " + location.world() + " but world is " + world.key());
         return toBukkit(location.pos(), world);
     }
 
-    public static Location toBukkit(xyz.orbitary.bits.mc.world.Location location) throws IllegalStateException {
+    public static Location toBukkit(BlockCoord coords) throws IllegalStateException {
+        return toBukkit(coords.pos(), resolveWorld(coords.world()));
+    }
+
+    public static Location toBukkit(Coord location) throws IllegalStateException {
         return toBukkit(location.pos(), resolveWorld(location.world()));
     }
 
