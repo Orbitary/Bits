@@ -165,7 +165,7 @@ class BrigadierCustomSuggestionsTest {
           arguments(),
           ignored -> null,
           (source, error) -> {},
-          Runnable::run
+          (source, node) -> true, Runnable::run
         );
         CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
         List<CommandDefinition> commands = CommandScanner.scan(owner);

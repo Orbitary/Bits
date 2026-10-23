@@ -27,7 +27,7 @@ public final class CommandErrors {
      * @since 0.1.6
      */
     public static String message(Throwable error) {
-        if (error instanceof ConditionFailedException) return "You cannot use this command.";
+        if (error instanceof ConditionFailedException || error instanceof PermissionDeniedException) return "You cannot use this command.";
         if (error instanceof CommandSyntaxException syntax && syntax.getMessage() != null) return syntax.getMessage();
         return "An error occurred while running this command.";
     }

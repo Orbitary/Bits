@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -56,12 +57,14 @@ public final class BrigadierCommandBuilder<S> {
     private final BrigadierArguments<S> arguments;
     private final Function<CommandContext<S>, ?> contextFactory;
     private final BiConsumer<S, Throwable> errorHandler;
+    private final BiPredicate<S, String> hasPermission;
     private final Executor async;
 
     /**
      * @param arguments      the arguments that parse each parameter type
      * @param contextFactory creates the value for parameters the platform injects, such as a context object
      * @param errorHandler   receives the source and the error of a command that did not run
+     * @param hasPermission  returns true if the source holds a permission node
      * @param async          runs commands marked {@code @Async}
      *
      * @since 0.1.6
@@ -70,11 +73,13 @@ public final class BrigadierCommandBuilder<S> {
       BrigadierArguments<S> arguments,
       Function<CommandContext<S>, ?> contextFactory,
       BiConsumer<S, Throwable> errorHandler,
+      BiPredicate<S, String> hasPermission,
       Executor async
     ) {
         this.arguments = arguments;
         this.contextFactory = contextFactory;
         this.errorHandler = errorHandler;
+        this.hasPermission = hasPermission;
         this.async = async;
     }
 
@@ -246,6 +251,7 @@ public final class BrigadierCommandBuilder<S> {
         try {
             Condition<S> failed = failedCondition(command, source);
             if (failed != null) throw new ConditionFailedException(failed.getClass());
+            if (!command.permissions().allows(node -> hasPermission.test(source, node))) throw new PermissionDeniedException();
 
             Object owner = command.constructor().newInstance(resolveArguments(command.constructor(), command.constructorParameters(), context));
             command.method().invoke(owner, resolveArguments(command.method(), command.parameters(), context));

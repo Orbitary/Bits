@@ -113,7 +113,7 @@ class BrigadierGroupsAndAliasesTest {
           BrigadierArguments.withDefaults(),
           ignored -> null,
           (source, error) -> {},
-          Runnable::run
+          (source, node) -> true, Runnable::run
         );
         CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
         List<CommandDefinition> commands = CommandScanner.scan(owner);
@@ -167,7 +167,7 @@ class BrigadierGroupsAndAliasesTest {
         List<CommandDefinition> commands = CommandScanner.scan(GreedyGroup.class);
 
         assertThrows(IllegalArgumentException.class, () -> new BrigadierCommandBuilder<>(
-          BrigadierArguments.withDefaults(), ignored -> null, (source, error) -> {}, Runnable::run).build(commands));
+          BrigadierArguments.withDefaults(), ignored -> null, (source, error) -> {}, (source, node) -> true, Runnable::run).build(commands));
     }
 
     @Test

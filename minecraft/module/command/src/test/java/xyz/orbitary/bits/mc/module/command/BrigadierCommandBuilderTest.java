@@ -183,7 +183,7 @@ class BrigadierCommandBuilderTest {
           BrigadierArguments.withDefaults(),
           ignored -> null,
           (source, error) -> errors.add(error),
-          Runnable::run
+          (source, node) -> true, Runnable::run
         );
         CommandDispatcher<Object> dispatcher = dispatcher(CommandScanner.scan(Guarded.class), builder);
 
@@ -199,6 +199,7 @@ class BrigadierCommandBuilderTest {
           BrigadierArguments.withDefaults(),
           ignored -> null,
           (source, error) -> {},
+          (source, node) -> true,
           runnable -> {
               asyncRuns.incrementAndGet();
               runnable.run();
@@ -306,7 +307,7 @@ class BrigadierCommandBuilderTest {
           arguments,
           ignored -> null,
           (source, error) -> errors.add(error.getMessage()),
-          Runnable::run
+          (source, node) -> true, Runnable::run
         );
         CommandDispatcher<Object> dispatcher = dispatcher(CommandScanner.scan(Reject.class), builder);
 
@@ -319,7 +320,7 @@ class BrigadierCommandBuilderTest {
     }
 
     private BrigadierCommandBuilder<Object> builder(BrigadierArguments<Object> arguments) {
-        return new BrigadierCommandBuilder<>(arguments, ignored -> new Context(), (source, error) -> {}, Runnable::run);
+        return new BrigadierCommandBuilder<>(arguments, ignored -> new Context(), (source, error) -> {}, (source, node) -> true, Runnable::run);
     }
 
     private static CommandDispatcher<Object> dispatcher(List<CommandDefinition> commands, BrigadierCommandBuilder<Object> builder) {

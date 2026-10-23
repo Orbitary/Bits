@@ -148,7 +148,7 @@ class BrigadierGreedyStringTest {
     }
 
     private static BrigadierCommandBuilder<Object> builder(BrigadierArguments<Object> arguments) {
-        return new BrigadierCommandBuilder<>(arguments, ignored -> null, (source, error) -> {}, Runnable::run);
+        return new BrigadierCommandBuilder<>(arguments, ignored -> null, (source, error) -> {}, (source, node) -> true, Runnable::run);
     }
 
     private static BrigadierArguments<Object> arguments() {

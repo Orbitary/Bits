@@ -274,7 +274,7 @@ class BrigadierCommandBehaviourTest {
           BrigadierArguments.withDefaults(),
           ignored -> null,
           (source, error) -> failedSources.add(source),
-          Runnable::run
+          (source, node) -> true, Runnable::run
         );
         CommandDispatcher<Object> dispatcher = dispatcher(CommandScanner.scan(Throws.class), builder);
 
@@ -295,7 +295,7 @@ class BrigadierCommandBehaviourTest {
           BrigadierArguments.withDefaults(),
           ignored -> null,
           (source, error) -> errors.add(error),
-          Runnable::run
+          (source, node) -> true, Runnable::run
         );
     }
 
