@@ -10,5 +10,14 @@ repositories {
 }
 
 dependencies {
+    api(project(":api:module:command"))
     api(rootProject.libs.brigadier)
+
+    testImplementation(platform(rootProject.libs.junit.bom))
+    testImplementation(rootProject.libs.junit.jupiter)
+    testRuntimeOnly(rootProject.libs.junit.launcher)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
