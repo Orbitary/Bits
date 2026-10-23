@@ -8,6 +8,9 @@
 package xyz.orbitary.bits.mc.module.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.LiteralMessage;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BrigadierCommandBuilderTest {
@@ -173,11 +177,20 @@ class BrigadierCommandBuilderTest {
     }
 
     @Test
-    void failingConditionHidesTheCommand() {
-        CommandDispatcher<Object> dispatcher = dispatcher(CommandScanner.scan(Guarded.class), builder());
+    void failingConditionSkipsTheCommandAndReachesTheErrorHandler() throws CommandSyntaxException {
+        List<Throwable> errors = new ArrayList<>();
+        BrigadierCommandBuilder<Object> builder = new BrigadierCommandBuilder<>(
+          BrigadierArguments.withDefaults(),
+          ignored -> null,
+          (source, error) -> errors.add(error),
+          Runnable::run
+        );
+        CommandDispatcher<Object> dispatcher = dispatcher(CommandScanner.scan(Guarded.class), builder);
 
-        assertThrows(CommandSyntaxException.class, () -> dispatcher.execute("secret", SOURCE));
+        assertEquals(0, dispatcher.execute("secret", SOURCE));
         assertEquals(List.of(), calls);
+        assertEquals(1, errors.size());
+        assertInstanceOf(ConditionFailedException.class, errors.getFirst());
     }
 
     @Test
@@ -185,7 +198,7 @@ class BrigadierCommandBuilderTest {
         BrigadierCommandBuilder<Object> builder = new BrigadierCommandBuilder<>(
           BrigadierArguments.withDefaults(),
           ignored -> null,
-          (source, message) -> {},
+          (source, error) -> {},
           runnable -> {
               asyncRuns.incrementAndGet();
               runnable.run();
@@ -232,12 +245,81 @@ class BrigadierCommandBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> builder().build(commands));
     }
 
+    @SuppressWarnings("unused")
+    public static final class Crowd {
+        @Command("crowd")
+        public void crowd(java.util.Collection<String> names) {
+            calls.add(names.toString());
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final class UnregisteredCrowd {
+        @Command("crowd")
+        public void crowd(java.util.Collection<Integer> numbers) {}
+    }
+
+    @Test
+    void collectionParameterUsesTheRegisteredElementArgument() throws CommandSyntaxException {
+        BrigadierArguments<Object> arguments = BrigadierArguments.withDefaults();
+        arguments.registerCollection(String.class, new BrigadierArgument<>() {
+            @Override
+            public com.mojang.brigadier.arguments.ArgumentType<?> argumentType() {
+                return com.mojang.brigadier.arguments.StringArgumentType.word();
+            }
+
+            @Override
+            public Object read(com.mojang.brigadier.context.CommandContext<Object> context, String name) {
+                return List.of(context.getArgument(name, String.class));
+            }
+        });
+        CommandDispatcher<Object> dispatcher = dispatcher(CommandScanner.scan(Crowd.class), builder(arguments));
+
+        dispatcher.execute("crowd bob", SOURCE);
+
+        assertEquals(List.of("[bob]"), calls);
+    }
+
+    @Test
+    void collectionWithoutRegisteredElementIsRejected() {
+        List<CommandDefinition> commands = CommandScanner.scan(UnregisteredCrowd.class);
+
+        assertThrows(IllegalArgumentException.class, () -> builder().build(commands));
+    }
+
+    @SuppressWarnings("unused")
+    public static final class Reject {
+        @Command("reject")
+        public void reject(Bad bad) {}
+    }
+
+    public static final class Bad {}
+
+    @Test
+    void argumentErrorsReachTheErrorHandler() throws CommandSyntaxException {
+        BrigadierArguments<Object> arguments = BrigadierArguments.withDefaults();
+        arguments.register(Bad.class, BrigadierArgument.of(StringArgumentType.word(), (context, name) -> {
+            throw new SimpleCommandExceptionType(new LiteralMessage("nope")).create();
+        }));
+        List<String> errors = new ArrayList<>();
+        BrigadierCommandBuilder<Object> builder = new BrigadierCommandBuilder<>(
+          arguments,
+          ignored -> null,
+          (source, error) -> errors.add(error.getMessage()),
+          Runnable::run
+        );
+        CommandDispatcher<Object> dispatcher = dispatcher(CommandScanner.scan(Reject.class), builder);
+
+        assertEquals(0, dispatcher.execute("reject anything", SOURCE));
+        assertEquals(List.of("nope"), errors);
+    }
+
     private BrigadierCommandBuilder<Object> builder() {
         return builder(BrigadierArguments.withDefaults());
     }
 
     private BrigadierCommandBuilder<Object> builder(BrigadierArguments<Object> arguments) {
-        return new BrigadierCommandBuilder<>(arguments, ignored -> new Context(), (source, message) -> {}, Runnable::run);
+        return new BrigadierCommandBuilder<>(arguments, ignored -> new Context(), (source, error) -> {}, Runnable::run);
     }
 
     private static CommandDispatcher<Object> dispatcher(List<CommandDefinition> commands, BrigadierCommandBuilder<Object> builder) {
