@@ -143,6 +143,56 @@ class SlashCommandBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> builder.build(CommandScanner.scan(TooDeep.class)));
     }
 
+    @SuppressWarnings("unused")
+    public static final class Typed {
+        @Command("typed")
+        public void typed(Long whole, Double decimal, Boolean flag, @Parameter(required = false) String note) {}
+
+        @Command("plain")
+        public void plain(String value) {}
+
+        @Command("grouped")
+        public static final class Grouped {
+            @Command("sub")
+            public void sub(String value) {}
+        }
+    }
+
+    @Test
+    void numericAndBooleanArgumentsMapToOptionTypes() {
+        List<OptionData> options = root(Typed.class, "typed").getOptions();
+
+        assertEquals(OptionType.INTEGER, options.get(0).getType());
+        assertEquals(OptionType.NUMBER, options.get(1).getType());
+        assertEquals(OptionType.BOOLEAN, options.get(2).getType());
+    }
+
+    @Test
+    void optionalArgumentsAreNotRequired() {
+        OptionData note = root(Typed.class, "typed").getOptions().get(3);
+
+        assertFalse(note.isRequired());
+    }
+
+    @Test
+    void undocumentedArgumentsGetTheDefaultDescription() {
+        assertEquals("No description provided.", root(Typed.class, "plain").getOptions().get(0).getDescription());
+    }
+
+    @Test
+    void blankDescriptionsGetTheDefault() {
+        assertEquals("No description provided.", root(Typed.class, "plain").getDescription());
+    }
+
+    @Test
+    void nestedCommandsBecomeSubcommandsOfTheirGroup() {
+        SlashCommandData grouped = root(Typed.class, "grouped");
+
+        assertEquals(1, grouped.getSubcommands().size());
+        assertEquals("sub", grouped.getSubcommands().getFirst().getName());
+        assertTrue(grouped.getSubcommandGroups().isEmpty());
+    }
+
     private SlashCommandData root(Class<?> owner, String name) {
         return builder.build(CommandScanner.scan(owner)).stream()
           .filter(command -> command.getName().equals(name))

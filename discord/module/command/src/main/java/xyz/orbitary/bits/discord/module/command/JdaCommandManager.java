@@ -12,17 +12,11 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import xyz.orbitary.bits.discord.module.command.argument.JdaArgumentRegistry;
 import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.log.Logger;
-import xyz.orbitary.bits.module.command.Command;
 import xyz.orbitary.bits.module.command.CommandDefinition;
 import xyz.orbitary.bits.module.command.CommandScanner;
-import xyz.orbitary.bits.util.reflection.ReflectionUtils;
-import xyz.orbitary.bits.util.reflection.ScannerFlags;
 
-import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -48,9 +42,7 @@ public final class JdaCommandManager implements BitsModule {
 
     @Override
     public void startup() {
-        List<CommandDefinition> definitions = commandRoots().stream()
-          .flatMap(root -> CommandScanner.scan(root, JdaCommandContext.class::equals).stream())
-          .toList();
+        List<CommandDefinition> definitions = CommandScanner.scanAll(JdaCommandContext.class::equals);
 
         List<SlashCommandData> commands = new SlashCommandBuilder(arguments).build(definitions);
         Map<String, CommandDefinition> routes = definitions.stream()
@@ -61,23 +53,6 @@ public final class JdaCommandManager implements BitsModule {
           err -> Logger.exception("Failed to register slash commands", err)
         );
         jda.get().addEventListener(new SlashCommandDispatcher(routes, arguments));
-    }
-
-    // Classes annotated with @Command or declaring a @Command method, skipping classes nested in another one
-    // because the outer class's scan already covers them.
-    private static List<Class<?>> commandRoots() {
-        Set<Class<?>> candidates = new HashSet<>(ReflectionUtils.Scanner.tryGetAnnotatedClasses("*", Command.class, ScannerFlags.DEFAULT));
-        for (Method method : ReflectionUtils.Scanner.tryGetAnnotatedMethods("*", Command.class, ScannerFlags.DEFAULT)) {
-            candidates.add(method.getDeclaringClass());
-        }
-        return candidates.stream().filter(candidate -> !hasEnclosingCandidate(candidate, candidates)).toList();
-    }
-
-    private static boolean hasEnclosingCandidate(Class<?> type, Set<Class<?>> candidates) {
-        for (Class<?> enclosing = type.getEnclosingClass(); enclosing != null; enclosing = enclosing.getEnclosingClass()) {
-            if (candidates.contains(enclosing)) return true;
-        }
-        return false;
     }
 
 }

@@ -60,6 +60,16 @@ final class SlashCommandBuilder {
      * @since 0.1.6
      */
     List<SlashCommandData> build(List<CommandDefinition> definitions) {
+        for (CommandDefinition command : definitions) {
+            for (Segment segment : command.path()) {
+                if (!segment.parameters().isEmpty()) {
+                    throw new IllegalArgumentException("Discord does not support group arguments: /" + command.fullName());
+                }
+                if (!segment.aliases().isEmpty()) {
+                    throw new IllegalArgumentException("Discord does not support aliases: /" + command.fullName());
+                }
+            }
+        }
         Map<String, List<CommandDefinition>> roots = definitions.stream()
           .collect(Collectors.groupingBy(command -> command.path().get(0).name(), LinkedHashMap::new, Collectors.toList()));
         return roots.values().stream().map(this::root).toList();
@@ -102,7 +112,7 @@ final class SlashCommandBuilder {
     }
 
     private OptionData option(ParameterDefinition parameter) {
-        JdaArgumentParser<?> parser = arguments.parser(parameter.type());
+        JdaArgumentParser<?> parser = arguments.parser(parameter.rawType());
         OptionData option = new OptionData(parser.optionType(), parameter.name(), descriptionOrDefault(parameter.description()), parameter.required());
         if (parser.supportsAutocomplete()) option.setAutoComplete(true);
         return option;

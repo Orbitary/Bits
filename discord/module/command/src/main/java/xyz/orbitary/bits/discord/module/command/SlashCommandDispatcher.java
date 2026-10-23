@@ -67,7 +67,7 @@ final class SlashCommandDispatcher extends ListenerAdapter {
         for (ParameterDefinition parameter : command.parameters()) {
             if (!parameter.name().equals(focusedName)) continue;
 
-            var parser = arguments.parser(parameter.type());
+            var parser = arguments.parser(parameter.rawType());
             if (parser.supportsAutocomplete()) {
                 event.replyChoices(parser.autocomplete(event.getFocusedOption().getValue())).queue();
             } else {
@@ -112,7 +112,7 @@ final class SlashCommandDispatcher extends ListenerAdapter {
 
         for (ParameterDefinition parameter : command.parameters()) {
             OptionMapping option = event.getOption(parameter.name());
-            args[parameter.index()] = option == null ? null : arguments.parser(parameter.type()).resolve(option, context);
+            args[parameter.index()] = option == null ? null : arguments.parser(parameter.rawType()).resolve(option, context);
         }
         return args;
     }
