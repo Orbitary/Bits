@@ -389,6 +389,8 @@ public final class ReflectionUtils {
     public static final class Scanner {
         private Scanner() {}
 
+        public record AnnotatedClassesAndMethods(List<Class<?>> classes, List<java.lang.reflect.Method> methods) {}
+
         private static Class<?> getCorrectLoader(ClassInfo info, Class<?> base) throws ClassNotFoundException {
             // We prefer the loader that loaded the base type - this should generally guarantee constraint compatibility
             ClassLoader baseLoader = base.getClassLoader();
@@ -459,6 +461,36 @@ public final class ReflectionUtils {
             } catch (ReflectionException e) {
                 Logger.warn("Failed to get annotated classes in package: " + packageName + " with annotation " + clazz.getName());
                 return Collections.emptyList();
+            }
+        }
+
+        public static AnnotatedClassesAndMethods tryGetAnnotatedClassesAndMethods(String packageName, Class<? extends Annotation> annotation, ScannerFlags flags) {
+            try (ScanResult scanResult = CLASSGRAPH_SUPPLIER.apply(packageName)
+              .enableMethodInfo()
+              .scan()) {
+                List<Class<?>> classes = new ArrayList<>();
+                for (ClassInfo info : scanResult.getClassesWithAnnotation(annotation.getName())) {
+                    if (flags.isValid(info)) classes.add(getCorrectLoader(info, annotation));
+                }
+
+                List<java.lang.reflect.Method> methods = new ArrayList<>();
+                for (ClassInfo info : scanResult.getClassesWithMethodAnnotation(annotation.getName())) {
+                    if (!flags.isValid(info)) continue;
+                    Class<?> clazz = getCorrectLoader(info, annotation);
+                    for (java.lang.reflect.Method method : clazz.getDeclaredMethods()) {
+                        if (!method.isAnnotationPresent(annotation)) continue;
+                        method.setAccessible(true);
+                        methods.add(method);
+                    }
+                }
+
+                return new AnnotatedClassesAndMethods(classes, methods);
+            } catch (Exception e) {
+                // Preserve the old independent error handling if the combined scan fails.
+                return new AnnotatedClassesAndMethods(
+                  tryGetAnnotatedClasses(packageName, annotation, flags),
+                  tryGetAnnotatedMethods(packageName, annotation, flags)
+                );
             }
         }
 

@@ -109,8 +109,10 @@ public final class CommandScanner {
     // because the outer class's scan already covers them.
     private static List<Class<?>> commandRoots() {
         ScannerFlags flags = ScannerFlags.DEFAULT.withInnerClasses();
-        Set<Class<?>> candidates = new HashSet<>(ReflectionUtils.Scanner.tryGetAnnotatedClasses("*", Command.class, flags));
-        for (Method method : ReflectionUtils.Scanner.tryGetAnnotatedMethods("*", Command.class, flags)) {
+        ReflectionUtils.Scanner.AnnotatedClassesAndMethods discovered =
+          ReflectionUtils.Scanner.tryGetAnnotatedClassesAndMethods("*", Command.class, flags);
+        Set<Class<?>> candidates = new HashSet<>(discovered.classes());
+        for (Method method : discovered.methods()) {
             candidates.add(method.getDeclaringClass());
         }
         return candidates.stream().filter(candidate -> !hasEnclosingCandidate(candidate, candidates)).toList();

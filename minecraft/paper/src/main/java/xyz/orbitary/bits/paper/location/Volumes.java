@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -44,17 +45,7 @@ public final class Volumes {
      */
     public static Set<BlockPos> blockLocs(Volume volume) {
         Set<BlockPos> locs = new HashSet<>();
-        Predicate<Vec3> inside = volume.tester();
-        for (Volume leaf : leaves(volume)) {
-            Vec3 min = leaf.bounds().min(), max = leaf.bounds().max();
-            for (int x = (int)Math.floor(min.x()); x <= Math.ceil(max.x()); x++) {
-                for (int y = (int)Math.floor(min.y()); y <= Math.ceil(max.y()); y++) {
-                    for (int z = (int)Math.floor(min.z()); z <= Math.ceil(max.z()); z++) {
-                        if (inside.test(new Vec3(x + 0.5, y + 0.5, z + 0.5))) locs.add(new BlockPos(x, y, z));
-                    }
-                }
-            }
-        }
+        visitBlocks(volume, locs::add);
         return locs;
     }
 
@@ -100,7 +91,32 @@ public final class Volumes {
      * @return the chunk coordinates, in the volume's world, of every chunk it touches.
      */
     public static Set<ChunkPos> chunkLocs(WorldVolume worldVolume) {
-        return chunkLocsOf(blockLocs(worldVolume.volume()), worldVolume.world());
+        Set<ChunkPos> chunks = new HashSet<>();
+        Volume volume = worldVolume.volume();
+        Predicate<Vec3> inside = volume.tester();
+        for (Volume leaf : leaves(volume)) {
+            Vec3 min = leaf.bounds().min(), max = leaf.bounds().max();
+            int minX = (int)Math.floor(min.x()), maxX = (int)Math.ceil(max.x());
+            int minY = (int)Math.floor(min.y()), maxY = (int)Math.ceil(max.y());
+            int minZ = (int)Math.floor(min.z()), maxZ = (int)Math.ceil(max.z());
+            for (int chunkX = minX >> 4; chunkX <= maxX >> 4; chunkX++) {
+                int fromX = Math.max(minX, chunkX << 4), toX = Math.min(maxX, (chunkX << 4) + 15);
+                for (int chunkZ = minZ >> 4; chunkZ <= maxZ >> 4; chunkZ++) {
+                    int fromZ = Math.max(minZ, chunkZ << 4), toZ = Math.min(maxZ, (chunkZ << 4) + 15);
+                    search:
+                    for (int x = fromX; x <= toX; x++) {
+                        for (int y = minY; y <= maxY; y++) {
+                            for (int z = fromZ; z <= toZ; z++) {
+                                if (!inside.test(new Vec3(x + 0.5, y + 0.5, z + 0.5))) continue;
+                                chunks.add(new ChunkPos(chunkX, chunkZ, worldVolume.world()));
+                                break search;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return chunks;
     }
 
     /**
@@ -129,6 +145,20 @@ public final class Volumes {
 
 
     //region Helpers
+
+    private static void visitBlocks(Volume volume, Consumer<BlockPos> consumer) {
+        Predicate<Vec3> inside = volume.tester();
+        for (Volume leaf : leaves(volume)) {
+            Vec3 min = leaf.bounds().min(), max = leaf.bounds().max();
+            for (int x = (int)Math.floor(min.x()); x <= Math.ceil(max.x()); x++) {
+                for (int y = (int)Math.floor(min.y()); y <= Math.ceil(max.y()); y++) {
+                    for (int z = (int)Math.floor(min.z()); z <= Math.ceil(max.z()); z++) {
+                        if (inside.test(new Vec3(x + 0.5, y + 0.5, z + 0.5))) consumer.accept(new BlockPos(x, y, z));
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * @return the chunks touched by {@code locs}, in the world with key {@code world}.
