@@ -13,12 +13,16 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.modcommon.MinecraftClientAudiences;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.log.FabricBitsLogger;
 import xyz.orbitary.bits.log.Logger;
-import xyz.orbitary.bits.mc.command.FabricClientBitsCommandManager;
+import xyz.orbitary.bits.fabric.module.command.FabricCommandManager;
+import xyz.orbitary.bits.mc.module.command.CommandErrors;
 import xyz.orbitary.bits.mc.permission.Permission;
 import xyz.orbitary.bits.wrapper.collection.AddableList;
 
@@ -79,7 +83,11 @@ public class ClientBitsFabric extends BitsFabric {
 
     @Override
     protected AddableList<BitsModule> modules() {
-        return super.modules().add(new FabricClientBitsCommandManager());
+        return super.modules().add(new FabricCommandManager<FabricClientCommandSource>(
+          arguments -> {},
+          (source, error) -> source.sendError(Component.literal(CommandErrors.message(error))),
+          dispatcherCallback -> ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcherCallback.accept(dispatcher))
+        ));
     }
 
     @Override

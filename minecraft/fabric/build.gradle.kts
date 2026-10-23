@@ -41,6 +41,14 @@ dependencies {
 
     api("net.kyori:adventure-platform-fabric:7.1.0")
     api("me.lucko:fabric-permissions-api:0.7.0")
+
+    testImplementation(platform(rootProject.libs.junit.bom))
+    testImplementation(rootProject.libs.junit.jupiter)
+    testRuntimeOnly(rootProject.libs.junit.launcher)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks {
