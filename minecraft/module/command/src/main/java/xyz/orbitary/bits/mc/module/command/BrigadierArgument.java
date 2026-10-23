@@ -116,6 +116,15 @@ public interface BrigadierArgument<S> {
     Object read(CommandContext<S> context, String name) throws CommandSyntaxException;
 
     /**
+     * @return whether the argument takes the rest of the input, so it must be the last argument of its command
+     *
+     * @since 0.1.6
+     */
+    default boolean greedy() {
+        return false;
+    }
+
+    /**
      * @return suggestions offered while typing, or {@code null} for none
      *
      * @since 0.1.6

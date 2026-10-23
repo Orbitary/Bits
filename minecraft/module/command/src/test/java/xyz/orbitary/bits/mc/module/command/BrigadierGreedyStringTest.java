@@ -93,6 +93,60 @@ class BrigadierGreedyStringTest {
         public void gto(GreedyString first, @Parameter(required = false) String second) {}
     }
 
+    public record Text(String value) {}
+
+    @SuppressWarnings("unused")
+    public static final class CustomSay {
+        @Command("say2")
+        public void say(String target, Text message) {
+            calls.add(target + "|" + message.value());
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final class CustomNotLast {
+        @Command("bad2")
+        public void bad(@Parameter("message") Text message, @Parameter("target") String target) {}
+    }
+
+    private static BrigadierArguments<Object> customGreedy() {
+        BrigadierArguments<Object> arguments = arguments();
+        arguments.register(Text.class, new BrigadierArgument<>() {
+            @Override
+            public com.mojang.brigadier.arguments.ArgumentType<?> argumentType() {
+                return StringArgumentType.greedyString();
+            }
+
+            @Override
+            public Object read(com.mojang.brigadier.context.CommandContext<Object> context, String name) {
+                return new Text(context.getArgument(name, String.class));
+            }
+
+            @Override
+            public boolean greedy() {
+                return true;
+            }
+        });
+        return arguments;
+    }
+
+    @Test
+    void greedyFlagOnACustomArgumentTakesTheRestOfTheInput() throws CommandSyntaxException {
+        CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
+        builder(customGreedy()).build(CommandScanner.scan(CustomSay.class)).forEach(dispatcher::register);
+
+        dispatcher.execute("say2 bob hello there", SOURCE);
+
+        assertEquals(List.of("bob|hello there"), calls);
+    }
+
+    @Test
+    void greedyFlagOnACustomArgumentMustBeLast() {
+        List<CommandDefinition> commands = CommandScanner.scan(CustomNotLast.class);
+
+        assertThrows(IllegalArgumentException.class, () -> builder(customGreedy()).build(commands));
+    }
+
     private static BrigadierCommandBuilder<Object> builder(BrigadierArguments<Object> arguments) {
         return new BrigadierCommandBuilder<>(arguments, ignored -> null, (source, error) -> {}, Runnable::run);
     }

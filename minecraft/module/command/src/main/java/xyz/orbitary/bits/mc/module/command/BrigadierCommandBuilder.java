@@ -221,7 +221,8 @@ public final class BrigadierCommandBuilder<S> {
     }
 
     private static boolean isGreedy(BrigadierArgument<?> argument) {
-        return argument.argumentType() instanceof StringArgumentType string && string.getType() == StringArgumentType.StringType.GREEDY_PHRASE;
+        return argument.greedy()
+          || argument.argumentType() instanceof StringArgumentType string && string.getType() == StringArgumentType.StringType.GREEDY_PHRASE;
     }
 
     private static <S> boolean noneRequiredFrom(List<Element<S>> elements, int from) {
