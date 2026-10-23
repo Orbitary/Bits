@@ -1,8 +1,0 @@
-name: 'Bits'
-version: '1.0.0'
-description: 'Wow, what an awesome Bits plugin!'
-api-version: '1.21.10'
-authors:
-    - 'BitSquidd'
-prefix: 'Bits'
-main: xyz.orbitary.bits.paper.example.ExampleBitsPlugin
