@@ -106,8 +106,9 @@ public final class CommandScanner {
     // Classes annotated with @Command or declaring a @Command method, skipping classes nested in another one
     // because the outer class's scan already covers them.
     private static List<Class<?>> commandRoots() {
-        Set<Class<?>> candidates = new HashSet<>(ReflectionUtils.Scanner.tryGetAnnotatedClasses("*", Command.class, ScannerFlags.DEFAULT));
-        for (Method method : ReflectionUtils.Scanner.tryGetAnnotatedMethods("*", Command.class, ScannerFlags.DEFAULT)) {
+        ScannerFlags flags = ScannerFlags.DEFAULT.withInnerClasses();
+        Set<Class<?>> candidates = new HashSet<>(ReflectionUtils.Scanner.tryGetAnnotatedClasses("*", Command.class, flags));
+        for (Method method : ReflectionUtils.Scanner.tryGetAnnotatedMethods("*", Command.class, flags)) {
             candidates.add(method.getDeclaringClass());
         }
         return candidates.stream().filter(candidate -> !hasEnclosingCandidate(candidate, candidates)).toList();
