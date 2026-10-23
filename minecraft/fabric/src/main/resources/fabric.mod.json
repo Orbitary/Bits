@@ -11,6 +11,9 @@
   "icon": "assets/bits/icon.png",
   "environment": "*",
   "entrypoints": {
+    "main": [
+      "xyz.orbitary.bits.fabric.BitsServerInitializer"
+    ],
     "client": [
       "xyz.orbitary.bits.fabric.BitsClientInitializer"
     ]
