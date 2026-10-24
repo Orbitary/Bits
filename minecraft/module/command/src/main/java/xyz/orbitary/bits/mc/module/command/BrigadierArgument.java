@@ -28,6 +28,21 @@ import java.util.Locale;
 public interface BrigadierArgument<S> {
 
     /**
+     * Identifies the Java type for automatic registration through the reflection scanner.
+     * Concrete, top-level implementations must override this method and have a no-argument
+     * constructor. Anonymous and nested implementations remain available for manual registration.
+     *
+     * @return the Java type this argument resolves
+     *
+     * @throws UnsupportedOperationException if the argument only supports manual registration
+     *
+     * @since 0.1.6
+     */
+    default Class<?> targetType() {
+        throw new UnsupportedOperationException("Discovered argument must declare targetType(): " + getClass().getName());
+    }
+
+    /**
      * Creates an argument from an argument type and a function that reads its value.
      *
      * @param argumentType the Brigadier argument type that parses the input

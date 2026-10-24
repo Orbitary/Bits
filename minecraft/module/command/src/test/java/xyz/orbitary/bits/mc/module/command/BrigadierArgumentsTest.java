@@ -9,7 +9,6 @@ package xyz.orbitary.bits.mc.module.command;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -22,7 +21,18 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class BrigadierArgumentsTest {
+public class BrigadierArgumentsTest {
+
+    @Test
+    void argumentsAreDiscoveredAndCanBeOverridden() {
+        BrigadierArguments<Object> arguments = BrigadierArguments.withDefaults();
+        assertEquals(ScannedArgument.class, arguments.get(java.util.UUID.class).getClass());
+        assertNotNull(arguments.get(Integer.class));
+
+        var replacement = BrigadierArgument.<Object>of(StringArgumentType.word(), (context, name) -> java.util.UUID.randomUUID());
+        arguments.register(java.util.UUID.class, replacement);
+        assertSame(replacement, arguments.get(java.util.UUID.class));
+    }
 
     public enum Mode { FAST, SLOW }
 

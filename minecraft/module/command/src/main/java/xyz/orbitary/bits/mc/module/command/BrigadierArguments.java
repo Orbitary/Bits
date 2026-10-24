@@ -18,7 +18,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import org.jetbrains.annotations.Nullable;
 import xyz.orbitary.bits.module.command.ParameterDefinition;
+import xyz.orbitary.bits.util.reflection.ReflectionException;
 import xyz.orbitary.bits.util.reflection.ReflectionUtils;
+import xyz.orbitary.bits.util.reflection.ScannerFlags;
 import xyz.orbitary.bits.wrapper.GreedyString;
 import xyz.orbitary.bits.wrapper.Link;
 
@@ -26,6 +28,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,13 +50,21 @@ public final class BrigadierArguments<S> {
     private final Map<Class<?>, BrigadierArgument<S>> collections = new ConcurrentHashMap<>();
 
     /**
+     * Loads built-in arguments and concrete, top-level implementations found by the reflection scanner.
+     * Discovered arguments must have a no-argument constructor, declare their target type and use
+     * the same command source type as this registry. Later explicit registrations can override them.
+     *
      * @param <S> the command source type
      *
-     * @return a registry with arguments for the built-in types: {@code String}, {@code Boolean}, {@code Integer},
-     * {@code Long}, {@code Float}, {@code Double} and {@code GreedyString}
+     * @return the populated registry
+     *
+     * @throws IllegalArgumentException if multiple discovered arguments declare the same target type
+     * @throws IllegalStateException if scanning or constructing an argument fails
+     * @throws UnsupportedOperationException if an argument does not declare its target type
      *
      * @since 0.1.6
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <S> BrigadierArguments<S> withDefaults() {
         BrigadierArguments<S> registry = new BrigadierArguments<>();
         registry.register(String.class, typed(String.class, StringArgumentType.word()));
@@ -65,6 +76,17 @@ public final class BrigadierArguments<S> {
         registry.register(GreedyString.class, BrigadierArgument.of(StringArgumentType.greedyString(),
           (context, name) -> GreedyString.of(context.getArgument(name, String.class))));
         registry.register(Link.class, link());
+        var discovered = new HashSet<Class<?>>();
+        try {
+            for (var clazz : ReflectionUtils.Scanner.getClasses("*", BrigadierArgument.class, ScannerFlags.DEFAULT)) {
+                BrigadierArgument<S> argument = (BrigadierArgument<S>) ReflectionUtils.Instance.create(clazz);
+                var type = argument.targetType();
+                if (!discovered.add(type)) throw new IllegalArgumentException("Multiple Brigadier argument providers for: " + type.getName());
+                registry.register(type, argument);
+            }
+        } catch (ReflectionException e) {
+            throw new IllegalStateException("Failed to discover Brigadier arguments", e);
+        }
         return registry;
     }
 
