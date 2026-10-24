@@ -84,6 +84,22 @@ class BrigadierCommandBuilderTest {
         }
     }
 
+    public static final class MixedInjected {
+        @Command("mixed")
+        public void mixed(@Parameter("required") String required, Context first,
+                          @Parameter(value = "optional", required = false) Integer optional, Context second) {
+            calls.add(required + " " + optional + " " + (first == second) + " " + (first != null));
+        }
+    }
+
+    @Test
+    void optionalArgumentsStayNullWithInterleavedInjectedParameters() throws CommandSyntaxException {
+        var dispatcher = dispatcher(CommandScanner.scan(MixedInjected.class, Context.class::equals), builder());
+        dispatcher.execute("mixed bob", SOURCE);
+        dispatcher.execute("mixed bob 3", SOURCE);
+        assertEquals(List.of("bob null true true", "bob 3 true true"), calls);
+    }
+
     public static final class DenyAll implements Condition<Object> {
         @Override
         public boolean test(Object actor) {
@@ -313,6 +329,239 @@ class BrigadierCommandBuilderTest {
 
         assertEquals(0, dispatcher.execute("reject anything", SOURCE));
         assertEquals(List.of("nope"), errors);
+    }
+
+    @Command(value = "overload", aliases = {"ol"})
+    public static final class Overloaded {
+        @Command("")
+        public void root() { calls.add("root"); }
+
+        @Command("")
+        public void one(@Parameter("first") String first) { calls.add("one " + first); }
+
+        @Command("")
+        public void two(@Parameter("target") String target, @Parameter("amount") int amount) {
+            calls.add("two " + target + " " + amount);
+        }
+    }
+
+    @Test
+    void overloadsDispatchByArgumentCountWithDifferentParameterNamesAndAliases() throws CommandSyntaxException {
+        var commands = CommandScanner.scan(Overloaded.class);
+        for (var ordered : List.of(commands, commands.reversed())) {
+            calls.clear();
+            var dispatcher = dispatcher(ordered, builder());
+            dispatcher.execute("overload", SOURCE);
+            dispatcher.execute("overload bob", SOURCE);
+            dispatcher.execute("overload bob 2", SOURCE);
+            dispatcher.execute("ol alice", SOURCE);
+            assertEquals(List.of("root", "one bob", "two bob 2", "one alice"), calls);
+        }
+    }
+
+    public static final class SecuredOverloads {
+        @Command("secured")
+        @Guard(DenyAll.class)
+        public void one(@Parameter("first") String first) { calls.add("denied"); }
+
+        @Command("secured")
+        public void two(@Parameter("target") String target, @Parameter("amount") int amount) {
+            calls.add("allowed " + target + " " + amount);
+        }
+    }
+
+    @Test
+    void overloadsKeepTheirOwnGuardsInEitherRegistrationOrder() throws CommandSyntaxException {
+        var commands = CommandScanner.scan(SecuredOverloads.class);
+        for (var ordered : List.of(commands, commands.reversed())) {
+            calls.clear();
+            List<Throwable> errors = new ArrayList<>();
+            var builder = new BrigadierCommandBuilder<Object>(BrigadierArguments.withDefaults(), ignored -> new Context(),
+              (source, error) -> errors.add(error), (source, node) -> true, Runnable::run);
+            var dispatcher = dispatcher(ordered, builder);
+            assertEquals(0, dispatcher.execute("secured bob", SOURCE));
+            assertEquals(1, dispatcher.execute("secured bob 2", SOURCE));
+            assertEquals(List.of("allowed bob 2"), calls);
+            assertEquals(1, errors.size());
+            assertInstanceOf(ConditionFailedException.class, errors.getFirst());
+        }
+    }
+
+    public static final class OptionalOverloads {
+        @Command("optionaloverload")
+        public void shortForm(@Parameter(value = "first", required = false) String first) {
+            calls.add("short " + first);
+        }
+
+        @Command("optionaloverload")
+        public void longForm(@Parameter("target") String target, @Parameter("amount") int amount) {
+            calls.add("long " + target + " " + amount);
+        }
+    }
+
+    @Test
+    void disjointOptionalOverloadsDispatchAtEachAcceptedArgumentCount() throws CommandSyntaxException {
+        var commands = CommandScanner.scan(OptionalOverloads.class);
+        for (var ordered : List.of(commands, commands.reversed())) {
+            calls.clear();
+            var dispatcher = dispatcher(ordered, builder());
+            dispatcher.execute("optionaloverload", SOURCE);
+            dispatcher.execute("optionaloverload bob", SOURCE);
+            dispatcher.execute("optionaloverload bob 2", SOURCE);
+            assertEquals(List.of("short null", "short bob", "long bob 2"), calls);
+        }
+    }
+
+    public static final class PrimitiveOverloads {
+        @Command("primitiveoverload")
+        public void shortForm(@Parameter("first") int first) { calls.add("short " + first); }
+
+        @Command("primitiveoverload")
+        public void longForm(@Parameter("value") Integer value, @Parameter("amount") int amount) {
+            calls.add("long " + value + " " + amount);
+        }
+    }
+
+    @Test
+    void primitiveAndWrapperOverloadsShareTheirCommonParser() throws CommandSyntaxException {
+        var dispatcher = dispatcher(CommandScanner.scan(PrimitiveOverloads.class), builder());
+        dispatcher.execute("primitiveoverload 1", SOURCE);
+        dispatcher.execute("primitiveoverload 1 2", SOURCE);
+        assertEquals(List.of("short 1", "long 1 2"), calls);
+    }
+
+    public static final class IncompatibleOverloads {
+        @Command("incompatible")
+        public void shortForm(int first) {}
+
+        @Command("incompatible")
+        public void longForm(String first, int second) {}
+    }
+
+    @Test
+    void incompatibleOverloadPrefixesAreRejectedBeforeRegistration() {
+        assertThrows(IllegalArgumentException.class, () -> builder().build(CommandScanner.scan(IncompatibleOverloads.class)));
+    }
+
+    public static final class AliasedOverloads {
+        @Command(value = "aliasoverload", aliases = {"shortalias", "sharedalias"})
+        public void root() { calls.add("root"); }
+
+        @Command(value = "aliasoverload", aliases = {"longalias", "sharedalias"})
+        public void argument(String value) { calls.add("argument " + value); }
+    }
+
+    @Test
+    void overloadAliasesAreCombinedRegardlessOfRegistrationOrder() throws CommandSyntaxException {
+        var commands = CommandScanner.scan(AliasedOverloads.class);
+        for (var ordered : List.of(commands, commands.reversed())) {
+            calls.clear();
+            var dispatcher = dispatcher(ordered, builder());
+            for (var alias : List.of("aliasoverload", "shortalias", "longalias", "sharedalias")) {
+                dispatcher.execute(alias, SOURCE);
+                dispatcher.execute(alias + " bob", SOURCE);
+            }
+            assertEquals(List.of("root", "argument bob", "root", "argument bob",
+              "root", "argument bob", "root", "argument bob"), calls);
+        }
+    }
+
+    public static final class AliasConflictsWithCommand {
+        @Command(value = "first", aliases = {"second"})
+        public void first() {}
+
+        @Command("second")
+        public void second() {}
+    }
+
+    public static final class AliasConflictsWithAlias {
+        @Command(value = "first", aliases = {"shared"})
+        public void first() {}
+
+        @Command(value = "second", aliases = {"shared"})
+        public void second() {}
+    }
+
+    @Test
+    void aliasCollisionsAreRejectedBeforeRegistration() {
+        for (var owner : List.of(AliasConflictsWithCommand.class, AliasConflictsWithAlias.class)) {
+            var commands = CommandScanner.scan(owner);
+            for (var ordered : List.of(commands, commands.reversed())) {
+                var error = assertThrows(IllegalArgumentException.class, () -> builder().build(ordered));
+                assertEquals(true, String.valueOf(error.getMessage()).contains("conflicts"));
+            }
+        }
+    }
+
+    @Command("prepared")
+    @Async
+    public static final class Prepared {
+        public Prepared(@Parameter("initial") Bad initial) { calls.add("constructed"); }
+
+        @Command("run")
+        public void run(Context context, @Parameter("value") Bad value) { calls.add("invoked"); }
+    }
+
+    @Test
+    void asyncArgumentsAndContextAreResolvedBeforeScheduling() throws CommandSyntaxException {
+        var arguments = BrigadierArguments.<Object>withDefaults();
+        var caller = Thread.currentThread();
+        arguments.register(Bad.class, BrigadierArgument.of(StringArgumentType.word(), (context, name) -> {
+            assertEquals(caller, Thread.currentThread());
+            calls.add("parsed " + name);
+            return new Bad();
+        }));
+        List<Runnable> queued = new ArrayList<>();
+        List<Throwable> errors = new ArrayList<>();
+        var builder = new BrigadierCommandBuilder<Object>(arguments, ignored -> {
+            calls.add("context");
+            return new Context();
+        }, (source, error) -> errors.add(error), (source, node) -> true, queued::add);
+        var dispatcher = dispatcher(CommandScanner.scan(Prepared.class, Context.class::equals), builder);
+
+        assertEquals(1, dispatcher.execute("prepared first run second", SOURCE));
+        assertEquals(List.of("parsed initial", "context", "parsed value"), calls);
+        assertEquals(1, queued.size());
+        queued.getFirst().run();
+        assertEquals(List.of("parsed initial", "context", "parsed value", "constructed", "invoked"), calls);
+        assertEquals(List.of(), errors);
+    }
+
+    @Test
+    void asyncArgumentFailureDoesNotScheduleExecution() throws CommandSyntaxException {
+        var arguments = BrigadierArguments.<Object>withDefaults();
+        arguments.register(Bad.class, BrigadierArgument.of(StringArgumentType.word(), (context, name) -> {
+            throw new SimpleCommandExceptionType(new LiteralMessage("invalid argument")).create();
+        }));
+        List<Runnable> queued = new ArrayList<>();
+        List<Throwable> errors = new ArrayList<>();
+        var builder = new BrigadierCommandBuilder<Object>(arguments, ignored -> new Context(),
+          (source, error) -> errors.add(error), (source, node) -> true, queued::add);
+        var dispatcher = dispatcher(CommandScanner.scan(Prepared.class, Context.class::equals), builder);
+
+        assertEquals(0, dispatcher.execute("prepared first run second", SOURCE));
+        assertEquals(List.of(), queued);
+        assertEquals(List.of(), calls);
+        assertInstanceOf(CommandSyntaxException.class, errors.getFirst());
+    }
+
+    @Test
+    void deniedAsyncCommandDoesNotParseOrSchedule() throws CommandSyntaxException {
+        var arguments = BrigadierArguments.<Object>withDefaults();
+        arguments.register(Bad.class, BrigadierArgument.of(StringArgumentType.word(), (context, name) -> {
+            calls.add("parsed");
+            return new Bad();
+        }));
+        List<Runnable> queued = new ArrayList<>();
+        List<Throwable> errors = new ArrayList<>();
+        var builder = new BrigadierCommandBuilder<Object>(arguments, ignored -> new Context(),
+          (source, error) -> errors.add(error), (source, node) -> false, queued::add);
+        var dispatcher = dispatcher(CommandScanner.scan(Prepared.class, Context.class::equals), builder);
+
+        assertEquals(0, dispatcher.execute("prepared first run second", SOURCE));
+        assertEquals(List.of(), queued);
+        assertEquals(List.of(), calls);
+        assertInstanceOf(PermissionDeniedException.class, errors.getFirst());
     }
 
     private BrigadierCommandBuilder<Object> builder() {

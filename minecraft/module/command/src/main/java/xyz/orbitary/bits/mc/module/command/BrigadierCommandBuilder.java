@@ -24,11 +24,15 @@ import xyz.orbitary.bits.module.command.CommandDefinition;
 import xyz.orbitary.bits.module.command.CommandDefinition.Segment;
 import xyz.orbitary.bits.module.command.Condition;
 import xyz.orbitary.bits.module.command.ParameterDefinition;
+import xyz.orbitary.bits.util.reflection.ReflectionUtils;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +41,6 @@ import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 /**
@@ -100,9 +103,9 @@ public final class BrigadierCommandBuilder<S> {
             for (Segment segment : command.path()) {
                 node = node.children.computeIfAbsent(segment.name(), name -> new Node());
                 node.parameters = segment.parameters();
-                node.aliases = segment.aliases();
+                node.aliases.addAll(segment.aliases());
             }
-            node.command = command;
+            node.commands.add(command);
         }
         return literals(tree.children);
     }
@@ -110,9 +113,13 @@ public final class BrigadierCommandBuilder<S> {
     // Brigadier copies a builder when it is added with then(), so children are built before their parent is added.
     private List<LiteralArgumentBuilder<S>> literals(Map<String, Node> children) {
         List<LiteralArgumentBuilder<S>> literals = new ArrayList<>();
+        Set<String> names = new HashSet<>(children.keySet());
         children.forEach((name, node) -> {
             literals.add(literal(name, node));
-            for (String alias : node.aliases) literals.add(literal(alias, node));
+            for (String alias : node.aliases) {
+                if (!names.add(alias)) throw new IllegalArgumentException("Command alias '" + alias + "' conflicts with another command or alias");
+                literals.add(literal(alias, node));
+            }
         });
         return literals;
     }
@@ -127,17 +134,25 @@ public final class BrigadierCommandBuilder<S> {
             }
         }
 
-        CommandDefinition command = node.command;
-        List<Element<S>> methodElements = command == null ? List.of() : elements(command.parameters());
-        if (command != null) checkGreedy(methodElements, command.fullName());
-
-        Command<S> execution = command == null ? null : context -> run(command, context);
-        ArgumentBuilder<S, ?> methodTop = chain(methodElements, execution);
-        Command<S> tailExecution = execution != null && noneRequiredFrom(methodElements, 0) ? execution : null;
+        List<ArgumentBuilder<S, ?>> methodTops = new ArrayList<>();
+        Command<S> tailExecution = null;
+        List<ParameterDefinition> canonical = node.commands.stream()
+          .map(CommandDefinition::parameters)
+          .max(java.util.Comparator.comparingInt(List::size))
+          .orElse(List.of());
+        for (var command : node.commands) {
+            var parameters = canonicalParameters(command, canonical);
+            var methodElements = elements(parameters);
+            checkGreedy(methodElements, command.fullName());
+            Command<S> execution = context -> run(command, parameters, context);
+            var methodTop = chain(methodElements, execution);
+            if (methodTop != null) methodTops.add(methodTop);
+            if (noneRequiredFrom(methodElements, 0)) tailExecution = execution;
+        }
         List<LiteralArgumentBuilder<S>> children = literals(node.children);
 
         if (groupElements.isEmpty()) {
-            attach(literal, children, methodTop, tailExecution);
+            attach(literal, children, methodTops, tailExecution);
             return literal;
         }
 
@@ -147,7 +162,7 @@ public final class BrigadierCommandBuilder<S> {
         for (int i = groupElements.size() - 1; i >= 0; i--) {
             RequiredArgumentBuilder<S, ?> argument = argument(groupElements.get(i));
             if (i == groupElements.size() - 1) {
-                attach(argument, children, methodTop, tailExecution);
+                attach(argument, children, methodTops, tailExecution);
             } else {
                 argument.then(top);
             }
@@ -157,10 +172,10 @@ public final class BrigadierCommandBuilder<S> {
         return literal;
     }
 
-    private void attach(ArgumentBuilder<S, ?> builder, List<LiteralArgumentBuilder<S>> children, @Nullable ArgumentBuilder<S, ?> methodTop, @Nullable Command<S> execution) {
+    private void attach(ArgumentBuilder<S, ?> builder, List<LiteralArgumentBuilder<S>> children, List<ArgumentBuilder<S, ?>> methodTops, @Nullable Command<S> execution) {
         if (execution != null) builder.executes(execution);
         for (LiteralArgumentBuilder<S> child : children) builder.then(child);
-        if (methodTop != null) builder.then(methodTop);
+        for (var methodTop : methodTops) builder.then(methodTop);
     }
 
     // Builds the arguments of one command as a chain. Each argument runs the command when the rest are optional.
@@ -238,33 +253,59 @@ public final class BrigadierCommandBuilder<S> {
         return parameter.name() + "_" + part.name();
     }
 
-    private int run(CommandDefinition command, CommandContext<S> context) {
-        if (command.async()) {
-            async.execute(() -> execute(command, context));
-            return 1;
+    private static List<ParameterDefinition> canonicalParameters(CommandDefinition command, List<ParameterDefinition> canonical) {
+        List<ParameterDefinition> parameters = new ArrayList<>();
+        for (int i = 0; i < command.parameters().size(); i++) {
+            var parameter = command.parameters().get(i);
+            var shared = canonical.get(i);
+            boolean sameType = parameter.type().equals(shared.type())
+              || parameter.type() instanceof Class<?> left && shared.type() instanceof Class<?> right
+              && ReflectionUtils.Primitive.fromOrSelf(left).equals(ReflectionUtils.Primitive.fromOrSelf(right));
+            if (!sameType) {
+                throw new IllegalArgumentException("Overloads of /" + command.fullName() + " must share argument types at position " + i);
+            }
+            parameters.add(new ParameterDefinition(parameter.index(), shared.name(), parameter.description(), parameter.required(), parameter.type(), parameter.suggestions()));
         }
-        return execute(command, context);
+        return parameters;
     }
 
-    private int execute(CommandDefinition command, CommandContext<S> context) {
+    private int run(CommandDefinition command, List<ParameterDefinition> parameters, CommandContext<S> context) {
         S source = context.getSource();
         try {
             Condition<S> failed = failedCondition(command, source);
             if (failed != null) throw new ConditionFailedException(failed.getClass());
             if (!command.permissions().allows(node -> hasPermission.test(source, node))) throw new PermissionDeniedException();
 
-            Object owner = command.constructor().newInstance(resolveArguments(command.constructor(), command.constructorParameters(), context));
-            command.method().invoke(owner, resolveArguments(command.method(), command.parameters(), context));
-            return 1;
-        } catch (CommandSyntaxException | ConditionFailedException e) {
+            Object[] constructorArguments = resolveArguments(command.constructor(), command.constructorParameters(), context);
+            Object[] methodArguments = resolveArguments(command.method(), parameters, context);
+            if (command.async()) {
+                async.execute(() -> invoke(command, source, constructorArguments, methodArguments));
+                return 1;
+            }
+            return invoke(command, source, constructorArguments, methodArguments);
+        } catch (CommandSyntaxException | ConditionFailedException | PermissionDeniedException e) {
             errorHandler.accept(source, e);
             return 0;
         } catch (Exception e) {
-            Throwable cause = e instanceof InvocationTargetException && e.getCause() != null ? e.getCause() : e;
-            Logger.exception("Unhandled exception in command /" + command.fullName(), cause);
-            errorHandler.accept(source, cause);
-            return 0;
+            return failed(command, source, e);
         }
+    }
+
+    private int invoke(CommandDefinition command, S source, Object[] constructorArguments, Object[] methodArguments) {
+        try {
+            Object owner = command.constructor().newInstance(constructorArguments);
+            command.method().invoke(owner, methodArguments);
+            return 1;
+        } catch (Exception e) {
+            return failed(command, source, e);
+        }
+    }
+
+    private int failed(CommandDefinition command, S source, Exception error) {
+        Throwable cause = error instanceof InvocationTargetException && error.getCause() != null ? error.getCause() : error;
+        Logger.exception("Unhandled exception in command /" + command.fullName(), cause);
+        errorHandler.accept(source, cause);
+        return 0;
     }
 
     private static <S> @Nullable Condition<S> failedCondition(CommandDefinition command, S source) {
@@ -278,16 +319,13 @@ public final class BrigadierCommandBuilder<S> {
     private Object[] resolveArguments(Executable executable, List<ParameterDefinition> parameters, CommandContext<S> context) throws CommandSyntaxException {
         Object[] args = new Object[executable.getParameterCount()];
 
-        Set<Integer> argumentIndices = parameters.stream().map(ParameterDefinition::index).collect(Collectors.toSet());
-        if (argumentIndices.size() < args.length) {
+        if (parameters.size() < args.length) {
             Object injected = contextFactory.apply(context);
-            for (int i = 0; i < args.length; i++) {
-                if (!argumentIndices.contains(i)) args[i] = injected;
-            }
+            Arrays.fill(args, injected);
         }
 
-        Set<String> present = context.getNodes().stream().map(parsed -> parsed.getNode().getName()).collect(Collectors.toSet());
         for (ParameterDefinition parameter : parameters) {
+            args[parameter.index()] = null;
             BrigadierComposite<?> composite = arguments.composite(parameter.rawType());
             if (composite != null) {
                 Object[] parts = new Object[composite.parts().size()];
@@ -296,11 +334,18 @@ public final class BrigadierCommandBuilder<S> {
                     parts[i] = arguments.get(part.type()).read(context, partName(parameter, part));
                 }
                 args[parameter.index()] = composite.combiner().apply(parts);
-            } else if (present.contains(parameter.name())) {
+            } else if (parameter.required() || hasArgument(context, parameter.name())) {
                 args[parameter.index()] = arguments.get(parameter.type()).read(context, parameter.name());
             }
         }
         return args;
+    }
+
+    private static boolean hasArgument(CommandContext<?> context, String name) {
+        for (var parsed : context.getNodes()) {
+            if (parsed.getNode().getName().equals(name)) return true;
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")
@@ -349,9 +394,9 @@ public final class BrigadierCommandBuilder<S> {
 
     private static final class Node {
         private final Map<String, Node> children = new LinkedHashMap<>();
-        private @Nullable CommandDefinition command;
+        private final List<CommandDefinition> commands = new ArrayList<>();
         private List<ParameterDefinition> parameters = List.of();
-        private List<String> aliases = List.of();
+        private final Set<String> aliases = new LinkedHashSet<>();
     }
 
 }

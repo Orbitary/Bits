@@ -13,7 +13,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Attaches a {@link Condition} that must pass before a command runs. A method guard replaces the class guard.
+ * Attaches a {@link Condition} that must pass before a command runs.
+ * Guards accumulate from enclosing groups, the declaring class and the method.
  *
  * @since 0.1.6
  */

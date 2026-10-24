@@ -103,6 +103,19 @@ class CommandScannerTest {
         public void second() {}
     }
 
+    public static final class AmbiguousOptional {
+        @Command("same")
+        public void root() {}
+
+        @Command("same")
+        public void optional(@Parameter(required = false) String value) {}
+    }
+
+    @Test
+    void rejectsOverloadsWithOverlappingOptionalArgumentCounts() {
+        assertThrows(IllegalArgumentException.class, () -> CommandScanner.scan(AmbiguousOptional.class));
+    }
+
     @SuppressWarnings("unused")
     public static final class NonPublic {
         @Command("secret")
@@ -197,8 +210,9 @@ class CommandScannerTest {
     }
 
     @Test
-    void methodGuardReplacesGroupGuard() {
-        assertEquals(List.of(AllowAll.class), find(Admin.class, "admin sub").conditions());
+    void methodGuardAddsToGroupGuard() {
+        assertEquals(List.of(DenyAll.class, AllowAll.class), find(Admin.class, "admin sub").conditions());
+        assertEquals(List.of(DenyAll.class), find(Admin.class, "admin group deep").conditions());
         assertEquals(List.of(DenyAll.class), find(Admin.class, "admin kick").conditions());
     }
 

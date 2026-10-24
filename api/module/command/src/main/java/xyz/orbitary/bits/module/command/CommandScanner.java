@@ -18,9 +18,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.function.Predicate;
@@ -32,7 +34,8 @@ import java.util.function.Predicate;
  * Every command method must be public. A {@link Command} class is a group: its constructor arguments are required
  * arguments that come before its subcommands, and it must be static and declare exactly one constructor. Argument
  * names are normalised to lower case with spaces replaced by underscores, and must be unique along a command's path.
- * Required arguments may not follow optional ones.
+ * Required arguments may not follow optional ones. Overloads may share a path when their accepted
+ * argument counts do not overlap.
  *
  * @since 0.1.6
  */
@@ -90,17 +93,21 @@ public final class CommandScanner {
      */
     public static List<CommandDefinition> scan(Class<?> owner, Predicate<Class<?>> injected) {
         List<CommandDefinition> commands = new ArrayList<>();
-        collect(owner, List.of(), List.of(), injected, commands);
+        collect(owner, List.of(), List.of(), List.of(), injected, commands);
 
         checkUniquePaths(commands, owner.getName());
         return commands;
     }
 
     private static void checkUniquePaths(List<CommandDefinition> commands, String source) {
-        Set<String> paths = new HashSet<>();
+        Map<String, Set<Integer>> paths = new HashMap<>();
         for (CommandDefinition command : commands) {
-            if (!paths.add(command.fullName())) {
-                throw new IllegalArgumentException("Duplicate command '" + command.fullName() + "' in " + source);
+            var counts = paths.computeIfAbsent(command.fullName(), ignored -> new HashSet<>());
+            int required = (int) command.parameters().stream().filter(ParameterDefinition::required).count();
+            for (int count = required; count <= command.parameters().size(); count++) {
+                if (!counts.add(count)) {
+                    throw new IllegalArgumentException("Duplicate command '" + command.fullName() + "' with " + count + " arguments in " + source);
+                }
             }
         }
     }
@@ -125,23 +132,24 @@ public final class CommandScanner {
         return false;
     }
 
-    private static void collect(Class<?> owner, List<Segment> prefix, List<PermissionClause> inherited, Predicate<Class<?>> injected, List<CommandDefinition> out) {
+    private static void collect(Class<?> owner, List<Segment> prefix, List<PermissionClause> inherited, List<Class<? extends Condition<?>>> inheritedConditions, Predicate<Class<?>> injected, List<CommandDefinition> out) {
         Command group = owner.getAnnotation(Command.class);
         List<Segment> base = group == null
                              ? prefix
                              : append(prefix, segment(group, owner, parameters(constructor(owner), injected, true)));
 
         List<PermissionClause> clauses = concat(inherited, permissionsOf(owner));
+        var conditions = concat(inheritedConditions, conditions(owner));
         for (Method method : owner.getDeclaredMethods()) {
             Command command = method.getAnnotation(Command.class);
-            if (command != null) out.add(define(owner, method, command, base, clauses, injected));
+            if (command != null) out.add(define(owner, method, command, base, clauses, conditions, injected));
         }
         for (Class<?> nested : owner.getDeclaredClasses()) {
-            if (nested.isAnnotationPresent(Command.class)) collect(nested, base, clauses, injected, out);
+            if (nested.isAnnotationPresent(Command.class)) collect(nested, base, clauses, conditions, injected, out);
         }
     }
 
-    private static CommandDefinition define(Class<?> owner, Method method, Command command, List<Segment> base, List<PermissionClause> inherited, Predicate<Class<?>> injected) {
+    private static CommandDefinition define(Class<?> owner, Method method, Command command, List<Segment> base, List<PermissionClause> inherited, List<Class<? extends Condition<?>>> inheritedConditions, Predicate<Class<?>> injected) {
         if (!Modifier.isPublic(method.getModifiers())) {
             throw new IllegalArgumentException("Command method " + method + " must be public");
         }
@@ -173,7 +181,7 @@ public final class CommandScanner {
           method,
           parameters,
           method.isAnnotationPresent(Async.class) || owner.isAnnotationPresent(Async.class),
-          conditions(owner, method),
+          concat(inheritedConditions, conditions(method)),
           new PermissionRule(defaultNode, concat(inherited, permissionsOf(method))),
           constructor,
           constructorParameters
@@ -254,9 +262,8 @@ public final class CommandScanner {
         return List.copyOf(joined);
     }
 
-    private static List<Class<? extends Condition<?>>> conditions(Class<?> owner, Method method) {
-        Guard guard = method.getAnnotation(Guard.class);
-        if (guard == null) guard = owner.getAnnotation(Guard.class);
+    private static List<Class<? extends Condition<?>>> conditions(AnnotatedElement element) {
+        Guard guard = element.getAnnotation(Guard.class);
         return guard == null ? List.of() : List.of(guard.value());
     }
 

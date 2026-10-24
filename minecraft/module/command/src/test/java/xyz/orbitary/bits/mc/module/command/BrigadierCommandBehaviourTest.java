@@ -144,6 +144,34 @@ class BrigadierCommandBehaviourTest {
         }
     }
 
+    @Command("restricted")
+    @Guard(DenyAll.class)
+    public static final class Restricted {
+        @Command("direct")
+        @Guard(AllowAll.class)
+        public void direct() { calls.add("direct"); }
+
+        @Command("nested")
+        @Guard(AllowAll.class)
+        public static final class Nested {
+            @Command("leaf")
+            @Guard(AllowAll.class)
+            public void leaf() { calls.add("leaf"); }
+        }
+    }
+
+    @Test
+    void methodAndNestedGuardsCannotReplaceAnEnclosingRestriction() throws CommandSyntaxException {
+        List<Throwable> errors = new ArrayList<>();
+        var dispatcher = dispatcher(CommandScanner.scan(Restricted.class), builder(errors));
+
+        assertEquals(0, dispatcher.execute("restricted direct", SOURCE));
+        assertEquals(0, dispatcher.execute("restricted nested leaf", SOURCE));
+        assertEquals(List.of(), calls);
+        assertEquals(2, errors.size());
+        errors.forEach(error -> assertInstanceOf(ConditionFailedException.class, error));
+    }
+
     @SuppressWarnings("unused")
     public static final class Say {
         @Command("say")
