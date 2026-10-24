@@ -37,4 +37,8 @@ public record BlockLoc(
         return new BlockPos(x, y, z);
     }
 
+    public net.minecraft.core.BlockPos mc() {
+        return new net.minecraft.core.BlockPos(x, y, z);
+    }
+
 }
