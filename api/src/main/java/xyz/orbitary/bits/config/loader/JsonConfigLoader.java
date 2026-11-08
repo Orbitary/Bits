@@ -36,9 +36,12 @@ public abstract sealed class JsonConfigLoader implements ConfigLoader permits Js
 
     static ObjectNode readTree(java.io.InputStream source, String label) throws ConfigException {
         try {
-            ObjectNode node = (ObjectNode)SerializationManager.SERIALIZER.readTree(source);
-            if (node == null) node = SerializationManager.SERIALIZER.createObjectNode();
-            return node;
+            var node = SerializationManager.SERIALIZER.readTree(source);
+            if (node == null || node.isMissingNode()) return SerializationManager.SERIALIZER.createObjectNode();
+            if (!(node instanceof ObjectNode object)) {
+                throw ConfigException.loadFailed(label, new IllegalArgumentException("Configuration root must be an object"));
+            }
+            return object;
         } catch (IOException e) {
             throw ConfigException.loadFailed(label, e);
         }

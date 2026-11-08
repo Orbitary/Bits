@@ -17,6 +17,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import org.jetbrains.annotations.Nullable;
+
 import xyz.orbitary.bits.module.command.ParameterDefinition;
 import xyz.orbitary.bits.util.reflection.ReflectionException;
 import xyz.orbitary.bits.util.reflection.ReflectionUtils;
@@ -44,7 +45,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 0.1.6
  */
 public final class BrigadierArguments<S> {
-
     private final Map<Class<?>, BrigadierArgument<S>> arguments = new ConcurrentHashMap<>();
     private final Map<Class<?>, BrigadierComposite<?>> composites = new ConcurrentHashMap<>();
     private final Map<Class<?>, BrigadierArgument<S>> collections = new ConcurrentHashMap<>();
@@ -73,8 +73,7 @@ public final class BrigadierArguments<S> {
         registry.register(Long.class, typed(Long.class, LongArgumentType.longArg()));
         registry.register(Float.class, typed(Float.class, FloatArgumentType.floatArg()));
         registry.register(Double.class, typed(Double.class, DoubleArgumentType.doubleArg()));
-        registry.register(GreedyString.class, BrigadierArgument.of(StringArgumentType.greedyString(),
-          (context, name) -> GreedyString.of(context.getArgument(name, String.class))));
+        registry.register(GreedyString.class, BrigadierArgument.of(StringArgumentType.greedyString(), (context, name) -> GreedyString.of(context.getArgument(name, String.class))));
         registry.register(Link.class, link());
         var discovered = new HashSet<Class<?>>();
         try {
@@ -144,7 +143,6 @@ public final class BrigadierArguments<S> {
      * @return the argument for the type
      *
      * @throws IllegalArgumentException if no argument handles the type
-     *
      * @since 0.1.6
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -159,9 +157,7 @@ public final class BrigadierArguments<S> {
         Class<?> key = ReflectionUtils.Primitive.fromOrSelf(ParameterDefinition.raw(type));
         BrigadierArgument<S> argument = arguments.get(key);
 
-        if (argument == null && key.isEnum()) {
-            argument = arguments.computeIfAbsent(key, k -> enumOf((Class<? extends Enum>) k));
-        }
+        if (argument == null && key.isEnum()) argument = arguments.computeIfAbsent(key, k -> enumOf((Class<? extends Enum>)k));
         if (argument != null) return argument;
         throw new IllegalArgumentException("No Brigadier argument registered for type: " + type.getTypeName());
     }
