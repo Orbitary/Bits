@@ -83,7 +83,8 @@ public final class Locations {
     }
 
     public static double getHorizontalDistance(Location location1, Location location2) {
-        return Math.sqrt(getHorizontalDistanceSq(location1, location2));
+        if (!isSameWorld(location1, location2)) return Double.MAX_VALUE;
+        return Math.sqrt(horizontalDistanceSq(location1, location2));
     }
 
     public static double getHorizontalDistanceSq(Location location1, Location location2) {
