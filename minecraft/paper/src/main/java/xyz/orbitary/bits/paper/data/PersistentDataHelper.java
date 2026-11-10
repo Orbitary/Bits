@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.orbitary.bits.log.Logger;
 import xyz.orbitary.bits.util.reflection.ReflectionUtils;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static xyz.orbitary.bits.paper.util.Keys.NSK;
@@ -25,6 +26,21 @@ import static xyz.orbitary.bits.util.serializer.SerializationManager.SERIALIZER;
 
 
 public final class PersistentDataHelper {
+    private static final Map<Class<?>, PersistentDataType<?, ?>> NATIVE_TYPES = Map.ofEntries(
+      Map.entry(byte.class, PersistentDataType.BYTE),
+      Map.entry(short.class, PersistentDataType.SHORT),
+      Map.entry(int.class, PersistentDataType.INTEGER),
+      Map.entry(long.class, PersistentDataType.LONG),
+      Map.entry(float.class, PersistentDataType.FLOAT),
+      Map.entry(double.class, PersistentDataType.DOUBLE),
+      Map.entry(boolean.class, PersistentDataType.BOOLEAN),
+      Map.entry(String.class, PersistentDataType.STRING),
+      Map.entry(byte[].class, PersistentDataType.BYTE_ARRAY),
+      Map.entry(int[].class, PersistentDataType.INTEGER_ARRAY),
+      Map.entry(long[].class, PersistentDataType.LONG_ARRAY),
+      Map.entry(PersistentDataHolder.class, PersistentDataType.TAG_CONTAINER)
+    );
+
     private PersistentDataHelper() {}
 
     @SuppressWarnings("unchecked")
@@ -77,33 +93,7 @@ public final class PersistentDataHelper {
 
     @SuppressWarnings("unchecked")
     private static <T> @Nullable PersistentDataType<?, T> toNative(Class<T> value) {
-        if (ReflectionUtils.Primitive.toOrSelf(value) == byte.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.BYTE;
-        } else if (ReflectionUtils.Primitive.toOrSelf(value) == short.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.SHORT;
-        } else if (ReflectionUtils.Primitive.toOrSelf(value) == int.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.INTEGER;
-        } else if (ReflectionUtils.Primitive.toOrSelf(value) == long.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.LONG;
-        } else if (ReflectionUtils.Primitive.toOrSelf(value) == float.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.FLOAT;
-        } else if (ReflectionUtils.Primitive.toOrSelf(value) == double.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.DOUBLE;
-        } else if (ReflectionUtils.Primitive.toOrSelf(value) == boolean.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.BOOLEAN;
-        } else if (value == String.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.STRING;
-        } else if (value == byte[].class) {
-            return (PersistentDataType<?, T>)PersistentDataType.BYTE_ARRAY;
-        } else if (value == int[].class) {
-            return (PersistentDataType<?, T>)PersistentDataType.INTEGER_ARRAY;
-        } else if (value == long[].class) {
-            return (PersistentDataType<?, T>)PersistentDataType.LONG_ARRAY;
-        } else if (value == PersistentDataHolder.class) {
-            return (PersistentDataType<?, T>)PersistentDataType.TAG_CONTAINER;
-        } else {
-            return null;
-        }
+        return (PersistentDataType<?, T>)NATIVE_TYPES.get(ReflectionUtils.Primitive.toOrSelf(value));
     }
 
 }
