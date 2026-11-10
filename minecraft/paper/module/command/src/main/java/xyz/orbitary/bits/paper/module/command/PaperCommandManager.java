@@ -36,6 +36,15 @@ public final class PaperCommandManager implements BitsModule {
     private final Consumer<? super BrigadierArguments<CommandSourceStack>> customArguments;
 
     /**
+     * Registers the Paper defaults and the arguments found by the reflection scanner.
+     *
+     * @since 0.1.8
+     */
+    public PaperCommandManager() {
+        this(arguments -> {});
+    }
+
+    /**
      * @param customArguments adds argument types beyond the Paper defaults, such as a plugin's own types
      *
      * @since 0.1.6

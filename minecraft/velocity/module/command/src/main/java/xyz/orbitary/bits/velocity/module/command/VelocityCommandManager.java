@@ -38,6 +38,18 @@ public final class VelocityCommandManager implements BitsModule {
     private final Consumer<BrigadierArguments<CommandSource>> customArguments;
 
     /**
+     * Registers the defaults and the arguments found by the reflection scanner.
+     *
+     * @param commands the proxy's command manager
+     * @param plugin   the plugin instance the commands belong to
+     *
+     * @since 0.1.8
+     */
+    public VelocityCommandManager(CommandManager commands, Object plugin) {
+        this(commands, plugin, arguments -> {});
+    }
+
+    /**
      * @param commands        the proxy's command manager
      * @param plugin          the plugin instance the commands belong to
      * @param customArguments adds argument types beyond the defaults, such as a plugin's own types

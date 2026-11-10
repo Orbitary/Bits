@@ -232,7 +232,7 @@ public final class CommandScanner {
             if (name.isEmpty()) {
                 // Without -parameters every argument of one type shares a name, so repeats are numbered.
                 String base = normalise(fallbackName(params[i]));
-                name = fallbackTotals.get(base) > 1 ? base + "-" + (fallbackSeen.merge(base, 1, Integer::sum) - 1) : base;
+                name = fallbackTotals.getOrDefault(base, 0) > 1 ? base + "-" + (fallbackSeen.merge(base, 1, Integer::sum) - 1) : base;
             }
             ParameterDefinition parameter = defineParameter(i, params[i], name);
             if (group && !parameter.required()) {
