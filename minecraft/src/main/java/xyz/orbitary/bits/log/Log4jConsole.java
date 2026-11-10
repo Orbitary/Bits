@@ -16,6 +16,7 @@ import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -39,6 +40,31 @@ public final class Log4jConsole {
         context.updateLoggers();
 
         return LogManager.getLogger(name);
+    }
+
+    /**
+     * Creates a logger that writes only to the host server's own log file ({@code latest.log}), so output that
+     * bypasses the host's console pipeline is still recorded there. The console is left alone to avoid duplicates.
+     *
+     * @return the logger, or null if the host has no appender named {@code File}
+     *
+     * @since 0.1.8
+     */
+    public static org.apache.logging.log4j.@Nullable Logger hostFile(String name) {
+        LoggerContext context = (LoggerContext)LogManager.getContext(false);
+        Configuration configuration = context.getConfiguration();
+
+        Appender host = configuration.getAppender("File");
+        if (host == null) return null;
+
+        String loggerName = name + "HostFile";
+        if (!configuration.getLoggers().containsKey(loggerName)) {
+            LoggerConfig loggerConfig = new LoggerConfig(loggerName, Level.ALL, false);
+            loggerConfig.addAppender(host, null, null);
+            configuration.addLogger(loggerName, loggerConfig);
+            context.updateLoggers();
+        }
+        return LogManager.getLogger(loggerName);
     }
 
     @SuppressWarnings("deprecation")

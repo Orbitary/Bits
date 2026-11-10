@@ -10,7 +10,9 @@ package xyz.orbitary.bits.log;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
+import xyz.orbitary.bits.log.pretty.ANSI;
 import xyz.orbitary.bits.mc.permission.Permission;
 
 import java.io.File;
@@ -18,15 +20,18 @@ import java.io.File;
 
 public class PaperBitsLogger extends BasicLogger {
     private final org.apache.logging.log4j.Logger output;
+    private final org.apache.logging.log4j.@Nullable Logger serverLog;
 
     public PaperBitsLogger(JavaPlugin plugin, LogFlags flags) {
         super(plugin.getSLF4JLogger(), flags);
         this.output = Log4jConsole.create("Bits", new File(plugin.getDataFolder(), "logs/bits.log"));
+        this.serverLog = Log4jConsole.hostFile("Bits");
     }
 
     @Override
     protected void writeLine(final String line) {
         output.info(line);
+        if (serverLog != null) serverLog.info(ANSI.strip(line));
     }
 
     private void notifyStaff(LogData logData) {
