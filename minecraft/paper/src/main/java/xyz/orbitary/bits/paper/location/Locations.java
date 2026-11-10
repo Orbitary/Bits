@@ -74,16 +74,12 @@ public final class Locations {
 
     public static double getDistance(Location location1, Location location2) {
         if (!isSameWorld(location1, location2)) return Double.MAX_VALUE;
-        return Math.sqrt(getDistanceSq(location1, location2));
+        return Math.sqrt(distanceSq(location1, location2));
     }
 
     public static double getDistanceSq(Location location1, Location location2) {
         if (!isSameWorld(location1, location2)) return Double.MAX_VALUE;
-
-        double dx = location1.getX() - location2.getX();
-        double dy = location1.getY() - location2.getY();
-        double dz = location1.getZ() - location2.getZ();
-        return dx * dx + dy * dy + dz * dz;
+        return distanceSq(location1, location2);
     }
 
     public static double getHorizontalDistance(Location location1, Location location2) {
@@ -92,7 +88,17 @@ public final class Locations {
 
     public static double getHorizontalDistanceSq(Location location1, Location location2) {
         if (!isSameWorld(location1, location2)) return Double.MAX_VALUE;
+        return horizontalDistanceSq(location1, location2);
+    }
 
+    private static double distanceSq(Location location1, Location location2) {
+        double dx = location1.getX() - location2.getX();
+        double dy = location1.getY() - location2.getY();
+        double dz = location1.getZ() - location2.getZ();
+        return dx * dx + dy * dy + dz * dz;
+    }
+
+    private static double horizontalDistanceSq(Location location1, Location location2) {
         double dx = location1.getX() - location2.getX();
         double dz = location1.getZ() - location2.getZ();
         return dx * dx + dz * dz;
