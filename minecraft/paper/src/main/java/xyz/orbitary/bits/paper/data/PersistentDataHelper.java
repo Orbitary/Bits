@@ -11,6 +11,7 @@ package xyz.orbitary.bits.paper.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.kyori.adventure.key.Key;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +39,7 @@ public final class PersistentDataHelper {
       Map.entry(byte[].class, PersistentDataType.BYTE_ARRAY),
       Map.entry(int[].class, PersistentDataType.INTEGER_ARRAY),
       Map.entry(long[].class, PersistentDataType.LONG_ARRAY),
-      Map.entry(PersistentDataHolder.class, PersistentDataType.TAG_CONTAINER)
+      Map.entry(PersistentDataContainer.class, PersistentDataType.TAG_CONTAINER)
     );
 
     private PersistentDataHelper() {}
