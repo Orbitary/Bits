@@ -217,10 +217,24 @@ public final class CommandScanner {
         boolean optionalSeen = false;
 
         java.lang.reflect.Parameter[] params = executable.getParameters();
+        Map<String, Integer> fallbackTotals = new HashMap<>();
+        for (java.lang.reflect.Parameter param : params) {
+            if (!injected.test(param.getType()) && explicitName(param).isEmpty()) {
+                fallbackTotals.merge(normalise(fallbackName(param)), 1, Integer::sum);
+            }
+        }
+        Map<String, Integer> fallbackSeen = new HashMap<>();
+
         for (int i = 0; i < params.length; i++) {
             if (injected.test(params[i].getType())) continue;
 
-            ParameterDefinition parameter = defineParameter(i, params[i]);
+            String name = explicitName(params[i]);
+            if (name.isEmpty()) {
+                // Without -parameters every argument of one type shares a name, so repeats are numbered.
+                String base = normalise(fallbackName(params[i]));
+                name = fallbackTotals.get(base) > 1 ? base + "-" + (fallbackSeen.merge(base, 1, Integer::sum) - 1) : base;
+            }
+            ParameterDefinition parameter = defineParameter(i, params[i], name);
             if (group && !parameter.required()) {
                 throw new IllegalArgumentException("Group argument '" + parameter.name() + "' must be required in " + executable);
             }
@@ -237,11 +251,13 @@ public final class CommandScanner {
         return List.copyOf(parameters);
     }
 
-    private static ParameterDefinition defineParameter(int index, java.lang.reflect.Parameter param) {
+    private static String explicitName(java.lang.reflect.Parameter param) {
         Parameter annotation = param.getAnnotation(Parameter.class);
-        String name = annotation != null && !annotation.value().isBlank()
-                      ? annotation.value()
-                      : fallbackName(param);
+        return annotation != null && !annotation.value().isBlank() ? annotation.value() : "";
+    }
+
+    private static ParameterDefinition defineParameter(int index, java.lang.reflect.Parameter param, String name) {
+        Parameter annotation = param.getAnnotation(Parameter.class);
         String description = annotation != null ? annotation.description() : "";
         boolean required = annotation == null || annotation.required();
         Suggest suggest = param.getAnnotation(Suggest.class);
