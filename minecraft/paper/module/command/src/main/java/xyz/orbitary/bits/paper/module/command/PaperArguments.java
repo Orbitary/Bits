@@ -18,19 +18,23 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.GameModeArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.flag.FeatureFlags;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.CraftParticle;
+import org.bukkit.craftbukkit.block.CraftBiome;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -135,6 +139,14 @@ final class PaperArguments {
                 Identifier id = context.getArgument(name, Identifier.class);
                 return Key.key(id.getNamespace(), id.getPath());
             }
+          )
+        );
+
+        arguments.register(
+          Biome.class,
+          BrigadierArgument.of(
+            ResourceArgument.resource(buildContext, Registries.BIOME),
+            (context, name) -> CraftBiome.minecraftHolderToBukkit(ResourceArgument.getResource(context, name, Registries.BIOME))
           )
         );
 

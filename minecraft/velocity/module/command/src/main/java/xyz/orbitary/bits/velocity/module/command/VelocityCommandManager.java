@@ -11,6 +11,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import xyz.orbitary.bits.Bits;
@@ -33,38 +34,40 @@ import java.util.function.Consumer;
  */
 public final class VelocityCommandManager implements BitsModule {
 
-    private final CommandManager commands;
+    private final ProxyServer proxy;
     private final Object plugin;
     private final Consumer<BrigadierArguments<CommandSource>> customArguments;
 
     /**
      * Registers the defaults and the arguments found by the reflection scanner.
      *
-     * @param commands the proxy's command manager
-     * @param plugin   the plugin instance the commands belong to
+     * @param proxy  the proxy, used to register commands and to look up players
+     * @param plugin the plugin instance the commands belong to
      *
      * @since 0.1.8
      */
-    public VelocityCommandManager(CommandManager commands, Object plugin) {
-        this(commands, plugin, arguments -> {});
+    public VelocityCommandManager(ProxyServer proxy, Object plugin) {
+        this(proxy, plugin, arguments -> {});
     }
 
     /**
-     * @param commands        the proxy's command manager
+     * @param proxy           the proxy, used to register commands and to look up players
      * @param plugin          the plugin instance the commands belong to
      * @param customArguments adds argument types beyond the defaults, such as a plugin's own types
      *
      * @since 0.1.6
      */
-    public VelocityCommandManager(CommandManager commands, Object plugin, Consumer<BrigadierArguments<CommandSource>> customArguments) {
-        this.commands = commands;
+    public VelocityCommandManager(ProxyServer proxy, Object plugin, Consumer<BrigadierArguments<CommandSource>> customArguments) {
+        this.proxy = proxy;
         this.plugin = plugin;
         this.customArguments = customArguments;
     }
 
     @Override
     public void startup() {
+        CommandManager commands = proxy.getCommandManager();
         BrigadierArguments<CommandSource> arguments = BrigadierArguments.withDefaults();
+        VelocityArguments.registerDefaults(arguments, proxy);
         customArguments.accept(arguments);
 
         List<CommandDefinition> definitions = CommandScanner.scanAll(VelocityCommandContext.class::equals);

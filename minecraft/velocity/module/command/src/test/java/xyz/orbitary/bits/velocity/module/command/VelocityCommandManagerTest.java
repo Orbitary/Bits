@@ -16,6 +16,7 @@ import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.junit.jupiter.api.BeforeAll;
@@ -137,7 +138,20 @@ class VelocityCommandManagerTest {
     }
 
     private static VelocityCommandManager manager(Object plugin, List<Object> customised) {
-        return new VelocityCommandManager(commandManager(), plugin, arguments -> customised.add(arguments));
+        return new VelocityCommandManager(proxy(), plugin, arguments -> customised.add(arguments));
+    }
+
+    private static ProxyServer proxy() {
+        CommandManager commands = commandManager();
+        return (ProxyServer) Proxy.newProxyInstance(
+          VelocityCommandManagerTest.class.getClassLoader(),
+          new Class<?>[]{ProxyServer.class},
+          (proxy, method, args) -> switch (method.getName()) {
+              case "getCommandManager" -> commands;
+              case "getAllPlayers" -> List.of();
+              default -> null;
+          }
+        );
     }
 
     @Test
