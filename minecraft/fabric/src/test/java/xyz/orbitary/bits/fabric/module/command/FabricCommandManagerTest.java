@@ -70,6 +70,16 @@ class FabricCommandManagerTest {
         }
     }
 
+    public record Source(String name) {}
+
+    @SuppressWarnings("unused")
+    public static final class WhoAmI {
+        @Command("whoami")
+        public void whoami(Source source) {
+            calls.add("whoami " + source.name());
+        }
+    }
+
     public enum Mode { FAST, SLOW }
 
     @SuppressWarnings("unused")
@@ -106,6 +116,8 @@ class FabricCommandManagerTest {
 
     private static FabricCommandManager<String> manager(List<Consumer<CommandDispatcher<String>>> callbacks, Consumer<BrigadierArguments<String>> custom) {
         return new FabricCommandManager<>(
+          Source.class,
+          context -> new Source(context.getSource()),
           custom,
           (source, error) -> errors.add(error),
           (source, node) -> true,
@@ -210,6 +222,15 @@ class FabricCommandManagerTest {
         assertEquals(0, registered(callbacks).execute("fail", SOURCE));
         assertEquals(1, errors.size());
         assertInstanceOf(IllegalStateException.class, errors.getFirst());
+    }
+
+    @Test
+    void contextFactoryInjectsTheSourceIntoDeclaringMethods() throws CommandSyntaxException {
+        List<Consumer<CommandDispatcher<String>>> callbacks = new ArrayList<>();
+        manager(callbacks, FabricCommandManagerTest::shoutArgument).startup();
+
+        assertEquals(1, registered(callbacks).execute("whoami", SOURCE));
+        assertEquals(List.of("whoami " + SOURCE), calls);
     }
 
 }

@@ -9,14 +9,17 @@ package xyz.orbitary.bits.mc.module.command;
 
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Locale;
+import java.util.function.Function;
 
 
 /**
@@ -86,6 +89,47 @@ public interface BrigadierArgument<S> {
               .filter(value -> value.toLowerCase(Locale.ROOT).startsWith(remaining))
               .forEach(builder::suggest);
             return builder.buildFuture();
+        };
+    }
+
+    /**
+     * Creates an argument that reads one word, or a comma separated list of words, and suggests values that depend
+     * on the command source.
+     *
+     * @param reader reads the parsed value from the context
+     * @param values the values to offer for a source, filtered by what has been typed so far
+     * @param list   whether the input is a comma separated list, so suggestions complete the last entry
+     * @param <S>    the command source type
+     *
+     * @return the argument
+     *
+     * @since 0.1.12
+     */
+    static <S> BrigadierArgument<S> words(Reader<S> reader, Function<S, Collection<String>> values, boolean list) {
+        return new BrigadierArgument<>() {
+            @Override
+            public ArgumentType<?> argumentType() {
+                return StringArgumentType.word();
+            }
+
+            @Override
+            public Object read(CommandContext<S> context, String name) throws CommandSyntaxException {
+                return reader.read(context, name);
+            }
+
+            @Override
+            public SuggestionProvider<S> suggestions() {
+                return (context, builder) -> {
+                    String input = builder.getRemaining();
+                    int start = list ? input.lastIndexOf(',') + 1 : 0;
+                    String prefix = input.substring(start).toLowerCase(Locale.ROOT);
+                    SuggestionsBuilder entry = builder.createOffset(builder.getStart() + start);
+                    values.apply(context.getSource()).stream()
+                      .filter(value -> value.toLowerCase(Locale.ROOT).startsWith(prefix))
+                      .forEach(entry::suggest);
+                    return entry.buildFuture();
+                };
+            }
         };
     }
 

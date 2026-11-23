@@ -9,6 +9,7 @@ package xyz.orbitary.bits.fabric.module.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import xyz.orbitary.bits.Bits;
 import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.log.Logger;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 
 /**
@@ -35,6 +37,8 @@ import java.util.function.Consumer;
  */
 public final class FabricCommandManager<S> implements BitsModule {
 
+    private final Class<?> contextType;
+    private final Function<CommandContext<S>, ?> contextFactory;
     private final Consumer<BrigadierArguments<S>> customArguments;
     private final BiConsumer<S, Throwable> errorHandler;
     private final BiPredicate<S, String> hasPermission;
@@ -54,6 +58,29 @@ public final class FabricCommandManager<S> implements BitsModule {
       BiPredicate<S, String> hasPermission,
       Consumer<Consumer<CommandDispatcher<S>>> onDispatcher
     ) {
+        this(Void.class, ignored -> null, customArguments, errorHandler, hasPermission, onDispatcher);
+    }
+
+    /**
+     * @param contextType     the type of the source object that command methods may declare as a parameter
+     * @param contextFactory  creates the source object injected into a command method from the executing command
+     * @param customArguments adds argument types beyond the defaults, such as a mod's own types
+     * @param errorHandler    sends an error to the source of a command that did not run
+     * @param hasPermission   returns true if the source holds a permission node
+     * @param onDispatcher    subscribes to the platform's command registration, passing each dispatcher to the callback
+     *
+     * @since 0.1.12
+     */
+    public FabricCommandManager(
+      Class<?> contextType,
+      Function<CommandContext<S>, ?> contextFactory,
+      Consumer<BrigadierArguments<S>> customArguments,
+      BiConsumer<S, Throwable> errorHandler,
+      BiPredicate<S, String> hasPermission,
+      Consumer<Consumer<CommandDispatcher<S>>> onDispatcher
+    ) {
+        this.contextType = contextType;
+        this.contextFactory = contextFactory;
         this.customArguments = customArguments;
         this.errorHandler = errorHandler;
         this.hasPermission = hasPermission;
@@ -65,10 +92,10 @@ public final class FabricCommandManager<S> implements BitsModule {
         BrigadierArguments<S> arguments = BrigadierArguments.withDefaults();
         customArguments.accept(arguments);
 
-        List<CommandDefinition> definitions = CommandScanner.scanAll(type -> false);
+        List<CommandDefinition> definitions = CommandScanner.scanAll(contextType::equals);
         BrigadierCommandBuilder<S> builder = new BrigadierCommandBuilder<>(
           arguments,
-          ignored -> null,
+          contextFactory,
           errorHandler,
           hasPermission,
           runnable -> Bits.get().runLaterAsync(runnable, 0)

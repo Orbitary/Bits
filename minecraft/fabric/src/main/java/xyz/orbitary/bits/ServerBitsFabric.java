@@ -20,6 +20,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 import xyz.orbitary.bits.fabric.module.command.FabricCommandManager;
+import xyz.orbitary.bits.fabric.module.command.ServerCommandArguments;
+import xyz.orbitary.bits.fabric.module.command.ServerCommandContext;
 import xyz.orbitary.bits.lifecycle.manager.BitsModule;
 import xyz.orbitary.bits.log.FabricBitsLogger;
 import xyz.orbitary.bits.log.Logger;
@@ -86,7 +88,9 @@ public class ServerBitsFabric extends BitsFabric {
     @Override
     protected AddableList<BitsModule> modules() {
         return super.modules().add(new FabricCommandManager<CommandSourceStack>(
-          arguments -> {},
+          ServerCommandContext.class,
+          context -> new ServerCommandContext(context.getSource()),
+          ServerCommandArguments::registerDefaults,
           (source, error) -> source.sendFailure(Component.literal(CommandErrors.message(error))),
           (source, node) -> Permissions.check(source, node, false),
           dispatcherCallback -> CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcherCallback.accept(dispatcher))
