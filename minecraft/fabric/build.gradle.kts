@@ -65,6 +65,10 @@ tasks.test {
 }
 
 tasks {
+    shadowJar {
+        enabled = false
+    }
+
     processResources {
         filteringCharset = "UTF-8"
 
