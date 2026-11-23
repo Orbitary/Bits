@@ -6,7 +6,6 @@
  */
 
 import xyz.bitsquidd.util.providedApi
-import xyz.bitsquidd.util.shade
 
 
 plugins {
@@ -24,6 +23,18 @@ loom {
     }
 }
 
+val transitiveInclude: Configuration by configurations.creating {
+    exclude(group = "com.mojang")
+    exclude(group = "net.fabricmc")
+    exclude(group = "net.kyori")
+    exclude(group = "io.netty")
+    exclude(group = "com.google.guava")
+    exclude(group = "org.joml")
+    exclude(group = "org.jspecify")
+    exclude(group = "org.slf4j")
+    exclude(group = "org.jetbrains")
+}
+
 providedApi(fabricLibs.fabric.loader)
 providedApi(fabricLibs.fabric.api)
 
@@ -36,10 +47,12 @@ dependencies {
 
     minecraft("com.mojang:minecraft:26.3")
 
-    shade(project(":minecraft"), transitive = true)
-    shade(project(":minecraft:module:command"), transitive = true)
+    api(project(":minecraft"))
+    api(project(":minecraft:module:command"))
+    transitiveInclude(project(":minecraft"))
+    transitiveInclude(project(":minecraft:module:command"))
 
-    api("net.kyori:adventure-platform-fabric:7.1.0")
+    api("net.kyori:adventure-platform-fabric:7.2.0")
     api("me.lucko:fabric-permissions-api:0.7.0")
 
     testImplementation(platform(rootProject.libs.junit.bom))
@@ -59,13 +72,18 @@ tasks {
             expand("version" to project.version)
         }
     }
-
-    shadowJar {
-        from(sourceSets["client"].output)
-        relocate("io.github.classgraph", "xyz.orbitary.lib.classgraph")
-    }
 }
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
+
+afterEvaluate {
+    dependencies {
+        transitiveInclude.resolvedConfiguration.resolvedArtifacts.forEach {
+            val id = it.id.componentIdentifier
+            if (id is ProjectComponentIdentifier) include(project(id.projectPath))
+            else include(it.moduleVersion.id.toString())
+        }
+    }
 }

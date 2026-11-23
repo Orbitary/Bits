@@ -6,17 +6,14 @@
  */
 package xyz.orbitary.bits.fabric;
 
-import net.fabricmc.api.ModInitializer;
-import xyz.orbitary.bits.Bits;
+import net.fabricmc.api.DedicatedServerModInitializer;
 import xyz.orbitary.bits.ServerBitsFabric;
 
-public class BitsServerInitializer implements ModInitializer {
+public class BitsServerInitializer implements DedicatedServerModInitializer {
 
     @Override
-    public void onInitialize() {
-        ServerBitsFabric.generic();
-        Bits.get().startup();
-        Bits.get().initialise();
+    public void onInitializeServer() {
+        ServerBitsFabric.bootstrap();
     }
 
 }

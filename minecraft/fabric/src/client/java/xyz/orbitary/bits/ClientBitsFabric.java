@@ -38,9 +38,12 @@ public class ClientBitsFabric extends BitsFabric {
         return (ClientBitsFabric)Bits.get();
     }
 
-    public static ClientBitsFabric generic() {
+    public static ClientBitsFabric bootstrap() {
         new FabricBitsLogger(org.slf4j.LoggerFactory.getLogger("BitsClient"), Logger.LogFlags.defaultFlags());
-        return new ClientBitsFabric();
+        var bits = new ClientBitsFabric();
+        bits.startup();
+        bits.initialise();
+        return bits;
     }
 
 
@@ -89,10 +92,6 @@ public class ClientBitsFabric extends BitsFabric {
           (source, node) -> true,
           dispatcherCallback -> ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcherCallback.accept(dispatcher))
         ));
-    }
-
-    @Override
-    public void registerAllCommands() {
     }
 
 }

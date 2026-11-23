@@ -10,16 +10,20 @@ package xyz.orbitary.bits;
 import xyz.orbitary.bits.util.Safety;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 public abstract class BitsFabric extends BitsMinecraft {
-    private final List<ScheduledTask> pendingTasks = new ArrayList<>();
+    private final PriorityQueue<ScheduledTask> pendingTasks = new PriorityQueue<>(
+        Comparator.comparingLong(ScheduledTask::dueNanos).thenComparingLong(ScheduledTask::sequence));
+    private final AtomicLong sequence = new AtomicLong();
     private final ExecutorService asyncTasks = Executors.newVirtualThreadPerTaskExecutor();
 
 
@@ -34,7 +38,7 @@ public abstract class BitsFabric extends BitsMinecraft {
     public void runLater(Runnable runnable, long delayMs) {
         Objects.requireNonNull(runnable, "runnable");
         var task = new ScheduledTask(runnable,
-            System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(Math.max(0, delayMs)));
+            System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(Math.max(0, delayMs)), sequence.getAndIncrement());
         synchronized (pendingTasks) {
             if (asyncTasks.isShutdown()) throw new RejectedExecutionException("Bits scheduler has shut down");
             pendingTasks.add(task);
@@ -59,11 +63,9 @@ public abstract class BitsFabric extends BitsMinecraft {
         var ready = new ArrayList<ScheduledTask>();
         var now = System.nanoTime();
         synchronized (pendingTasks) {
-            pendingTasks.removeIf(task -> {
-                if (now - task.dueNanos() < 0) return false;
-                ready.add(task);
-                return true;
-            });
+            while (!pendingTasks.isEmpty() && now - pendingTasks.peek().dueNanos() >= 0) {
+                ready.add(pendingTasks.poll());
+            }
         }
 
         ready.forEach(task -> Safety.safeExecute("Fabric scheduled task", task.runnable()));
@@ -79,9 +81,6 @@ public abstract class BitsFabric extends BitsMinecraft {
     }
 
 
-    public abstract void registerAllCommands();
-
-
-    private record ScheduledTask(Runnable runnable, long dueNanos) {}
+    private record ScheduledTask(Runnable runnable, long dueNanos, long sequence) {}
 
 }

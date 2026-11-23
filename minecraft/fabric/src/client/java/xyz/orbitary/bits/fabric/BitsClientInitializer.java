@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 import xyz.orbitary.bits.ClientBitsFabric;
-import xyz.orbitary.bits.Bits;
 
 
 @Environment(EnvType.CLIENT)
@@ -20,9 +19,7 @@ public class BitsClientInitializer implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientBitsFabric.generic();
-        Bits.get().startup();
-        Bits.get().initialise();
+        ClientBitsFabric.bootstrap();
     }
 
 }

@@ -43,9 +43,12 @@ public class ServerBitsFabric extends BitsFabric {
         return (ServerBitsFabric) Bits.get();
     }
 
-    public static ServerBitsFabric generic() {
+    public static ServerBitsFabric bootstrap() {
         new FabricBitsLogger(org.slf4j.LoggerFactory.getLogger("BitsServer"), Logger.LogFlags.defaultFlags());
-        return new ServerBitsFabric();
+        var bits = new ServerBitsFabric();
+        bits.startup();
+        bits.initialise();
+        return bits;
     }
 
     @Override
@@ -95,10 +98,6 @@ public class ServerBitsFabric extends BitsFabric {
           (source, node) -> Permissions.check(source, node, false),
           dispatcherCallback -> CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcherCallback.accept(dispatcher))
         ));
-    }
-
-    @Override
-    public void registerAllCommands() {
     }
 
 }
