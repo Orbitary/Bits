@@ -35,7 +35,7 @@ import java.util.function.Function;
  *
  * @since 0.1.6
  */
-public final class FabricCommandManager<S> implements BitsModule {
+public class FabricCommandManager<S> implements BitsModule {
 
     private final Class<?> contextType;
     private final Function<CommandContext<S>, ?> contextFactory;
